@@ -88,9 +88,54 @@ def search_news(q: str, db: Session = Depends(get_db), limit: int = Query(defaul
     )
 
 
+@router.get("/rss")
+def get_rss_feed(db: Session = Depends(get_db)):
+    """Google News va boshqa agregatorlar uchun RSS feed."""
+    import html
+    from fastapi import Response
+    from ..config import FRONTEND_ORIGIN
+
+    articles = (
+        published(db)
+        .order_by(Article.published_at.desc())
+        .limit(50)
+        .all()
+    )
+    
+    rss_items = []
+    for article in articles:
+        pub_date = article.published_at.strftime("%a, %d %b %Y %H:%M:%S GMT") if article.published_at else ""
+        link = f"{FRONTEND_ORIGIN}/maqola/{article.slug}"
+        rss_items.append(
+            f"<item>\n"
+            f"  <title>{html.escape(article.title)}</title>\n"
+            f"  <link>{link}</link>\n"
+            f"  <guid isPermaLink=\"true\">{link}</guid>\n"
+            f"  <description>{html.escape(article.summary)}</description>\n"
+            f"  <pubDate>{pub_date}</pubDate>\n"
+            f"</item>"
+        )
+    
+    rss_items_str = "\n".join(rss_items)
+    rss_xml = (
+        f"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
+        f"<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n"
+        f"<channel>\n"
+        f"  <title>AI Xabar — Sun'iy intellekt yangiliklari o'zbek tilida</title>\n"
+        f"  <link>{FRONTEND_ORIGIN}</link>\n"
+        f"  <description>Dunyodagi eng so'nggi sun'iy intellekt yangiliklari va tahlillari o'zbek tilida.</description>\n"
+        f"  <language>uz</language>\n"
+        f"  {rss_items_str}\n"
+        f"</channel>\n"
+        f"</rss>"
+    )
+    return Response(content=rss_xml, media_type="application/xml")
+
+
 @router.get("/{slug}", response_model=ArticleOut)
 def article_detail(slug: str, db: Session = Depends(get_db)):
     article = published(db).filter(Article.slug == slug).first()
     if not article:
         raise HTTPException(status_code=404, detail="Maqola topilmadi")
     return article
+
