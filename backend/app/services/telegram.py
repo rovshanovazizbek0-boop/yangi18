@@ -4,7 +4,7 @@ import html
 
 import httpx
 
-from ..config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL_ID
+from ..config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL_ID, FRONTEND_ORIGIN
 from ..models import Article
 
 
@@ -17,9 +17,11 @@ def format_post(article: Article) -> str:
         f"{html.escape(article.summary)}\n\n"
         f"💡 <i>{html.escape(article.practical_note)}</i>\n\n"
         f"📂 {html.escape(category)} | Ahamiyati: {stars}\n"
-        f"🔗 <a href=\"{article.original_url}\">Asl manba</a>\n"
+        f"🔗 <a href=\"{article.original_url}\">Asl manba</a> | "
+        f"<a href=\"{FRONTEND_ORIGIN}/maqola/{article.slug}\">Batafsil o'qish</a>\n"
         f"{tags}"
     )
+
 
 
 def send_to_channel(article: Article) -> None:
