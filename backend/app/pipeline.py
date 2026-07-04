@@ -1,15 +1,30 @@
-"""AI Agent quvuri: yig'ish -> dublikat filtri -> tahlil -> bazaga saqlash (pending).
+"""AI Agent quvuri: yig'ish -> dublikat filtri -> tahlil -> saqlash.
+
+AUTO_PUBLISH=true (standart) bo'lsa maqolalar darhol saytga chiqadi va
+muhimlari (AUTO_TELEGRAM_MIN_IMPORTANCE dan yuqori) Telegram kanalga
+avtomatik yuboriladi. AUTO_PUBLISH=false bo'lsa eski rejim: maqolalar
+pending holatda admin tasdig'ini kutadi.
 
 Ishga tushirish:  python -m app.pipeline
 Muntazam ishlashi uchun cron'ga qo'ying, masalan har soatda:
-  0 * * * * cd /path/backend && python -m app.pipeline
+  0 * * * * cd /path/backend && .venv/bin/python -m app.pipeline
 """
 
+from datetime import datetime
+
+from .config import (
+    AUTO_PUBLISH,
+    AUTO_PUBLISH_MIN_IMPORTANCE,
+    AUTO_TELEGRAM,
+    AUTO_TELEGRAM_MIN_IMPORTANCE,
+    TELEGRAM_BOT_TOKEN,
+)
 from .database import Base, SessionLocal, engine
 from .models import Article, Category
 from .seed import seed_categories
 from .services.ai_agent import analyze_news
 from .services.collector import collect_news
+from .services.telegram import send_to_channel
 from .utils import slugify
 
 
@@ -42,6 +57,8 @@ def run_pipeline(per_feed: int = 5) -> int:
             if db.query(Article).filter(Article.slug == slug).first():
                 slug = f"{slug}-{saved + 1}"
 
+            auto_publish = AUTO_PUBLISH and analysis["ahamiyati"] >= AUTO_PUBLISH_MIN_IMPORTANCE
+
             article = Article(
                 title=analysis["sarlavha"],
                 seo_title=analysis["seo_sarlavha"],
@@ -57,13 +74,33 @@ def run_pipeline(per_feed: int = 5) -> int:
                 image_url=news["image_url"],
                 category_id=categories.get(analysis["kategoriya"], None) and categories[analysis["kategoriya"]].id,
                 source_published_at=news["published_at"],
-                status="pending",
+                status="published" if auto_publish else "pending",
+                published_at=datetime.utcnow() if auto_publish else None,
             )
             db.add(article)
             db.commit()
             saved += 1
 
-        print(f"\n✅ {saved} ta maqola saqlandi (holati: pending — admin tasdig'ini kutmoqda).")
+            if auto_publish:
+                print("   ✓ Saytga chiqarildi")
+
+            # Muhim yangiliklarni Telegram kanalga avtomatik yuborish
+            if (
+                auto_publish
+                and AUTO_TELEGRAM
+                and TELEGRAM_BOT_TOKEN
+                and analysis["ahamiyati"] >= AUTO_TELEGRAM_MIN_IMPORTANCE
+            ):
+                try:
+                    send_to_channel(article)
+                    article.sent_to_telegram = True
+                    db.commit()
+                    print("   ✓ Telegram kanalga yuborildi")
+                except Exception as error:
+                    print(f"   ✗ Telegram xatosi: {error}")
+
+        mode = "saytga chiqarildi (avto)" if AUTO_PUBLISH else "pending — admin tasdig'ini kutmoqda"
+        print(f"\n✅ {saved} ta maqola saqlandi ({mode}).")
         return saved
     finally:
         db.close()

@@ -117,10 +117,23 @@ To'liq interaktiv hujjatlar: `http://localhost:8000/docs`
 
 ## Ish oqimi (workflow)
 
-1. `python -m app.pipeline` — RSS'dan yangiliklar yig'iladi, dublikatlar filtrlanadi, Claude har birini o'zbekcha maqolaga aylantiradi → baza (`pending`)
-2. Admin `/admin` sahifasida ko'radi, kerak bo'lsa tahrirlaydi, **Tasdiqlash** bosadi → maqola saytga chiqadi
-3. **Telegramga** tugmasi → maqola kanalga chiroyli post bo'lib yuboriladi
-4. Bot foydalanuvchilari yangiliklar bilan menyu orqali ishlaydi
+**Avtomatik rejim (standart, `AUTO_PUBLISH=true`):**
+
+1. Cron har soatda `python -m app.pipeline` ni ishga tushiradi
+2. RSS'dan yangiliklar yig'iladi, dublikatlar filtrlanadi, Claude har birini o'zbekcha maqolaga aylantiradi
+3. Maqolalar **darhol saytga chiqadi**; muhimlari (bahosi ≥ `AUTO_TELEGRAM_MIN_IMPORTANCE`, standart 4) **Telegram kanalga ham avtomatik yuboriladi**
+4. Admin `/admin` panelda faqat nazorat qiladi: xato maqolani tahrirlaydi yoki o'chiradi
+
+Sozlamalar (`.env`):
+
+| O'zgaruvchi | Standart | Tavsif |
+|---|---|---|
+| `AUTO_PUBLISH` | `true` | `false` — maqolalar admin tasdig'ini kutadi |
+| `AUTO_PUBLISH_MIN_IMPORTANCE` | `1` | Shu bahodan pastlari `pending`da qoladi |
+| `AUTO_TELEGRAM` | `true` | Muhim yangiliklarni kanalga avto-yuborish |
+| `AUTO_TELEGRAM_MIN_IMPORTANCE` | `4` | Kanalga yuborish uchun minimal baho |
+
+**Moderatsiya rejimi (`AUTO_PUBLISH=false`):** maqolalar `pending` holatda saqlanadi, admin `/admin` sahifasida ko'rib **Tasdiqlash** bosgachgina saytga chiqadi va **Telegramga** tugmasi bilan kanalga yuboradi.
 
 ## Kelajakdagi rejalar (TZ bo'yicha)
 

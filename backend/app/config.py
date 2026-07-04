@@ -15,5 +15,20 @@ ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "admin-token-o'zgartiring")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHANNEL_ID = os.getenv("TELEGRAM_CHANNEL_ID", "")  # masalan: @ai_news_uz
 
+
+def _bool(name: str, default: str) -> bool:
+    return os.getenv(name, default).strip().lower() in ("1", "true", "yes", "ha")
+
+
+# Avto-chop etish: pipeline maqolalarni admin tasdig'isiz to'g'ridan-to'g'ri
+# saytga chiqaradi. O'chirish uchun: AUTO_PUBLISH=false
+AUTO_PUBLISH = _bool("AUTO_PUBLISH", "true")
+# Faqat shu bahodan yuqori maqolalar avto-chop etiladi (qolganlari pending)
+AUTO_PUBLISH_MIN_IMPORTANCE = int(os.getenv("AUTO_PUBLISH_MIN_IMPORTANCE", "1"))
+
+# Muhim yangiliklarni Telegram kanalga avtomatik yuborish
+AUTO_TELEGRAM = _bool("AUTO_TELEGRAM", "true")
+AUTO_TELEGRAM_MIN_IMPORTANCE = int(os.getenv("AUTO_TELEGRAM_MIN_IMPORTANCE", "4"))
+
 # Frontend manzili (CORS uchun)
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
