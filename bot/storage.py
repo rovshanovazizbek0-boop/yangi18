@@ -1,10 +1,12 @@
 """Bot foydalanuvchilari uchun oddiy SQLite saqlash:
 bildirishnoma sozlamalari va saqlangan maqolalar."""
 
+import os
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "bot.db"
+DB_PATH = Path(os.getenv("BOT_DB_PATH", Path(__file__).parent / "bot.db"))
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 
 def _connect():

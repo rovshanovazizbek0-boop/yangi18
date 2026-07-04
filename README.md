@@ -44,6 +44,29 @@ Maqolalar `pending` holatida saqlanadi — **admin tasdiqlagachgina** saytga chi
 
 ---
 
+## ⚡ Eng oson yo'l: Docker Compose (tavsiya etiladi)
+
+Butun platforma (PostgreSQL + backend + AI pipeline + sayt + bot) bitta buyruq bilan:
+
+```bash
+cp .env.example .env      # GEMINI_API_KEY, ADMIN_TOKEN, TELEGRAM_* ni to'ldiring
+docker compose up -d --build
+```
+
+Shundan so'ng:
+- Sayt: http://localhost:3000 (admin: http://localhost:3000/admin)
+- API: http://localhost:8000/docs
+- Pipeline har soatda (`PIPELINE_INTERVAL`) avtomatik yangiliklarni yig'ib chop etadi
+- Bot `TELEGRAM_BOT_TOKEN` kiritilgan bo'lsa avtomatik ishlaydi
+
+Loglarni ko'rish: `docker compose logs -f pipeline` · To'xtatish: `docker compose down`
+
+Serverga qo'yganda `.env`da `NEXT_PUBLIC_API_URL`, `FRONTEND_ORIGIN`, `SITE_URL` qiymatlarini o'z domeningizga almashtiring.
+
+---
+
+Quyida har bir qismni Docker'siz, alohida ishga tushirish yo'riqnomasi.
+
 ## 1. Backend'ni ishga tushirish
 
 ```bash
