@@ -6,6 +6,12 @@ load_dotenv()
 # Ma'lumotlar bazasi: prod'da PostgreSQL, lokal ishlab chiqishda SQLite yetarli.
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./ainews.db")
 
+# AI provayder: "gemini" (standart) yoki "claude"
+AI_PROVIDER = os.getenv("AI_PROVIDER", "gemini").strip().lower()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
+
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-4-8")
 

@@ -21,7 +21,7 @@ Sun'iy intellektga oid eng muhim yangiliklarni dunyodagi ishonchli manbalardan *
 | Qism | Texnologiya | Papka |
 |---|---|---|
 | Backend + REST API | FastAPI, SQLAlchemy, PostgreSQL/SQLite | `backend/` |
-| AI Agent | Claude API (strukturali JSON) | `backend/app/services/ai_agent.py` |
+| AI Agent | Gemini API (standart) yoki Claude API — strukturali JSON | `backend/app/services/ai_agent.py` |
 | Yangiliklar yig'uvchi | feedparser (RSS) + dublikat filtri | `backend/app/services/collector.py` |
 | Frontend | Next.js 15, React 19, Tailwind CSS 4 | `frontend/` |
 | Admin panel | Next.js sahifasi (`/admin`) + Admin API | `frontend/app/admin/` |
@@ -29,7 +29,7 @@ Sun'iy intellektga oid eng muhim yangiliklarni dunyodagi ishonchli manbalardan *
 
 ## AI Agent nima qiladi?
 
-Har bir inglizcha yangilik uchun Claude quyidagilarni **bitta so'rovda** tayyorlaydi (javob JSON sxema bilan kafolatlanadi):
+Har bir inglizcha yangilik uchun AI model (standart: **Gemini `gemini-3.1-flash-lite`** — arzon va tez; `.env`da `AI_PROVIDER=claude` qilib Claude'ga o'tish mumkin) quyidagilarni **bitta so'rovda** tayyorlaydi (javob JSON sxema bilan kafolatlanadi):
 
 - `kategoriya` — OpenAI, Gemini, Claude, xAI, Meta, DeepSeek, Qwen, Microsoft, Startuplar, Robototexnika, Dasturlash
 - `sarlavha` — o'zbekcha sarlavha
@@ -50,7 +50,7 @@ Maqolalar `pending` holatida saqlanadi — **admin tasdiqlagachgina** saytga chi
 cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env        # ANTHROPIC_API_KEY, ADMIN_TOKEN va boshqalarni to'ldiring
+cp .env.example .env        # GEMINI_API_KEY, ADMIN_TOKEN va boshqalarni to'ldiring
 
 # Serverni ishga tushirish (http://localhost:8000, hujjatlar: /docs)
 uvicorn app.main:app --reload
