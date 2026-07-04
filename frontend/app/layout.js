@@ -14,8 +14,28 @@ export default function RootLayout({ children }) {
         <Header />
         <main className="mx-auto max-w-6xl px-4 pb-16">{children}</main>
         <footer className="border-t border-slate-800 py-8 text-center text-sm text-slate-500">
+          <div className="mb-3 flex justify-center gap-4 flex-wrap">
+            <a
+              href="https://t.me/aixabarlari"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-sky-400 transition-colors"
+            >
+              📢 Telegram Kanal (@aixabarlari)
+            </a>
+            <span>•</span>
+            <a
+              href="https://t.me/Ainewsuzbek_bot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-blue-400 transition-colors"
+            >
+              🤖 Telegram Bot (@Ainewsuzbek_bot)
+            </a>
+          </div>
           © {new Date().getFullYear()} AI News Uzbekistan — sun&apos;iy intellekt yangiliklari o&apos;zbek tilida
         </footer>
+
       </body>
     </html>
   );

@@ -11,17 +11,36 @@ export default async function Header() {
           <Link href="/" className="text-xl font-bold">
             🤖 AI News <span className="text-blue-400">Uzbekistan</span>
           </Link>
-          <form action="/qidiruv" className="flex gap-2">
-            <input
-              name="q"
-              placeholder="Qidiruv..."
-              className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm outline-none focus:border-blue-500"
-            />
-            <button className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm hover:bg-blue-500">
-              🔍
-            </button>
-          </form>
+          <div className="flex flex-wrap items-center gap-4">
+            <a
+              href="https://t.me/aixabarlari"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-sky-400 transition-colors"
+            >
+              📢 Telegram Kanal
+            </a>
+            <a
+              href="https://t.me/Ainewsuzbek_bot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-blue-400 transition-colors"
+            >
+              🤖 Telegram Bot
+            </a>
+            <form action="/qidiruv" className="flex gap-2">
+              <input
+                name="q"
+                placeholder="Qidiruv..."
+                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm outline-none focus:border-blue-500"
+              />
+              <button className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm hover:bg-blue-500">
+                🔍
+              </button>
+            </form>
+          </div>
         </div>
+
         <nav className="flex flex-wrap gap-2 text-sm">
           {categories.map((cat) => (
             <Link
