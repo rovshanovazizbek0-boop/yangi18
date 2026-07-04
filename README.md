@@ -1,84 +1,131 @@
-# 🤖 AI Yangiliklar Tahlilchisi
+# 🤖 AI News Uzbekistan
 
-Jahon sun'iy intellekt yangiliklarini **o'zbek tilida**, qisqa va tushunarli formatda taqdim etuvchi dastur.
+Sun'iy intellektga oid eng muhim yangiliklarni dunyodagi ishonchli manbalardan **avtomatik yig'ib**, AI yordamida **o'zbek tiliga moslashtirib**, **web sayt** va **Telegram bot** orqali yetkazib beruvchi platforma (MVP).
 
-Dastur ingliz tilidagi AI yangiliklarini (OpenAI, Google, Anthropic, TechCrunch va boshqa manbalardan) avtomatik yig'adi va Claude API yordamida har birini o'zbek auditoriyasi uchun tahlil qiladi.
+## Arxitektura
 
-## Har bir tahlil quyidagilarni o'z ichiga oladi
-
-| Maydon | Tavsif |
-|---|---|
-| `kategoriya` | Yangilik qaysi kompaniyaga tegishli (OpenAI, Gemini, Claude, xAI, Meta, DeepSeek, Boshqa) |
-| `sarlavha` | O'zbekcha sarlavha |
-| `xulosa` | 3-5 jumladan iborat qisqa xulosa |
-| `ahamiyati` | 1 dan 5 gacha yulduzcha (⭐) baho |
-| `amaliy_ahamiyat` | "Bu nima degani?" — dasturchilar va biznes egalari uchun amaliy ahamiyati |
-
-Misol:
-
-```json
-{
-  "kategoriya": "Gemini",
-  "sarlavha": "Google yangi AI modelini e'lon qildi",
-  "xulosa": "Google kompaniyasi o'zining eng so'nggi va kuchli...",
-  "ahamiyati": "⭐⭐⭐⭐⭐",
-  "amaliy_ahamiyat": "Dasturchilar uchun kod yozish tezlashadi, bizneslar uchun esa kattaroq ma'lumotlarni tahlil qilish arzonlashadi."
-}
+```
+┌─────────────────┐     ┌──────────────────────┐     ┌───────────────┐
+│  RSS manbalar   │ --> │  AI Agent (pipeline) │ --> │  PostgreSQL / │
+│ OpenAI, Google, │     │  yig'ish → dublikat  │     │    SQLite     │
+│ TechCrunch, ... │     │  → Claude tahlili    │     │  (pending)    │
+└─────────────────┘     └──────────────────────┘     └───────┬───────┘
+                                                             │ admin tasdiqlaydi
+                        ┌──────────────┐    ┌────────────────┼────────────────┐
+                        │ Admin panel  │ -->│                ▼                │
+                        └──────────────┘    │  Web sayt (Next.js)             │
+                                            │  Telegram kanal + bot (aiogram) │
+                                            └─────────────────────────────────┘
 ```
 
-## O'rnatish
+| Qism | Texnologiya | Papka |
+|---|---|---|
+| Backend + REST API | FastAPI, SQLAlchemy, PostgreSQL/SQLite | `backend/` |
+| AI Agent | Claude API (strukturali JSON) | `backend/app/services/ai_agent.py` |
+| Yangiliklar yig'uvchi | feedparser (RSS) + dublikat filtri | `backend/app/services/collector.py` |
+| Frontend | Next.js 15, React 19, Tailwind CSS 4 | `frontend/` |
+| Admin panel | Next.js sahifasi (`/admin`) + Admin API | `frontend/app/admin/` |
+| Telegram bot | aiogram 3 | `bot/` |
 
-1. Loyihani yuklab oling va bog'liqliklarni o'rnating:
+## AI Agent nima qiladi?
 
-   ```bash
-   npm install
-   ```
+Har bir inglizcha yangilik uchun Claude quyidagilarni **bitta so'rovda** tayyorlaydi (javob JSON sxema bilan kafolatlanadi):
 
-2. `.env` faylini yarating va API kalitini kiriting:
+- `kategoriya` — OpenAI, Gemini, Claude, xAI, Meta, DeepSeek, Qwen, Microsoft, Startuplar, Robototexnika, Dasturlash
+- `sarlavha` — o'zbekcha sarlavha
+- `seo_sarlavha` — SEO uchun optimallashtirilgan sarlavha
+- `xulosa` — 3-5 jumlalik qisqa xulosa
+- `maqola` — to'liq o'zbekcha maqola (3-6 paragraf)
+- `amaliy_ahamiyat` — "Bu nima degani?" (dasturchilar/biznes uchun)
+- `teglar` — 3-6 ta teg
+- `ahamiyati` — 1-5 baho
 
-   ```bash
-   cp .env.example .env
-   # .env faylida ANTHROPIC_API_KEY qiymatini to'ldiring
-   ```
+Maqolalar `pending` holatida saqlanadi — **admin tasdiqlagachgina** saytga chiqadi.
 
-   API kalitini [platform.claude.com](https://platform.claude.com) saytidan olish mumkin.
+---
 
-## Ishlatish
-
-**1. Yangiliklarni yig'ish va tahlil qilish:**
+## 1. Backend'ni ishga tushirish
 
 ```bash
-npm run analyze
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env        # ANTHROPIC_API_KEY, ADMIN_TOKEN va boshqalarni to'ldiring
+
+# Serverni ishga tushirish (http://localhost:8000, hujjatlar: /docs)
+uvicorn app.main:app --reload
 ```
 
-Bu buyruq RSS manbalardan eng so'nggi yangiliklarni oladi, har birini Claude yordamida tahlil qiladi va natijani `data/tahlillar.json` fayliga saqlaydi.
-
-**2. Natijalarni brauzerda ko'rish:**
+**Yangiliklarni yig'ish va tahlil qilish** (qo'lda yoki cron orqali):
 
 ```bash
-npm run serve
+python -m app.pipeline
 ```
 
-So'ng brauzerda [http://localhost:3000](http://localhost:3000) sahifasini oching. Sahifada tahlillarni kompaniya bo'yicha filtrlash mumkin.
+Muntazam avtomatik ishlashi uchun cron misoli (har soatda):
 
-## Loyiha tuzilishi
-
-```
-src/
-  prompt.js     — o'zbek tahlilchisi tizim prompti va JSON sxemasi
-  feeds.js      — RSS manbalardan yangiliklar yig'ish
-  analyzer.js   — Claude API orqali tahlil qilish
-  index.js      — asosiy skript (yig'ish + tahlil + saqlash)
-  server.js     — natijalarni ko'rsatuvchi veb-server
-public/
-  index.html    — o'zbekcha veb-interfeys
-data/
-  tahlillar.json — tahlil natijalari (avtomatik yaratiladi)
+```cron
+0 * * * * cd /path/backend && .venv/bin/python -m app.pipeline
 ```
 
-## Texnologiyalar
+## 2. Frontend'ni ishga tushirish
 
-- **Node.js 18+** (ES modules)
-- **Claude API** (`@anthropic-ai/sdk`) — strukturali JSON javob (`output_config.format`) bilan
-- **rss-parser** — yangiliklar yig'ish uchun
-- **Express** — veb-server uchun
+```bash
+cd frontend
+npm install
+cp .env.example .env.local   # NEXT_PUBLIC_API_URL
+npm run dev                  # http://localhost:3000
+```
+
+Sahifalar:
+- `/` — so'nggi yangiliklar, Top 10, bugungi dayjest, trend mavzular, qidiruv
+- `/kategoriya/[slug]` — kategoriya bo'yicha
+- `/maqola/[slug]` — to'liq maqola (SEO meta, teglar, ulashish)
+- `/qidiruv?q=...` — qidiruv
+- `/admin` — admin panel (token bilan kirish)
+
+## 3. Telegram botni ishga tushirish
+
+```bash
+cd bot
+pip install -r requirements.txt
+cp .env.example .env         # TELEGRAM_BOT_TOKEN, API_URL
+python bot.py
+```
+
+Bot funksiyalari: 📰 bugungi yangiliklar · 🗓 haftalik dayjest · 📂 kategoriyalar · 🔍 qidiruv · ⭐ saqlanganlar · 🔔 bildirishnomalar.
+
+## REST API (asosiy endpointlar)
+
+| Metod | Yo'l | Tavsif |
+|---|---|---|
+| GET | `/api/news` | So'nggi yangiliklar (`kategoriya`, `limit`, `offset`) |
+| GET | `/api/news/top` | Top yangiliklar (`kunlar`, `limit`) |
+| GET | `/api/news/digest` | Bugungi dayjest |
+| GET | `/api/news/trends` | Trend teglar |
+| GET | `/api/news/search?q=` | Qidiruv |
+| GET | `/api/news/{slug}` | Bitta maqola |
+| GET | `/api/categories` | Kategoriyalar |
+| GET | `/api/admin/articles` | Admin: maqolalar ro'yxati (`X-Admin-Token`) |
+| PUT | `/api/admin/articles/{id}` | Admin: tahrirlash |
+| POST | `/api/admin/articles/{id}/approve` | Admin: tasdiqlash → saytga chiqarish |
+| POST | `/api/admin/articles/{id}/telegram` | Admin: Telegram kanaliga yuborish |
+| DELETE | `/api/admin/articles/{id}` | Admin: o'chirish |
+| GET | `/api/admin/stats` | Admin: statistika |
+
+To'liq interaktiv hujjatlar: `http://localhost:8000/docs`
+
+## Ish oqimi (workflow)
+
+1. `python -m app.pipeline` — RSS'dan yangiliklar yig'iladi, dublikatlar filtrlanadi, Claude har birini o'zbekcha maqolaga aylantiradi → baza (`pending`)
+2. Admin `/admin` sahifasida ko'radi, kerak bo'lsa tahrirlaydi, **Tasdiqlash** bosadi → maqola saytga chiqadi
+3. **Telegramga** tugmasi → maqola kanalga chiroyli post bo'lib yuboriladi
+4. Bot foydalanuvchilari yangiliklar bilan menyu orqali ishlaydi
+
+## Kelajakdagi rejalar (TZ bo'yicha)
+
+- Redis kesh, email obuna, push bildirishnomalar
+- AI Tool katalogi, tadbirlar taqvimi, ish o'rinlari, kurslar
+- Ovozli dayjest, YouTube Shorts, avtomatik SMM postlar
+- Premium obuna va reklama moduli
+- Mobil ilova
