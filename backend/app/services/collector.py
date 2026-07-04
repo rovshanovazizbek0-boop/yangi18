@@ -100,6 +100,27 @@ def _parse_feed(xml_text: str) -> list[dict]:
     return entries
 
 
+_OG_PATTERNS = [
+    r'<meta[^>]+(?:property|name)=["\'](?:og:image|twitter:image)(?::src)?["\'][^>]*content=["\']([^"\']+)["\']',
+    r'<meta[^>]+content=["\']([^"\']+)["\'][^>]*(?:property|name)=["\'](?:og:image|twitter:image)(?::src)?["\']',
+]
+
+
+def fetch_og_image(url: str) -> str | None:
+    """Maqola sahifasidan og:image / twitter:image meta tegini oladi
+    (RSS'da rasm bo'lmaganda zaxira usul)."""
+    try:
+        with httpx.Client(timeout=15, follow_redirects=True, headers=HEADERS) as client:
+            html = client.get(url).text[:200_000]
+    except Exception:
+        return None
+    for pattern in _OG_PATTERNS:
+        match = re.search(pattern, html, re.IGNORECASE)
+        if match and match.group(1).startswith("http"):
+            return match.group(1)
+    return None
+
+
 def collect_news(db: Session, per_feed: int = 5) -> list[dict]:
     """RSS/Atom manbalardan yangi (bazada yo'q) yangiliklarni qaytaradi."""
     existing_urls = {u for (u,) in db.query(Article.original_url).all()}

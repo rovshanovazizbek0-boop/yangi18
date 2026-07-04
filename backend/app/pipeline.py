@@ -17,13 +17,15 @@ from .config import (
     AUTO_PUBLISH_MIN_IMPORTANCE,
     AUTO_TELEGRAM,
     AUTO_TELEGRAM_MIN_IMPORTANCE,
+    IMAGE_GENERATION,
     TELEGRAM_BOT_TOKEN,
 )
 from .database import Base, SessionLocal, engine
 from .models import Article, Category
 from .seed import seed_categories
 from .services.ai_agent import analyze_news
-from .services.collector import collect_news
+from .services.collector import collect_news, fetch_og_image
+from .services.image_gen import generate_image
 from .services.telegram import send_to_channel
 from .utils import slugify
 
@@ -59,6 +61,13 @@ def run_pipeline(per_feed: int = 5) -> int:
 
             auto_publish = AUTO_PUBLISH and analysis["ahamiyati"] >= AUTO_PUBLISH_MIN_IMPORTANCE
 
+            # Rasm zanjiri: RSS -> maqola sahifasidan og:image -> (ixtiyoriy) Gemini
+            image_url = news["image_url"] or fetch_og_image(news["url"])
+            if not image_url and IMAGE_GENERATION:
+                image_url = generate_image(analysis["sarlavha"], slug)
+                if image_url:
+                    print("   ✓ Rasm generatsiya qilindi")
+
             article = Article(
                 title=analysis["sarlavha"],
                 seo_title=analysis["seo_sarlavha"],
@@ -71,7 +80,7 @@ def run_pipeline(per_feed: int = 5) -> int:
                 original_title=news["title"],
                 original_url=news["url"],
                 source_name=news["source"],
-                image_url=news["image_url"],
+                image_url=image_url,
                 category_id=categories.get(analysis["kategoriya"], None) and categories[analysis["kategoriya"]].id,
                 source_published_at=news["published_at"],
                 status="published" if auto_publish else "pending",

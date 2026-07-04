@@ -36,5 +36,12 @@ AUTO_PUBLISH_MIN_IMPORTANCE = int(os.getenv("AUTO_PUBLISH_MIN_IMPORTANCE", "1"))
 AUTO_TELEGRAM = _bool("AUTO_TELEGRAM", "true")
 AUTO_TELEGRAM_MIN_IMPORTANCE = int(os.getenv("AUTO_TELEGRAM_MIN_IMPORTANCE", "4"))
 
+# Rasm topilmaganda Gemini bilan generatsiya qilish (pullik — standart o'chiq)
+IMAGE_GENERATION = _bool("IMAGE_GENERATION", "false")
+GEMINI_IMAGE_MODEL = os.getenv("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-image")
+# Yaratilgan rasmlar saqlanadigan papka va ularning ommaviy manzili
+MEDIA_DIR = os.getenv("MEDIA_DIR", "./media")
+BACKEND_PUBLIC_URL = os.getenv("BACKEND_PUBLIC_URL", "http://localhost:8000")
+
 # Frontend manzili (CORS uchun)
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")

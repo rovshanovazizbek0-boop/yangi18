@@ -1,9 +1,11 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
-from .config import FRONTEND_ORIGIN
+from .config import FRONTEND_ORIGIN, MEDIA_DIR
 from .database import Base, SessionLocal, engine
 from .routers import admin, categories, news
 from .seed import seed_categories
@@ -36,6 +38,10 @@ app.add_middleware(
 app.include_router(news.router)
 app.include_router(categories.router)
 app.include_router(admin.router)
+
+# Generatsiya qilingan rasmlar (IMAGE_GENERATION=true rejimi uchun)
+Path(MEDIA_DIR).mkdir(parents=True, exist_ok=True)
+app.mount("/media", StaticFiles(directory=MEDIA_DIR), name="media")
 
 
 @app.get("/")
