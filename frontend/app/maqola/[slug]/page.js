@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AdPlaceholder from "../../../components/AdPlaceholder";
 import { apiGet } from "../../../lib/api";
 
 export async function generateMetadata({ params }) {
@@ -78,6 +79,10 @@ export default async function ArticlePage({ params }) {
             #{tag}
           </Link>
         ))}
+      </div>
+
+      <div className="mb-8">
+        <AdPlaceholder type="banner" />
       </div>
 
       <div className="flex flex-wrap items-center gap-4 border-t border-slate-800 pt-5 text-sm">

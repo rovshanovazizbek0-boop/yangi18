@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ArticleCard from "../components/ArticleCard";
+import AdPlaceholder from "../components/AdPlaceholder";
 import { apiGet } from "../lib/api";
 
 export default async function HomePage() {
@@ -60,6 +61,10 @@ export default async function HomePage() {
               <p className="text-sm text-slate-500">Bugun hali yangiliklar yo&apos;q.</p>
             )}
           </div>
+        </section>
+
+        <section>
+          <AdPlaceholder type="sidebar" />
         </section>
 
         <section>
