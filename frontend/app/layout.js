@@ -5,7 +5,11 @@ export const metadata = {
   title: "AI News Uzbekistan — Sun'iy intellekt yangiliklari o'zbek tilida",
   description:
     "Dunyodagi eng muhim AI yangiliklari — qisqa, tushunarli va o'zbek tilida. OpenAI, Gemini, Claude, xAI, Meta va boshqalar.",
+  verification: {
+    google: "jXooaK9j5y0IH4ngJRPi--LR795mmAU5b_Qebo4QBjs",
+  },
 };
+
 
 export default function RootLayout({ children }) {
   return (
