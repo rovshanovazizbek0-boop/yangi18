@@ -1,6 +1,24 @@
 import ArticleCard from "../../../components/ArticleCard";
 import { apiGet } from "../../../lib/api";
 
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const categories = (await apiGet("/api/categories")) || [];
+  const category = categories.find((c) => c.slug === slug);
+  const name = category?.name || slug;
+
+  return {
+    title: `${name} yangiliklari`,
+    description: `${name} bo'yicha eng so'nggi sun'iy intellekt yangiliklari — o'zbek tilida.`,
+    alternates: { canonical: `/kategoriya/${slug}` },
+    openGraph: {
+      title: `${name} yangiliklari`,
+      description: `${name} bo'yicha eng so'nggi AI yangiliklari — o'zbek tilida.`,
+      url: `/kategoriya/${slug}`,
+    },
+  };
+}
+
 export default async function CategoryPage({ params }) {
   const { slug } = await params;
   const [articles, categories] = await Promise.all([

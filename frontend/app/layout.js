@@ -2,12 +2,40 @@ import "./globals.css";
 import Header from "../components/Header";
 import PwaRegister from "../components/PwaRegister";
 import SubscribePopup from "../components/SubscribePopup";
+import { SITE_URL, SITE_NAME } from "../lib/site";
+
+const DESCRIPTION =
+  "Dunyodagi eng muhim AI yangiliklari — qisqa, tushunarli va o'zbek tilida. OpenAI, Gemini, Claude, xAI, Meta va boshqalar.";
 
 export const metadata = {
-  title: "AI News Uzbekistan — Sun'iy intellekt yangiliklari o'zbek tilida",
-  description:
-    "Dunyodagi eng muhim AI yangiliklari — qisqa, tushunarli va o'zbek tilida. OpenAI, Gemini, Claude, xAI, Meta va boshqalar.",
-  applicationName: "AI News Uzbekistan",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — Sun'iy intellekt yangiliklari o'zbek tilida`,
+    template: `%s — ${SITE_NAME}`,
+  },
+  description: DESCRIPTION,
+  applicationName: SITE_NAME,
+  alternates: {
+    canonical: "/",
+    types: {
+      "application/rss+xml": [
+        { url: "/api/news/rss", title: `${SITE_NAME} RSS` },
+      ],
+    },
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: SITE_NAME,
+    locale: "uz_UZ",
+    title: `${SITE_NAME} — Sun'iy intellekt yangiliklari o'zbek tilida`,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — Sun'iy intellekt yangiliklari`,
+    description: DESCRIPTION,
+  },
   appleWebApp: {
     capable: true,
     title: "AI News UZ",
@@ -16,6 +44,41 @@ export const metadata = {
   verification: {
     google: "jXooaK9j5y0IH4ngJRPi--LR795mmAU5b_Qebo4QBjs",
   },
+};
+
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/icon-512`,
+        width: 512,
+        height: 512,
+      },
+      sameAs: ["https://t.me/aixabarlari"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      inLanguage: "uz",
+      publisher: { "@id": `${SITE_URL}/#organization` },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${SITE_URL}/qidiruv?q={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
 };
 
 export const viewport = {
@@ -27,6 +90,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="uz">
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+        />
         <Header />
         <main className="mx-auto max-w-6xl px-4 pb-16">{children}</main>
         <footer className="border-t border-slate-800 py-8 text-center text-sm text-slate-500">

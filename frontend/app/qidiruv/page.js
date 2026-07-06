@@ -1,6 +1,11 @@
 import ArticleCard from "../../components/ArticleCard";
 import { apiGet } from "../../lib/api";
 
+export const metadata = {
+  title: "Qidiruv",
+  robots: { index: false, follow: true },
+};
+
 export default async function SearchPage({ searchParams }) {
   const { q } = await searchParams;
   const articles = q ? await apiGet("/api/news/search", { q }) : [];

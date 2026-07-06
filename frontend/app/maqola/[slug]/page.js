@@ -1,14 +1,65 @@
 import Link from "next/link";
 import AdPlaceholder from "../../../components/AdPlaceholder";
 import { apiGet } from "../../../lib/api";
+import { SITE_URL, SITE_NAME } from "../../../lib/site";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const article = await apiGet(`/api/news/${slug}`);
   if (!article) return { title: "Maqola topilmadi" };
+
+  const title = article.seo_title || article.title;
+  const url = `/maqola/${article.slug}`;
+
   return {
-    title: article.seo_title || article.title,
+    title,
     description: article.summary,
+    keywords: article.tags || [],
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      siteName: SITE_NAME,
+      locale: "uz_UZ",
+      title,
+      description: article.summary,
+      publishedTime: article.published_at || article.created_at,
+      section: article.category?.name,
+      tags: article.tags || [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: article.summary,
+    },
+  };
+}
+
+function articleJsonLd(article) {
+  const url = `${SITE_URL}/maqola/${article.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    headline: article.title,
+    description: article.summary,
+    image: [
+      article.image_url?.startsWith("http")
+        ? article.image_url
+        : `${url}/opengraph-image`,
+    ],
+    datePublished: article.published_at || article.created_at,
+    dateModified: article.published_at || article.created_at,
+    inLanguage: "uz",
+    articleSection: article.category?.name,
+    keywords: (article.tags || []).join(", "),
+    author: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    isBasedOn: article.original_url,
   };
 }
 
@@ -28,10 +79,16 @@ export default async function ArticlePage({ params }) {
   const date = article.published_at
     ? new Date(article.published_at).toLocaleString("uz-UZ")
     : "";
-  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(article.original_url)}&text=${encodeURIComponent(article.title)}`;
+  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(`${SITE_URL}/maqola/${article.slug}`)}&text=${encodeURIComponent(article.title)}`;
 
   return (
     <article className="mx-auto max-w-3xl py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(articleJsonLd(article)),
+        }}
+      />
       <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-slate-400">
         {article.category && (
           <Link

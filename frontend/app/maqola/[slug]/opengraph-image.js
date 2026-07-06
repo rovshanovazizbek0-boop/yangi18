@@ -1,0 +1,116 @@
+import { ImageResponse } from "next/og";
+import { apiGet } from "../../../lib/api";
+
+export const size = { width: 1200, height: 630 };
+export const contentType = "image/png";
+export const alt = "AI News Uzbekistan maqolasi";
+
+export default async function OgImage({ params }) {
+  const { slug } = await params;
+  const article = await apiGet(`/api/news/${slug}`);
+
+  const title = article?.seo_title || article?.title || "AI News Uzbekistan";
+  const category = article?.category?.name || "AI yangiliklari";
+  const hasImage = article?.image_url?.startsWith("http");
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          background: "#020617",
+          fontFamily: "sans-serif",
+        }}
+      >
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            padding: 60,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 56,
+                height: 56,
+                borderRadius: 14,
+                background: "#0f172a",
+                border: "3px solid #3b82f6",
+                color: "#38bdf8",
+                fontSize: 26,
+                fontWeight: 700,
+              }}
+            >
+              AI
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                color: "#e2e8f0",
+                fontSize: 30,
+                fontWeight: 700,
+              }}
+            >
+              <span>AI News</span>
+              <span style={{ color: "#60a5fa" }}>Uzbekistan</span>
+            </div>
+          </div>
+
+          <div
+            style={{
+              color: "white",
+              fontSize: title.length > 90 ? 44 : 54,
+              fontWeight: 700,
+              lineHeight: 1.2,
+              display: "block",
+              lineClamp: 4,
+            }}
+          >
+            {title}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <div
+              style={{
+                background: "rgba(59,130,246,0.15)",
+                color: "#60a5fa",
+                borderRadius: 999,
+                padding: "8px 22px",
+                fontSize: 26,
+                fontWeight: 600,
+              }}
+            >
+              {category}
+            </div>
+            <div style={{ color: "#64748b", fontSize: 24 }}>aixabar.uz</div>
+          </div>
+        </div>
+
+        {hasImage && (
+          <img
+            src={article.image_url}
+            width={420}
+            height={630}
+            style={{ objectFit: "cover" }}
+          />
+        )}
+      </div>
+    ),
+    size
+  );
+}
