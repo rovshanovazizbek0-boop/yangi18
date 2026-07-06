@@ -29,12 +29,12 @@ export function pwaIcon(px) {
         </div>
         <div
           style={{
-            fontSize: 26 * s,
+            fontSize: 24 * s,
             color: "#94a3b8",
-            letterSpacing: 6 * s,
+            letterSpacing: 4 * s,
           }}
         >
-          NEWS
+          XABAR
         </div>
       </div>
     ),

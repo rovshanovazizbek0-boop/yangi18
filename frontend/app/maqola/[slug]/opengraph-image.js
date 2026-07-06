@@ -3,13 +3,13 @@ import { apiGet } from "../../../lib/api";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "AI News Uzbekistan maqolasi";
+export const alt = "AI Xabar maqolasi";
 
 export default async function OgImage({ params }) {
   const { slug } = await params;
   const article = await apiGet(`/api/news/${slug}`);
 
-  const title = article?.seo_title || article?.title || "AI News Uzbekistan";
+  const title = article?.seo_title || article?.title || "AI Xabar";
   const category = article?.category?.name || "AI yangiliklari";
   const hasImage = article?.image_url?.startsWith("http");
 
@@ -66,8 +66,8 @@ export default async function OgImage({ params }) {
                 fontWeight: 700,
               }}
             >
-              <span>AI News</span>
-              <span style={{ color: "#60a5fa" }}>Uzbekistan</span>
+              <span>AI</span>
+              <span style={{ color: "#60a5fa" }}>Xabar</span>
             </div>
           </div>
 

@@ -2,4 +2,5 @@
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://aixabar.uz";
 
-export const SITE_NAME = "AI News Uzbekistan";
+export const SITE_NAME = "AI Xabar";
+export const SITE_ALT_NAMES = ["AI Yangiliklari", "AI News Uzbekistan"];

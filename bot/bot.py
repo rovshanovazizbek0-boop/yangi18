@@ -89,7 +89,7 @@ async def send_articles(message: Message, articles: list[dict], empty_text: str,
 async def cmd_start(message: Message):
     storage.ensure_user(message.chat.id)
     await message.answer(
-        "🤖 <b>AI News Uzbekistan</b> botiga xush kelibsiz!\n\n"
+        "🤖 <b>AI Xabar</b> botiga xush kelibsiz!\n\n"
         "Bu bot dunyodagi eng muhim sun'iy intellekt yangiliklarini "
         "o'zbek tilida yetkazib beradi.\n\n"
         "Quyidagi menyudan foydalaning 👇",

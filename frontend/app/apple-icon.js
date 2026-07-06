@@ -29,8 +29,8 @@ export default function AppleIcon() {
         >
           AI
         </div>
-        <div style={{ fontSize: 26, color: "#94a3b8", letterSpacing: 6 }}>
-          NEWS
+        <div style={{ fontSize: 24, color: "#94a3b8", letterSpacing: 4 }}>
+          XABAR
         </div>
       </div>
     ),

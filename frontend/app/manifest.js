@@ -1,7 +1,7 @@
 export default function manifest() {
   return {
-    name: "AI News Uzbekistan — Sun'iy intellekt yangiliklari",
-    short_name: "AI News UZ",
+    name: "AI Xabar — Sun'iy intellekt yangiliklari",
+    short_name: "AI Xabar",
     description:
       "Dunyodagi eng muhim AI yangiliklari — qisqa, tushunarli va o'zbek tilida.",
     start_url: "/",

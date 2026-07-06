@@ -2,7 +2,7 @@ import "./globals.css";
 import Header from "../components/Header";
 import PwaRegister from "../components/PwaRegister";
 import SubscribePopup from "../components/SubscribePopup";
-import { SITE_URL, SITE_NAME } from "../lib/site";
+import { SITE_URL, SITE_NAME, SITE_ALT_NAMES } from "../lib/site";
 
 const DESCRIPTION =
   "Dunyodagi eng muhim AI yangiliklari — qisqa, tushunarli va o'zbek tilida. OpenAI, Gemini, Claude, xAI, Meta va boshqalar.";
@@ -38,7 +38,7 @@ export const metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "AI News UZ",
+    title: "AI Xabar",
     statusBarStyle: "black-translucent",
   },
   verification: {
@@ -53,6 +53,7 @@ const siteJsonLd = {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
       name: SITE_NAME,
+      alternateName: SITE_ALT_NAMES,
       url: SITE_URL,
       logo: {
         "@type": "ImageObject",
@@ -66,6 +67,7 @@ const siteJsonLd = {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
       name: SITE_NAME,
+      alternateName: SITE_ALT_NAMES,
       url: SITE_URL,
       inLanguage: "uz",
       publisher: { "@id": `${SITE_URL}/#organization` },
@@ -116,7 +118,7 @@ export default function RootLayout({ children }) {
               🤖 Telegram Bot (@Ainewsuzbek_bot)
             </a>
           </div>
-          © {new Date().getFullYear()} AI News Uzbekistan — sun&apos;iy intellekt yangiliklari o&apos;zbek tilida
+          © {new Date().getFullYear()} AI Xabar (aixabar.uz) — sun&apos;iy intellekt yangiliklari o&apos;zbek tilida
         </footer>
         <SubscribePopup />
         <PwaRegister />

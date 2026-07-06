@@ -57,7 +57,7 @@ export default function SubscribePopup() {
         </button>
 
         <div className="mb-2 flex items-center gap-2">
-          <img src="/logo.svg" alt="AI News" width={36} height={36} />
+          <img src="/logo.svg" alt="AI Xabar" width={36} height={36} />
           <p className="font-bold">AI yangiliklaridan orqada qolmang!</p>
         </div>
         <p className="mb-4 text-sm text-slate-400">

@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "AI News Uzbekistan — Sun'iy intellekt yangiliklari";
+export const alt = "AI Xabar — Sun'iy intellekt yangiliklari";
 
 export default function OgImage() {
   return new ImageResponse(
@@ -46,8 +46,8 @@ export default function OgImage() {
             fontWeight: 700,
           }}
         >
-          <span>AI News</span>
-          <span style={{ color: "#60a5fa" }}>Uzbekistan</span>
+          <span>AI</span>
+          <span style={{ color: "#60a5fa" }}>Xabar</span>
         </div>
         <div style={{ color: "#94a3b8", fontSize: 32 }}>
           Sun&apos;iy intellekt yangiliklari — o&apos;zbek tilida
