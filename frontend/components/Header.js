@@ -8,8 +8,11 @@ export default async function Header() {
     <header className="border-b border-slate-800">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href="/" className="text-xl font-bold">
-            🤖 AI News <span className="text-blue-400">Uzbekistan</span>
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold">
+            <img src="/logo.svg" alt="AI News Uzbekistan logotipi" width={36} height={36} />
+            <span>
+              AI News <span className="text-blue-400">Uzbekistan</span>
+            </span>
           </Link>
           <div className="flex flex-wrap items-center gap-4">
             <a

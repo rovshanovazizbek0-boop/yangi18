@@ -1,13 +1,25 @@
 import "./globals.css";
 import Header from "../components/Header";
+import PwaRegister from "../components/PwaRegister";
+import SubscribePopup from "../components/SubscribePopup";
 
 export const metadata = {
   title: "AI News Uzbekistan — Sun'iy intellekt yangiliklari o'zbek tilida",
   description:
     "Dunyodagi eng muhim AI yangiliklari — qisqa, tushunarli va o'zbek tilida. OpenAI, Gemini, Claude, xAI, Meta va boshqalar.",
+  applicationName: "AI News Uzbekistan",
+  appleWebApp: {
+    capable: true,
+    title: "AI News UZ",
+    statusBarStyle: "black-translucent",
+  },
   verification: {
     google: "jXooaK9j5y0IH4ngJRPi--LR795mmAU5b_Qebo4QBjs",
   },
+};
+
+export const viewport = {
+  themeColor: "#0f172a",
 };
 
 
@@ -39,7 +51,8 @@ export default function RootLayout({ children }) {
           </div>
           © {new Date().getFullYear()} AI News Uzbekistan — sun&apos;iy intellekt yangiliklari o&apos;zbek tilida
         </footer>
-
+        <SubscribePopup />
+        <PwaRegister />
       </body>
     </html>
   );
