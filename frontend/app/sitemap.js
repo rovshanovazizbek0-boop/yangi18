@@ -31,6 +31,13 @@ export default async function sitemap() {
     priority: 0.8,
   }));
 
+  const staticUrls = ["/haqida", "/aloqa", "/maxfiylik"].map((path) => ({
+    url: `${SITE_URL}${path}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.4,
+  }));
+
   return [
     {
       url: SITE_URL,
@@ -39,6 +46,7 @@ export default async function sitemap() {
       priority: 1.0,
     },
     ...categoryUrls,
+    ...staticUrls,
     ...articleUrls,
   ];
 }
