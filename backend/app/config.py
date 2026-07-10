@@ -17,17 +17,24 @@ CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-4-8")
 
 # Admin panelga kirish uchun maxfiy token (X-Admin-Token sarlavhasi orqali).
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "")
+UNSAFE_ADMIN_TOKENS = {
+    "admin-token-o'zgartiring",
+    "maxfiy-admin-token",
+    "bu-yerga-kuchli-tasodifiy-token-kiriting",
+}
+
+
+def admin_is_configured() -> bool:
+    return len(ADMIN_TOKEN) >= 32 and ADMIN_TOKEN not in UNSAFE_ADMIN_TOKENS
 
 
 def validate_production_settings() -> None:
-    """Xavfli standart sozlamalar bilan server ishga tushishini to'xtatadi."""
-    unsafe_tokens = {
-        "admin-token-o'zgartiring",
-        "maxfiy-admin-token",
-        "bu-yerga-kuchli-tasodifiy-token-kiriting",
-    }
-    if len(ADMIN_TOKEN) < 32 or ADMIN_TOKEN in unsafe_tokens:
-        raise RuntimeError("ADMIN_TOKEN kamida 32 belgili, kuchli va noyob qiymat bo'lishi shart")
+    """Xavfli admin token haqida ogohlantiradi; public API'ni yiqitmaydi."""
+    if not admin_is_configured():
+        print(
+            "OGOHLANTIRISH: ADMIN_TOKEN xavfsiz sozlanmagan. "
+            "Admin endpointlari yangi kuchli token berilguncha bloklandi."
+        )
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHANNEL_ID = os.getenv("TELEGRAM_CHANNEL_ID", "")  # masalan: @ai_news_uz
