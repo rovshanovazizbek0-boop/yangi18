@@ -16,7 +16,18 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-4-8")
 
 # Admin panelga kirish uchun maxfiy token (X-Admin-Token sarlavhasi orqali).
-ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "admin-token-o'zgartiring")
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "")
+
+
+def validate_production_settings() -> None:
+    """Xavfli standart sozlamalar bilan server ishga tushishini to'xtatadi."""
+    unsafe_tokens = {
+        "admin-token-o'zgartiring",
+        "maxfiy-admin-token",
+        "bu-yerga-kuchli-tasodifiy-token-kiriting",
+    }
+    if len(ADMIN_TOKEN) < 32 or ADMIN_TOKEN in unsafe_tokens:
+        raise RuntimeError("ADMIN_TOKEN kamida 32 belgili, kuchli va noyob qiymat bo'lishi shart")
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHANNEL_ID = os.getenv("TELEGRAM_CHANNEL_ID", "")  # masalan: @ai_news_uz
@@ -24,6 +35,11 @@ TELEGRAM_CHANNEL_ID = os.getenv("TELEGRAM_CHANNEL_ID", "")  # masalan: @ai_news_
 
 def _bool(name: str, default: str) -> bool:
     return os.getenv(name, default).strip().lower() in ("1", "true", "yes", "ha")
+
+
+# Render kabi yagona web-service deploymentida pipeline va bot API jarayoni
+# ichida ishlaydi. Docker Compose backend servisida bu qiymat false qilinadi.
+RUN_BACKGROUND_SERVICES = _bool("RUN_BACKGROUND_SERVICES", "true")
 
 
 # Avto-chop etish: pipeline maqolalarni admin tasdig'isiz to'g'ridan-to'g'ri

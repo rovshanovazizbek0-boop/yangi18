@@ -3,7 +3,7 @@ Barcha so'rovlar X-Admin-Token sarlavhasini talab qiladi."""
 
 from datetime import datetime
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -61,7 +61,7 @@ def reject_article(article_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/articles/{article_id}/telegram")
-def send_article_to_telegram(article_id: int, background: BackgroundTasks, db: Session = Depends(get_db)):
+def send_article_to_telegram(article_id: int, db: Session = Depends(get_db)):
     """Maqolani Telegram kanaliga yuborish."""
     article = get_article(db, article_id)
     try:

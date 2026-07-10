@@ -18,7 +18,7 @@ export default function AdminPage() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const saved = localStorage.getItem("admin_token");
+    const saved = sessionStorage.getItem("admin_token");
     if (saved) {
       setToken(saved);
       setLoggedIn(true);
@@ -37,7 +37,7 @@ export default function AdminPage() {
       });
       if (res.status === 401) {
         setLoggedIn(false);
-        localStorage.removeItem("admin_token");
+        sessionStorage.removeItem("admin_token");
         throw new Error("Token noto'g'ri");
       }
       if (!res.ok) throw new Error((await res.json()).detail || "Xatolik");
@@ -86,7 +86,7 @@ export default function AdminPage() {
         />
         <button
           onClick={() => {
-            localStorage.setItem("admin_token", token);
+            sessionStorage.setItem("admin_token", token);
             setLoggedIn(true);
           }}
           className="w-full rounded-lg bg-blue-600 py-2 font-semibold hover:bg-blue-500"
@@ -103,7 +103,7 @@ export default function AdminPage() {
         <h1 className="text-2xl font-bold">🛠 Admin panel</h1>
         <button
           onClick={() => {
-            localStorage.removeItem("admin_token");
+            sessionStorage.removeItem("admin_token");
             setLoggedIn(false);
           }}
           className="text-sm text-slate-400 hover:text-white"

@@ -7,65 +7,60 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from .config import FRONTEND_ORIGIN, MEDIA_DIR
+from .bot.bot import main as run_bot
+from .config import (
+    FRONTEND_ORIGIN,
+    MEDIA_DIR,
+    RUN_BACKGROUND_SERVICES,
+    validate_production_settings,
+)
 from .database import Base, SessionLocal, engine
+from .pipeline import run_pipeline
 from .routers import admin, categories, news
 from .seed import seed_categories
-from .pipeline import run_pipeline
-from .bot.bot import main as run_bot
 
 
 async def pipeline_loop_task():
-    # Wait for the server to spin up fully
     await asyncio.sleep(15)
     while True:
         try:
-            print("⏳ Running background news pipeline...")
             loop = asyncio.get_running_loop()
             saved = await loop.run_in_executor(None, run_pipeline, 5)
-            print(f"✅ Pipeline done. Saved {saved} articles.")
-        except Exception as e:
-            print(f"❌ Pipeline loop error: {e}")
-        
-        interval = int(os.getenv("PIPELINE_INTERVAL", "3600"))
-        await asyncio.sleep(interval)
+            print(f"Pipeline yakunlandi: {saved} ta maqola saqlandi.")
+        except Exception as error:
+            print(f"Pipeline xatosi: {error}")
+        await asyncio.sleep(int(os.getenv("PIPELINE_INTERVAL", "3600")))
 
 
 async def bot_task():
     await asyncio.sleep(5)
     try:
-        print("🤖 Starting background Telegram Bot...")
         await run_bot()
-    except Exception as e:
-        print(f"❌ Telegram Bot error: {e}")
+    except Exception as error:
+        print(f"Telegram bot xatosi: {error}")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    validate_production_settings()
     Base.metadata.create_all(engine)
     db = SessionLocal()
     try:
         seed_categories(db)
     finally:
         db.close()
-    
-    bg_tasks = []
-    
-    # Start pipeline
-    bg_tasks.append(asyncio.create_task(pipeline_loop_task()))
-    
-    # Start bot if token exists
-    if os.getenv("TELEGRAM_BOT_TOKEN"):
-        bg_tasks.append(asyncio.create_task(bot_task()))
-    else:
-        print("⚠️ TELEGRAM_BOT_TOKEN is not set. Bot background task will not start.")
-        
+
+    background_tasks = []
+    if RUN_BACKGROUND_SERVICES:
+        background_tasks.append(asyncio.create_task(pipeline_loop_task()))
+        if os.getenv("TELEGRAM_BOT_TOKEN"):
+            background_tasks.append(asyncio.create_task(bot_task()))
     yield
-    
-    for task in bg_tasks:
+
+    for task in background_tasks:
         task.cancel()
-    if bg_tasks:
-        await asyncio.gather(*bg_tasks, return_exceptions=True)
+    if background_tasks:
+        await asyncio.gather(*background_tasks, return_exceptions=True)
 
 
 app = FastAPI(
@@ -81,12 +76,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 app.include_router(news.router)
 app.include_router(categories.router)
 app.include_router(admin.router)
 
-# Generatsiya qilingan rasmlar (IMAGE_GENERATION=true rejimi uchun)
 Path(MEDIA_DIR).mkdir(parents=True, exist_ok=True)
 app.mount("/media", StaticFiles(directory=MEDIA_DIR), name="media")
 

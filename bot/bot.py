@@ -183,7 +183,8 @@ async def handle_text(message: Message):
 
 async def main():
     if not BOT_TOKEN:
-        raise SystemExit("TELEGRAM_BOT_TOKEN muhit o'zgaruvchisi sozlanmagan")
+        print("TELEGRAM_BOT_TOKEN sozlanmagan — bot ishga tushirilmadi.")
+        return
     bot = Bot(token=BOT_TOKEN)
     print("🤖 Bot ishga tushdi...")
     await dp.start_polling(bot)

@@ -40,7 +40,8 @@ Har bir inglizcha yangilik uchun AI model (standart: **Gemini `gemini-3.1-flash-
 - `teglar` — 3-6 ta teg
 - `ahamiyati` — 1-5 baho
 
-Maqolalar `pending` holatida saqlanadi — **admin tasdiqlagachgina** saytga chiqadi.
+`AUTO_PUBLISH=true` bo'lsa maqolalar avtomatik chiqadi; `false` bo'lsa ular
+`pending` holatida saqlanib, **admin tasdig'idan keyin** saytga chiqadi.
 
 ---
 
@@ -62,6 +63,10 @@ Shundan so'ng:
 Loglarni ko'rish: `docker compose logs -f pipeline` · To'xtatish: `docker compose down`
 
 Serverga qo'yganda `.env`da `NEXT_PUBLIC_API_URL`, `FRONTEND_ORIGIN`, `SITE_URL` qiymatlarini o'z domeningizga almashtiring.
+
+Render kabi bitta web service ishlatilsa `RUN_BACKGROUND_SERVICES=true` qoldiring.
+Docker Compose backend uchun uni avtomatik o'chiradi, chunki pipeline va bot
+alohida konteynerlarda ishlaydi.
 
 ---
 
