@@ -29,7 +29,7 @@ Sun'iy intellektga oid eng muhim yangiliklarni dunyodagi ishonchli manbalardan *
 
 ## AI Agent nima qiladi?
 
-Har bir inglizcha yangilik uchun AI model (standart: **Gemini `gemini-3.1-flash-lite`** — arzon va tez; `.env`da `AI_PROVIDER=claude` qilib Claude'ga o'tish mumkin) quyidagilarni **bitta so'rovda** tayyorlaydi (javob JSON sxema bilan kafolatlanadi):
+Har bir inglizcha yangilik uchun AI model (standart: **Gemini `gemini-3.5-flash-lite`** — arzon va tez; `.env`da `AI_PROVIDER=claude` qilib Claude'ga o'tish mumkin) quyidagilarni **bitta so'rovda** tayyorlaydi (javob JSON sxema bilan kafolatlanadi):
 
 - `kategoriya` — OpenAI, Gemini, Claude, xAI, Meta, DeepSeek, Qwen, Microsoft, Startuplar, Robototexnika, Dasturlash
 - `sarlavha` — o'zbekcha sarlavha
@@ -134,6 +134,7 @@ Bot funksiyalari: 📰 bugungi yangiliklar · 🗓 haftalik dayjest · 📂 kate
 | GET | `/api/news/search?q=` | Qidiruv |
 | GET | `/api/news/{slug}` | Bitta maqola |
 | GET | `/api/categories` | Kategoriyalar |
+| GET | `/health` | API, baza va oxirgi pipeline holati |
 | GET | `/api/admin/articles` | Admin: maqolalar ro'yxati (`X-Admin-Token`) |
 | PUT | `/api/admin/articles/{id}` | Admin: tahrirlash |
 | POST | `/api/admin/articles/{id}/approve` | Admin: tasdiqlash → saytga chiqarish |

@@ -34,6 +34,7 @@ def run_pipeline(per_feed: int = 5) -> int:
     Base.metadata.create_all(engine)
     db = SessionLocal()
     saved = 0
+    analysis_errors = 0
     try:
         seed_categories(db)
         categories = {c.slug: c for c in db.query(Category).all()}
@@ -52,6 +53,7 @@ def run_pipeline(per_feed: int = 5) -> int:
                     source=news["source"],
                 )
             except Exception as error:
+                analysis_errors += 1
                 print(f"   ✗ Tahlil xatosi: {error}")
                 continue
 
@@ -107,6 +109,9 @@ def run_pipeline(per_feed: int = 5) -> int:
                     print("   ✓ Telegram kanalga yuborildi")
                 except Exception as error:
                     print(f"   ✗ Telegram xatosi: {error}")
+
+        if fresh and saved == 0 and analysis_errors == len(fresh):
+            raise RuntimeError("Barcha yangi yangiliklar AI tahlilida xatoga uchradi")
 
         mode = "saytga chiqarildi (avto)" if AUTO_PUBLISH else "pending — admin tasdig'ini kutmoqda"
         print(f"\n✅ {saved} ta maqola saqlandi ({mode}).")

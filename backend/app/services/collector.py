@@ -18,7 +18,6 @@ from ..utils import title_hash
 FEEDS = [
     {"name": "OpenAI Blog", "url": "https://openai.com/news/rss.xml"},
     {"name": "Google AI Blog", "url": "https://blog.google/technology/ai/rss/"},
-    {"name": "Anthropic News", "url": "https://www.anthropic.com/rss.xml"},
     {"name": "TechCrunch AI", "url": "https://techcrunch.com/category/artificial-intelligence/feed/"},
     {"name": "VentureBeat AI", "url": "https://venturebeat.com/category/ai/feed/"},
     {"name": "MIT Technology Review AI", "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed"},
@@ -127,12 +126,14 @@ def collect_news(db: Session, per_feed: int = 5) -> list[dict]:
     existing_hashes = {title_hash(t) for (t,) in db.query(Article.original_title).all()}
 
     fresh: list[dict] = []
+    successful_feeds = 0
     with httpx.Client(timeout=20, follow_redirects=True, headers=HEADERS) as client:
         for feed in FEEDS:
             try:
                 response = client.get(feed["url"])
                 response.raise_for_status()
                 entries = _parse_feed(response.text)
+                successful_feeds += 1
             except Exception as error:
                 print(f"  ✗ Manba o'qilmadi ({feed['name']}): {error}")
                 continue
@@ -155,5 +156,8 @@ def collect_news(db: Session, per_feed: int = 5) -> list[dict]:
                 })
                 existing_urls.add(url)
                 existing_hashes.add(title_hash(title))
+
+    if successful_feeds == 0:
+        raise RuntimeError("Barcha RSS manbalarini o'qish muvaffaqiyatsiz tugadi")
 
     return fresh

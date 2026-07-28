@@ -8,7 +8,13 @@ venv/
 node_modules/
 .next/
 out/
+frontend/.npm-cache-codex/
 
 # Muhit fayllari va lokal bazalar
 .env
 *.db
+
+# Maxfiy kalitlar va Google service-account credential fayllari
+*-sa.json
+*service-account*.json
+google-credentials*.json
