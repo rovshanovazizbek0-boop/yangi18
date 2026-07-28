@@ -8,17 +8,36 @@ from ..config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL_ID, FRONTEND_ORIGIN
 from ..models import Article
 
 
-def format_post(article: Article) -> str:
+def _truncate(value: str | None, limit: int) -> str:
+    text = " ".join((value or "").split())
+    if len(text) <= limit:
+        return text
+    return f"{text[: limit - 1].rstrip()}…"
+
+
+def format_post(article: Article, *, compact: bool = False) -> str:
+    title_limit = 160 if compact else 300
+    summary_limit = 420 if compact else 1200
+    practical_limit = 160 if compact else 500
+
     stars = "⭐" * max(1, min(5, article.importance))
-    tags = " ".join(f"#{t.replace(' ', '_')}" for t in (article.tags or [])[:5])
-    category = article.category.name if article.category else "AI"
+    tags = " ".join(
+        f"#{html.escape(_truncate(str(tag), 40).replace(' ', '_'))}"
+        for tag in (article.tags or [])[:5]
+    )
+    category = _truncate(article.category.name if article.category else "AI", 80)
+    source_url = html.escape(article.original_url or "", quote=True)
+    detail_url = html.escape(
+        f"{FRONTEND_ORIGIN}/maqola/{article.slug}",
+        quote=True,
+    )
     return (
-        f"<b>{html.escape(article.title)}</b>\n\n"
-        f"{html.escape(article.summary)}\n\n"
-        f"💡 <i>{html.escape(article.practical_note)}</i>\n\n"
+        f"<b>{html.escape(_truncate(article.title, title_limit))}</b>\n\n"
+        f"{html.escape(_truncate(article.summary, summary_limit))}\n\n"
+        f"💡 <i>{html.escape(_truncate(article.practical_note, practical_limit))}</i>\n\n"
         f"📂 {html.escape(category)} | Ahamiyati: {stars}\n"
-        f"🔗 <a href=\"{article.original_url}\">Asl manba</a> | "
-        f"<a href=\"{FRONTEND_ORIGIN}/maqola/{article.slug}\">Batafsil o'qish</a>\n"
+        f"🔗 <a href=\"{source_url}\">Asl manba</a> | "
+        f"<a href=\"{detail_url}\">Batafsil o'qish</a>\n"
         f"{tags}"
     )
 
@@ -29,20 +48,20 @@ def send_to_channel(article: Article) -> None:
         raise RuntimeError("TELEGRAM_BOT_TOKEN yoki TELEGRAM_CHANNEL_ID sozlanmagan")
 
     api = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
-    text = format_post(article)
-
     if article.image_url:
+        text = format_post(article, compact=True)
         payload = {
             "chat_id": TELEGRAM_CHANNEL_ID,
             "photo": article.image_url,
-            "caption": text[:1024],
+            "caption": text,
             "parse_mode": "HTML",
         }
         response = httpx.post(f"{api}/sendPhoto", json=payload, timeout=30)
     else:
+        text = format_post(article)
         payload = {
             "chat_id": TELEGRAM_CHANNEL_ID,
-            "text": text[:4096],
+            "text": text,
             "parse_mode": "HTML",
             "disable_web_page_preview": False,
         }
