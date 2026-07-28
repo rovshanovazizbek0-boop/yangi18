@@ -29,7 +29,7 @@ Sun'iy intellektga oid eng muhim yangiliklarni dunyodagi ishonchli manbalardan *
 
 ## AI Agent nima qiladi?
 
-Har bir inglizcha yangilik uchun AI model (standart: **Gemini `gemini-3.5-flash-lite`** — arzon va tez; `.env`da `AI_PROVIDER=claude` qilib Claude'ga o'tish mumkin) quyidagilarni **bitta so'rovda** tayyorlaydi (javob JSON sxema bilan kafolatlanadi):
+Har bir inglizcha yangilik uchun AI model (standart: **Gemini `gemini-3.5-flash-lite`** — arzon va tez; serverda service-account bilan `AI_PROVIDER=vertex`, yoki `AI_PROVIDER=claude` ishlatish mumkin) quyidagilarni **bitta so'rovda** tayyorlaydi (javob JSON sxema bilan kafolatlanadi):
 
 - `kategoriya` — OpenAI, Gemini, Claude, xAI, Meta, DeepSeek, Qwen, Microsoft, Startuplar, Robototexnika, Dasturlash
 - `sarlavha` — o'zbekcha sarlavha
