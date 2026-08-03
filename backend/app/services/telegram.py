@@ -26,21 +26,27 @@ def format_post(article: Article, *, compact: bool = False) -> str:
         for tag in (article.tags or [])[:5]
     )
     category = _truncate(article.category.name if article.category else "AI", 80)
-    source_url = html.escape(article.original_url or "", quote=True)
-    detail_url = html.escape(
-        f"{FRONTEND_ORIGIN}/maqola/{article.slug}",
-        quote=True,
-    )
     return (
         f"<b>{html.escape(_truncate(article.title, title_limit))}</b>\n\n"
         f"{html.escape(_truncate(article.summary, summary_limit))}\n\n"
         f"💡 <i>{html.escape(_truncate(article.practical_note, practical_limit))}</i>\n\n"
         f"📂 {html.escape(category)} | Ahamiyati: {stars}\n"
-        f"🔗 <a href=\"{source_url}\">Asl manba</a> | "
-        f"<a href=\"{detail_url}\">Batafsil o'qish</a>\n"
         f"{tags}"
     )
 
+
+def post_keyboard(article: Article) -> dict:
+    """Post ostida katta va aniq Telegram inline tugmalarini qaytaradi."""
+    rows = [[{
+        "text": "📖 Batafsil o‘qish",
+        "url": f"{FRONTEND_ORIGIN.rstrip('/')}/maqola/{article.slug}",
+    }]]
+    if article.original_url:
+        rows.append([{
+            "text": "🌐 Asl manba",
+            "url": article.original_url,
+        }])
+    return {"inline_keyboard": rows}
 
 
 def send_to_channel(article: Article) -> None:
@@ -55,6 +61,7 @@ def send_to_channel(article: Article) -> None:
             "photo": article.image_url,
             "caption": text,
             "parse_mode": "HTML",
+            "reply_markup": post_keyboard(article),
         }
         response = httpx.post(f"{api}/sendPhoto", json=payload, timeout=30)
     else:
@@ -64,6 +71,7 @@ def send_to_channel(article: Article) -> None:
             "text": text,
             "parse_mode": "HTML",
             "disable_web_page_preview": False,
+            "reply_markup": post_keyboard(article),
         }
         response = httpx.post(f"{api}/sendMessage", json=payload, timeout=30)
 

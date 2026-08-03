@@ -60,16 +60,27 @@ def article_text(article: dict) -> str:
         f"<b>{html.escape(article['title'])}</b>\n\n"
         f"{html.escape(article['summary'])}\n\n"
         f"💡 <i>{html.escape(article.get('practical_note', ''))}</i>\n\n"
-        f"📂 {html.escape(category)} | {stars}\n"
-        f"🔗 <a href=\"{article['original_url']}\">Asl manba</a> | "
-        f"<a href=\"{SITE_URL}/maqola/{article['slug']}\">Saytda o'qish</a>"
+        f"📂 {html.escape(category)} | {stars}"
     )
 
 
-def save_button(article: dict) -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(inline_keyboard=[[
-        InlineKeyboardButton(text="⭐ Saqlash", callback_data=f"save:{article['slug']}")
-    ]])
+def article_buttons(article: dict) -> InlineKeyboardMarkup:
+    rows = [[InlineKeyboardButton(
+        text="📖 Batafsil o‘qish",
+        url=f"{SITE_URL.rstrip('/')}/maqola/{article['slug']}",
+    )]]
+    secondary_buttons = []
+    if article.get("original_url"):
+        secondary_buttons.append(InlineKeyboardButton(
+            text="🌐 Asl manba",
+            url=article["original_url"],
+        ))
+    secondary_buttons.append(InlineKeyboardButton(
+        text="⭐ Saqlash",
+        callback_data=f"save:{article['slug']}",
+    ))
+    rows.append(secondary_buttons)
+    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 async def send_articles(message: Message, articles: list[dict], empty_text: str, limit: int = 5):
@@ -80,7 +91,7 @@ async def send_articles(message: Message, articles: list[dict], empty_text: str,
         await message.answer(
             article_text(article),
             parse_mode="HTML",
-            reply_markup=save_button(article),
+            reply_markup=article_buttons(article),
             disable_web_page_preview=False,
         )
 
