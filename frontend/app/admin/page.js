@@ -14,8 +14,11 @@ export default function AdminPage() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [status, setStatus] = useState("pending");
   const [articles, setArticles] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [stats, setStats] = useState(null);
   const [message, setMessage] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [draft, setDraft] = useState(null);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("admin_token");
@@ -48,12 +51,14 @@ export default function AdminPage() {
 
   const load = useCallback(async () => {
     try {
-      const [list, statistics] = await Promise.all([
+      const [list, statistics, categoryList] = await Promise.all([
         api(`/api/admin/articles?status=${status}`),
         api("/api/admin/stats"),
+        api("/api/categories"),
       ]);
       setArticles(list);
       setStats(statistics);
+      setCategories(categoryList);
     } catch (error) {
       setMessage(error.message);
     }
@@ -68,6 +73,45 @@ export default function AdminPage() {
       await api(path, { method });
       setMessage("✅ Bajarildi");
       load();
+    } catch (error) {
+      setMessage(`❌ ${error.message}`);
+    }
+  }
+
+  function startEditing(article) {
+    setEditingId(article.id);
+    setDraft({
+      title: article.title,
+      seo_title: article.seo_title,
+      summary: article.summary,
+      content: article.content,
+      practical_note: article.practical_note,
+      tags: (article.tags || []).join(", "),
+      importance: article.importance,
+      category_id: article.category?.id || "",
+      image_url: article.image_url || "",
+    });
+    setMessage("");
+  }
+
+  async function saveEditing(event, articleId) {
+    event.preventDefault();
+    try {
+      const payload = {
+        ...draft,
+        tags: draft.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+        importance: Number(draft.importance),
+        category_id: Number(draft.category_id),
+        image_url: draft.image_url || null,
+      };
+      await api(`/api/admin/articles/${articleId}`, {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      });
+      setEditingId(null);
+      setDraft(null);
+      setMessage("✅ Maqola saqlandi");
+      await load();
     } catch (error) {
       setMessage(`❌ ${error.message}`);
     }
@@ -161,9 +205,132 @@ export default function AdminPage() {
               <span>{article.source_name}</span>
               {article.sent_to_telegram && <span>📨 Telegramda</span>}
             </div>
-            <h2 className="mb-1 font-semibold">{article.title}</h2>
-            <p className="mb-3 text-sm text-slate-400">{article.summary}</p>
+            {editingId === article.id ? (
+              <form onSubmit={(event) => saveEditing(event, article.id)} className="my-4 space-y-3">
+                <label className="block text-sm">
+                  <span className="mb-1 block text-slate-400">Sarlavha</span>
+                  <input
+                    value={draft.title}
+                    onChange={(event) => setDraft({ ...draft, title: event.target.value })}
+                    minLength={12}
+                    required
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="mb-1 block text-slate-400">SEO sarlavha</span>
+                  <input
+                    value={draft.seo_title}
+                    onChange={(event) => setDraft({ ...draft, seo_title: event.target.value })}
+                    minLength={12}
+                    required
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="mb-1 block text-slate-400">Qisqa xulosa</span>
+                  <textarea
+                    value={draft.summary}
+                    onChange={(event) => setDraft({ ...draft, summary: event.target.value })}
+                    rows={3}
+                    minLength={40}
+                    required
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="mb-1 block text-slate-400">Maqola</span>
+                  <textarea
+                    value={draft.content}
+                    onChange={(event) => setDraft({ ...draft, content: event.target.value })}
+                    rows={10}
+                    minLength={100}
+                    required
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="mb-1 block text-slate-400">Amaliy ahamiyati</span>
+                  <textarea
+                    value={draft.practical_note}
+                    onChange={(event) => setDraft({ ...draft, practical_note: event.target.value })}
+                    rows={2}
+                    minLength={20}
+                    required
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
+                  />
+                </label>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <label className="block text-sm sm:col-span-2">
+                    <span className="mb-1 block text-slate-400">Teglar, vergul bilan</span>
+                    <input
+                      value={draft.tags}
+                      onChange={(event) => setDraft({ ...draft, tags: event.target.value })}
+                      className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
+                    />
+                  </label>
+                  <label className="block text-sm">
+                    <span className="mb-1 block text-slate-400">Ahamiyati</span>
+                    <select
+                      value={draft.importance}
+                      onChange={(event) => setDraft({ ...draft, importance: event.target.value })}
+                      className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
+                    >
+                      {[1, 2, 3, 4, 5].map((value) => <option key={value} value={value}>{value}</option>)}
+                    </select>
+                  </label>
+                </div>
+                <label className="block text-sm">
+                  <span className="mb-1 block text-slate-400">Kategoriya</span>
+                  <select
+                    value={draft.category_id}
+                    onChange={(event) => setDraft({ ...draft, category_id: event.target.value })}
+                    required
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
+                  >
+                    <option value="" disabled>Kategoriyani tanlang</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>{category.name}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block text-sm">
+                  <span className="mb-1 block text-slate-400">Rasm URL’i</span>
+                  <input
+                    type="url"
+                    value={draft.image_url}
+                    onChange={(event) => setDraft({ ...draft, image_url: event.target.value })}
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
+                  />
+                </label>
+                <div className="flex gap-2">
+                  <button type="submit" className="rounded-lg bg-blue-600 px-4 py-2 font-semibold hover:bg-blue-500">
+                    💾 Saqlash
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setEditingId(null); setDraft(null); }}
+                    className="rounded-lg border border-slate-700 px-4 py-2 text-slate-300"
+                  >
+                    Bekor qilish
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <h2 className="mb-1 font-semibold">{article.title}</h2>
+                <p className="mb-3 text-sm text-slate-400">{article.summary}</p>
+              </>
+            )}
             <div className="flex flex-wrap gap-2 text-sm">
+              {editingId !== article.id && (
+                <button
+                  onClick={() => startEditing(article)}
+                  className="rounded-lg bg-blue-800 px-3 py-1.5 hover:bg-blue-700"
+                >
+                  ✏️ Tahrirlash
+                </button>
+              )}
               {article.status !== "published" && (
                 <button
                   onClick={() => action(`/api/admin/articles/${article.id}/approve`)}

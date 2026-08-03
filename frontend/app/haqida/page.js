@@ -30,8 +30,9 @@ export default function AboutPage() {
         <p>
           Halollik — asosiy tamoyilimiz: har bir maqola tagida <strong className="text-white">asl
           manbaga havola</strong> ko&apos;rsatiladi, muhimlik bahosi (1–5 yulduz) esa
-          yangilikning soha uchun ahamiyatini bildiradi. Maqolalar saytga chiqishidan oldin
-          tahririy nazoratdan o&apos;tadi.
+          yangilikning soha uchun ahamiyatini bildiradi. AI tayyorlagan har bir material
+          avtomatik sifat tekshiruvidan o&apos;tadi va tahririyat tasdiqlaganidan keyin
+          saytga chiqariladi.
         </p>
 
         <h2 className="pt-2 text-xl font-bold text-white">Nima uchun bepul</h2>

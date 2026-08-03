@@ -1,9 +1,9 @@
 """AI Agent quvuri: yig'ish -> dublikat filtri -> tahlil -> saqlash.
 
-AUTO_PUBLISH=true (standart) bo'lsa maqolalar darhol saytga chiqadi va
+AUTO_PUBLISH=true bo'lsa maqolalar darhol saytga chiqadi va
 muhimlari (AUTO_TELEGRAM_MIN_IMPORTANCE dan yuqori) Telegram kanalga
-avtomatik yuboriladi. AUTO_PUBLISH=false bo'lsa eski rejim: maqolalar
-pending holatda admin tasdig'ini kutadi.
+avtomatik yuboriladi. Xavfsiz standart AUTO_PUBLISH=false: maqolalar
+quality gate'dan o'tib, pending holatda admin tasdig'ini kutadi.
 
 Ishga tushirish:  python -m app.pipeline
 Muntazam ishlashi uchun cron'ga qo'ying, masalan har soatda:
@@ -26,6 +26,7 @@ from .seed import seed_categories
 from .services.ai_agent import analyze_news
 from .services.collector import collect_news, fetch_og_image
 from .services.image_gen import generate_image
+from .services.quality import evaluate_candidate
 from .services.telegram import send_to_channel
 from .utils import slugify
 
@@ -35,6 +36,7 @@ def run_pipeline(per_feed: int = 5) -> int:
     db = SessionLocal()
     saved = 0
     analysis_errors = 0
+    quality_rejected = 0
     try:
         seed_categories(db)
         categories = {c.slug: c for c in db.query(Category).all()}
@@ -55,6 +57,14 @@ def run_pipeline(per_feed: int = 5) -> int:
             except Exception as error:
                 analysis_errors += 1
                 print(f"   ✗ Tahlil xatosi: {error}")
+                continue
+
+            quality = evaluate_candidate(analysis, news)
+            for warning in quality.warnings:
+                print(f"   ⚠ Quality warning: {warning}")
+            if not quality.ok:
+                quality_rejected += 1
+                print(f"   ✗ Quality gate rad etdi: {'; '.join(quality.errors)}")
                 continue
 
             slug = slugify(analysis["sarlavha"])
@@ -114,7 +124,10 @@ def run_pipeline(per_feed: int = 5) -> int:
             raise RuntimeError("Barcha yangi yangiliklar AI tahlilida xatoga uchradi")
 
         mode = "saytga chiqarildi (avto)" if AUTO_PUBLISH else "pending — admin tasdig'ini kutmoqda"
-        print(f"\n✅ {saved} ta maqola saqlandi ({mode}).")
+        print(
+            f"\n✅ {saved} ta maqola saqlandi ({mode}). "
+            f"Quality gate rad etdi: {quality_rejected}."
+        )
         return saved
     finally:
         db.close()

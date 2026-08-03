@@ -19,8 +19,8 @@ export default async function HomePage() {
         <h1 className="mb-5 text-2xl font-bold">📰 Eng so&apos;nggi AI yangiliklari</h1>
         {hasContent ? (
           <div className="grid gap-5 sm:grid-cols-2">
-            {latest.map((article) => (
-              <ArticleCard key={article.id} article={article} />
+            {latest.map((article, index) => (
+              <ArticleCard key={article.id} article={article} priority={index === 0} />
             ))}
           </div>
         ) : (

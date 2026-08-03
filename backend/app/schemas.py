@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class CategoryOut(BaseModel):
@@ -34,15 +34,27 @@ class ArticleOut(BaseModel):
 
 
 class ArticleUpdate(BaseModel):
-    title: str | None = None
-    seo_title: str | None = None
-    summary: str | None = None
-    content: str | None = None
-    practical_note: str | None = None
-    tags: list | None = None
-    importance: int | None = None
-    category_id: int | None = None
-    image_url: str | None = None
+    title: str | None = Field(default=None, min_length=12, max_length=300)
+    seo_title: str | None = Field(default=None, min_length=12, max_length=300)
+    summary: str | None = Field(default=None, min_length=40)
+    content: str | None = Field(default=None, min_length=100)
+    practical_note: str | None = Field(default=None, min_length=20)
+    tags: list[str] | None = None
+    importance: int | None = Field(default=None, ge=1, le=5)
+    category_id: int | None = Field(default=None, gt=0)
+    image_url: str | None = Field(default=None, max_length=1000)
+
+    @field_validator("tags")
+    @classmethod
+    def clean_tags(cls, value: list[str] | None) -> list[str] | None:
+        if value is None:
+            return None
+        cleaned = []
+        for tag in value:
+            normalized = tag.strip()[:60]
+            if normalized and normalized.casefold() not in {item.casefold() for item in cleaned}:
+                cleaned.append(normalized)
+        return cleaned[:6]
 
 
 class StatsOut(BaseModel):

@@ -33,7 +33,11 @@ def list_articles(db: Session = Depends(get_db), status: str | None = None, limi
 @router.put("/articles/{article_id}", response_model=ArticleOut)
 def update_article(article_id: int, data: ArticleUpdate, db: Session = Depends(get_db)):
     article = get_article(db, article_id)
-    for field, value in data.model_dump(exclude_unset=True).items():
+    changes = data.model_dump(exclude_unset=True)
+    category_id = changes.get("category_id")
+    if category_id is not None and not db.query(Category).filter(Category.id == category_id).first():
+        raise HTTPException(status_code=422, detail="Kategoriya topilmadi")
+    for field, value in changes.items():
         setattr(article, field, value)
     db.commit()
     db.refresh(article)

@@ -9,6 +9,8 @@ COPY . .
 # Brauzer uchun API manzili (build vaqtida kodga kiritiladi)
 ARG NEXT_PUBLIC_API_URL=http://localhost:8000
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_SITE_URL=https://www.aixabar.uz
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 RUN npm run build
 
 # 2-bosqich: yengil runtime (standalone)

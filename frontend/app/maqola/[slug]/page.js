@@ -1,12 +1,17 @@
 import Link from "next/link";
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { cache } from "react";
 import AdPlaceholder from "../../../components/AdPlaceholder";
 import { apiGet } from "../../../lib/api";
 import { SITE_URL, SITE_NAME } from "../../../lib/site";
 
+const getArticle = cache((slug) => apiGet(`/api/news/${slug}`));
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const article = await apiGet(`/api/news/${slug}`);
-  if (!article) return { title: "Maqola topilmadi" };
+  const article = await getArticle(slug);
+  if (!article) notFound();
 
   const title = article.seo_title || article.title;
   const url = `/maqola/${article.slug}`;
@@ -65,15 +70,9 @@ function articleJsonLd(article) {
 
 export default async function ArticlePage({ params }) {
   const { slug } = await params;
-  const article = await apiGet(`/api/news/${slug}`);
+  const article = await getArticle(slug);
 
-  if (!article) {
-    return (
-      <div className="py-20 text-center text-slate-400">
-        Maqola topilmadi. <Link href="/" className="text-blue-400">Bosh sahifaga qaytish</Link>
-      </div>
-    );
-  }
+  if (!article) notFound();
 
   const stars = "⭐".repeat(Math.max(1, Math.min(5, article.importance)));
   const date = article.published_at
@@ -105,8 +104,16 @@ export default async function ArticlePage({ params }) {
       <h1 className="mb-4 text-3xl font-bold leading-tight">{article.title}</h1>
 
       {article.image_url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={article.image_url} alt="" className="mb-6 w-full rounded-xl object-cover" />
+        <div className="relative mb-6 aspect-video overflow-hidden rounded-xl bg-slate-900">
+          <Image
+            src={article.image_url}
+            alt={`${article.title} maqolasi rasmi`}
+            fill
+            sizes="(max-width: 768px) 100vw, 768px"
+            className="object-cover"
+            priority
+          />
+        </div>
       )}
 
       <p className="mb-6 border-l-4 border-blue-500 pl-4 text-lg leading-relaxed text-slate-200">

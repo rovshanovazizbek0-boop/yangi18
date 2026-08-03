@@ -1,9 +1,13 @@
 import { API_URL } from "../lib/api";
 import { SITE_URL } from "../lib/site";
 
+// Deploy build vaqtida backend hali tayyor bo'lmasligi mumkin; sitemap har
+// so'rovda server muhitidagi API manzilidan olinadi.
+export const dynamic = "force-dynamic";
+
 async function fetchJson(url) {
   try {
-    const res = await fetch(url, { next: { revalidate: 3600 } });
+    const res = await fetch(url, { next: { revalidate: 300 } });
     return res.ok ? await res.json() : [];
   } catch (error) {
     console.error("Sitemap fetch error:", error);
@@ -11,9 +15,26 @@ async function fetchJson(url) {
   }
 }
 
+async function fetchAllArticles() {
+  const pageSize = 100;
+  const maxPages = 20;
+  const articles = [];
+
+  for (let page = 0; page < maxPages; page += 1) {
+    const batch = await fetchJson(
+      `${API_URL}/api/news?limit=${pageSize}&offset=${page * pageSize}`,
+    );
+    if (!Array.isArray(batch) || batch.length === 0) break;
+    articles.push(...batch);
+    if (batch.length < pageSize) break;
+  }
+
+  return articles;
+}
+
 export default async function sitemap() {
   const [articles, categories] = await Promise.all([
-    fetchJson(`${API_URL}/api/news?limit=500`),
+    fetchAllArticles(),
     fetchJson(`${API_URL}/api/categories`),
   ]);
 

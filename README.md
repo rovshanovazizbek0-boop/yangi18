@@ -40,8 +40,8 @@ Har bir inglizcha yangilik uchun AI model (standart: **Gemini `gemini-3.5-flash-
 - `teglar` — 3-6 ta teg
 - `ahamiyati` — 1-5 baho
 
-`AUTO_PUBLISH=true` bo'lsa maqolalar avtomatik chiqadi; `false` bo'lsa ular
-`pending` holatida saqlanib, **admin tasdig'idan keyin** saytga chiqadi.
+Standart `AUTO_PUBLISH=false`: maqolalar quality gate'dan o'tgach `pending`
+holatida saqlanadi va **admin tahriri/tasdig'idan keyin** saytga chiqadi.
 
 ---
 
@@ -146,23 +146,24 @@ To'liq interaktiv hujjatlar: `http://localhost:8000/docs`
 
 ## Ish oqimi (workflow)
 
-**Avtomatik rejim (standart, `AUTO_PUBLISH=true`):**
+**Moderatsiya rejimi (standart, `AUTO_PUBLISH=false`):**
 
 1. Cron har soatda `python -m app.pipeline` ni ishga tushiradi
-2. RSS'dan yangiliklar yig'iladi, dublikatlar filtrlanadi, Claude har birini o'zbekcha maqolaga aylantiradi
-3. Maqolalar **darhol saytga chiqadi**; muhimlari (bahosi ≥ `AUTO_TELEGRAM_MIN_IMPORTANCE`, standart 4) **Telegram kanalga ham avtomatik yuboriladi**
-4. Admin `/admin` panelda faqat nazorat qiladi: xato maqolani tahrirlaydi yoki o'chiradi
+2. RSS'dan yangiliklar yig'iladi, dublikatlar va AI relevance tekshiriladi, model maqolani o'zbekcha tayyorlaydi
+3. Inglizcha sarlavha, AI'ga aloqasiz manba yoki sifatsiz maydonlar quality gate'da rad etiladi
+4. Qolgan maqolalar `pending` bo'lib, admin panelda tahrirlanadi va tasdiqlanadi
+5. Tasdiqlangan maqolani admin Telegram kanalga yuborishi mumkin
 
 Sozlamalar (`.env`):
 
 | O'zgaruvchi | Standart | Tavsif |
 |---|---|---|
-| `AUTO_PUBLISH` | `true` | `false` — maqolalar admin tasdig'ini kutadi |
+| `AUTO_PUBLISH` | `false` | `true` — tekshiruvdan o'tgan maqolalarni avtomatik chiqaradi |
 | `AUTO_PUBLISH_MIN_IMPORTANCE` | `1` | Shu bahodan pastlari `pending`da qoladi |
 | `AUTO_TELEGRAM` | `true` | Muhim yangiliklarni kanalga avto-yuborish |
 | `AUTO_TELEGRAM_MIN_IMPORTANCE` | `4` | Kanalga yuborish uchun minimal baho |
 
-**Moderatsiya rejimi (`AUTO_PUBLISH=false`):** maqolalar `pending` holatda saqlanadi, admin `/admin` sahifasida ko'rib **Tasdiqlash** bosgachgina saytga chiqadi va **Telegramga** tugmasi bilan kanalga yuboradi.
+**Avtomatik rejim (`AUTO_PUBLISH=true`):** faqat editorial jarayon va monitoring tayyor bo'lsa yoqing. Quality gate'dan o'tgan maqolalar darhol chiqadi, muhimlari Telegram kanalga avtomatik yuborilishi mumkin.
 
 ## Kelajakdagi rejalar (TZ bo'yicha)
 

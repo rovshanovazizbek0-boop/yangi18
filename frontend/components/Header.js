@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { apiGet } from "../lib/api";
 
 export default async function Header() {
@@ -9,12 +10,12 @@ export default async function Header() {
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2 text-xl font-bold">
-            <img src="/logo.svg" alt="AI Xabar logotipi" width={36} height={36} />
+            <Image src="/logo.svg" alt="AI Xabar logotipi" width={36} height={36} priority />
             <span>
               AI <span className="text-blue-400">Xabar</span>
             </span>
           </Link>
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
             <a
               href="https://t.me/aixabarlari"
               target="_blank"
@@ -31,20 +32,22 @@ export default async function Header() {
             >
               🤖 Telegram Bot
             </a>
-            <form action="/qidiruv" className="flex gap-2">
+            <form action="/qidiruv" className="flex w-full gap-2 sm:w-auto">
+              <label htmlFor="site-search" className="sr-only">Saytdan qidirish</label>
               <input
+                id="site-search"
                 name="q"
                 placeholder="Qidiruv..."
-                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm outline-none focus:border-blue-500"
+                className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm outline-none focus:border-blue-500 sm:flex-none"
               />
-              <button className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm hover:bg-blue-500">
+              <button aria-label="Qidirish" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm hover:bg-blue-500">
                 🔍
               </button>
             </form>
           </div>
         </div>
 
-        <nav className="flex flex-wrap gap-2 text-sm">
+        <nav className="hidden flex-wrap gap-2 text-sm sm:flex" aria-label="AI mavzulari">
           {categories.map((cat) => (
             <Link
               key={cat.slug}
@@ -55,6 +58,26 @@ export default async function Header() {
             </Link>
           ))}
         </nav>
+
+        <details className="group sm:hidden">
+          <summary className="cursor-pointer list-none rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 marker:content-none">
+            <span className="flex items-center justify-between">
+              <span>📂 Mavzular</span>
+              <span className="text-slate-500 group-open:rotate-180">⌄</span>
+            </span>
+          </summary>
+          <nav className="mt-2 grid grid-cols-2 gap-2 text-sm" aria-label="Mobil AI mavzulari">
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/kategoriya/${cat.slug}`}
+                className="rounded-lg border border-slate-800 px-3 py-2 text-slate-300 hover:border-blue-500 hover:text-white"
+              >
+                {cat.name}
+              </Link>
+            ))}
+          </nav>
+        </details>
       </div>
     </header>
   );

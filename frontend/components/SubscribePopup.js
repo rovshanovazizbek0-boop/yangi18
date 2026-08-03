@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 const STORAGE_KEY = "ainews_popup_closed_at";
-const SHOW_DELAY_MS = 10_000; // 10 soniyadan keyin chiqadi
+const SHOW_DELAY_MS = 45_000; // foydalanuvchi avval sayt qiymatini ko'rsin
 const COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000; // yopilgach 3 kun ko'rinmaydi
 
 export default function SubscribePopup() {
@@ -57,7 +58,7 @@ export default function SubscribePopup() {
         </button>
 
         <div className="mb-2 flex items-center gap-2">
-          <img src="/logo.svg" alt="AI Xabar" width={36} height={36} />
+          <Image src="/logo.svg" alt="AI Xabar" width={36} height={36} />
           <p className="font-bold">AI yangiliklaridan orqada qolmang!</p>
         </div>
         <p className="mb-4 text-sm text-slate-400">

@@ -9,6 +9,9 @@ export default function robots() {
         disallow: ["/admin", "/qidiruv"],
       },
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: [
+      `${SITE_URL}/sitemap.xml`,
+      `${SITE_URL}/news-sitemap.xml`,
+    ],
   };
 }

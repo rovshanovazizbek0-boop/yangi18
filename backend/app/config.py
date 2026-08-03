@@ -54,9 +54,9 @@ def _bool(name: str, default: str) -> bool:
 RUN_BACKGROUND_SERVICES = _bool("RUN_BACKGROUND_SERVICES", "true")
 
 
-# Avto-chop etish: pipeline maqolalarni admin tasdig'isiz to'g'ridan-to'g'ri
-# saytga chiqaradi. O'chirish uchun: AUTO_PUBLISH=false
-AUTO_PUBLISH = _bool("AUTO_PUBLISH", "true")
+# Avto-chop etish ixtiyoriy. Xavfsiz standartda maqolalar admin tasdig'ini kutadi.
+# Faqat editorial jarayon tayyor bo'lsa AUTO_PUBLISH=true qiling.
+AUTO_PUBLISH = _bool("AUTO_PUBLISH", "false")
 # Faqat shu bahodan yuqori maqolalar avto-chop etiladi (qolganlari pending)
 AUTO_PUBLISH_MIN_IMPORTANCE = int(os.getenv("AUTO_PUBLISH_MIN_IMPORTANCE", "1"))
 
