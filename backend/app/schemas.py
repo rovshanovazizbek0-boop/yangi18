@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 
 class CategoryOut(BaseModel):
@@ -31,6 +31,20 @@ class ArticleOut(BaseModel):
     sent_to_telegram: bool
     published_at: datetime | None
     created_at: datetime
+
+    @field_serializer("published_at", "created_at")
+    def _as_utc(self, value: datetime | None) -> str | None:
+        """Sanalarni vaqt zonasi bilan qaytaradi.
+
+        Bazada UTC saqlanadi, lekin zonasiz. Zonasiz ISO qatorni JavaScript
+        mahalliy vaqt deb o'qiydi — natijada saytda sana surilib ketadi va
+        NewsArticle schema'sidagi datePublished Google uchun noaniq bo'ladi.
+        """
+        if value is None:
+            return None
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.isoformat()
 
 
 class ArticleUpdate(BaseModel):
