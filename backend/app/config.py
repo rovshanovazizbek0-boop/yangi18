@@ -53,6 +53,13 @@ def _bool(name: str, default: str) -> bool:
 # ichida ishlaydi. Docker Compose backend servisida bu qiymat false qilinadi.
 RUN_BACKGROUND_SERVICES = _bool("RUN_BACKGROUND_SERVICES", "true")
 
+# Sikllar orasidagi tanaffus. Qisqaroq oraliq = yangilik tezroq chiqadi.
+PIPELINE_INTERVAL = int(os.getenv("PIPELINE_INTERVAL", "900"))
+# Har manbadan o'qiladigan eng yangi yozuvlar soni. Manba bir siklda shundan
+# ko'p maqola chiqarsa, ortiqchasi butunlay yo'qoladi — keyingi sikl ham
+# faqat eng yangilariga qaraydi.
+PIPELINE_PER_FEED = int(os.getenv("PIPELINE_PER_FEED", "12"))
+
 
 # Avto-chop etish ixtiyoriy. Xavfsiz standartda maqolalar admin tasdig'ini kutadi.
 # Faqat editorial jarayon tayyor bo'lsa AUTO_PUBLISH=true qiling.

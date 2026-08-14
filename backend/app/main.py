@@ -13,6 +13,8 @@ from .bot.bot import main as run_bot
 from .config import (
     FRONTEND_ORIGIN,
     MEDIA_DIR,
+    PIPELINE_INTERVAL,
+    PIPELINE_PER_FEED,
     RUN_BACKGROUND_SERVICES,
     validate_production_settings,
 )
@@ -39,7 +41,7 @@ async def pipeline_loop_task():
         PIPELINE_STATE["last_started_at"] = datetime.now(timezone.utc).isoformat()
         try:
             loop = asyncio.get_running_loop()
-            saved = await loop.run_in_executor(None, run_pipeline, 5)
+            saved = await loop.run_in_executor(None, run_pipeline, PIPELINE_PER_FEED)
             PIPELINE_STATE["status"] = "ok"
             PIPELINE_STATE["last_completed_at"] = datetime.now(timezone.utc).isoformat()
             PIPELINE_STATE["last_saved"] = saved
@@ -50,7 +52,7 @@ async def pipeline_loop_task():
             PIPELINE_STATE["last_error"] = format_error(error)
             traceback.print_exc()
             print(f"Pipeline xatosi: {error}")
-        await asyncio.sleep(int(os.getenv("PIPELINE_INTERVAL", "3600")))
+        await asyncio.sleep(PIPELINE_INTERVAL)
 
 
 async def bot_task():

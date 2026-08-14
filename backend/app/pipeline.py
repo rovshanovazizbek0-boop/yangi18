@@ -20,6 +20,7 @@ from .config import (
     AUTO_TELEGRAM,
     AUTO_TELEGRAM_MIN_IMPORTANCE,
     IMAGE_GENERATION,
+    PIPELINE_PER_FEED,
     TELEGRAM_BOT_TOKEN,
 )
 from .database import Base, SessionLocal, engine
@@ -73,7 +74,7 @@ def format_error(error: BaseException, limit: int = 300) -> str:
     return text if len(text) <= limit else f"{text[: limit - 1]}…"
 
 
-def run_pipeline(per_feed: int = 5) -> int:
+def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
     Base.metadata.create_all(engine)
     db = SessionLocal()
     saved = 0

@@ -19,6 +19,11 @@ from ..utils import title_hash
 FEEDS = [
     {"name": "OpenAI Blog", "url": "https://openai.com/news/rss.xml"},
     {"name": "Google AI Blog", "url": "https://blog.google/technology/ai/rss/"},
+    # Google model e'lonlari (Gemini reliz'lari) technology/ai feed'iga tushmaydi —
+    # ular quyidagi ikki manbada birinchi bo'lib chiqadi.
+    {"name": "Google Gemini Blog", "url": "https://blog.google/products/gemini/rss/"},
+    {"name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml"},
+    {"name": "Ars Technica AI", "url": "https://arstechnica.com/ai/feed/"},
     {"name": "TechCrunch AI", "url": "https://techcrunch.com/category/artificial-intelligence/feed/"},
     {"name": "VentureBeat AI", "url": "https://venturebeat.com/category/ai/feed/"},
     {"name": "MIT Technology Review AI", "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed"},
