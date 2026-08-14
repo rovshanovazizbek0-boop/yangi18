@@ -10,8 +10,13 @@ function escapeXml(value) {
     .replaceAll("'", "&apos;");
 }
 
+// Har so'rovda qayta hisoblanadi. Aks holda Next.js build paytidagi natijani
+// muzlatib qo'yadi — backend o'sha lahzada javob bermasa (Render uyquda bo'lsa),
+// sitemap abadiy bo'sh qolib, Google News hech qanday maqola ko'rmaydi.
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  let articles = [];
+  let articles = null;
   try {
     const response = await fetch(`${API_URL}/api/news?limit=100`, {
       next: { revalidate: 300 },
@@ -19,6 +24,12 @@ export async function GET() {
     if (response.ok) articles = await response.json();
   } catch (error) {
     console.error("News sitemap fetch error:", error);
+  }
+
+  // Bo'sh sitemap Google uchun "yangilik yo'q" degani. Backend javob bermasa
+  // 503 qaytaramiz — shunda Google keyinroq qayta uradi.
+  if (!articles) {
+    return new Response("News sitemap hozircha mavjud emas", { status: 503 });
   }
 
   const cutoff = Date.now() - 2 * 24 * 60 * 60 * 1000;

@@ -1,5 +1,8 @@
 import { API_URL } from "../../../../lib/api";
 
+// news-sitemap bilan bir xil sabab: build paytidagi natija muzlab qolmasligi uchun.
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const response = await fetch(`${API_URL}/api/news/rss`, {
