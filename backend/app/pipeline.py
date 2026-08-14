@@ -120,7 +120,11 @@ def run_pipeline(per_feed: int = 5) -> int:
                 print(f"   ⚠ Quality warning: {warning}")
             if not quality.ok:
                 quality_rejected += 1
+                # Model qanday sarlavha yozganini ko'rsatamiz — aks holda gate
+                # haq bo'ldimi yoki yo'qmi, logdan aniqlab bo'lmaydi.
+                rejected_title = str(analysis.get("sarlavha") or "").strip() or "(sarlavha yo'q)"
                 print(f"   ✗ Quality gate rad etdi: {'; '.join(quality.errors)}")
+                print(f"     ↳ model sarlavhasi: {rejected_title[:100]}")
                 continue
 
             slug = slugify(analysis["sarlavha"])
