@@ -10,6 +10,7 @@ Muntazam ishlashi uchun cron'ga qo'ying, masalan har soatda:
   0 * * * * cd /path/backend && .venv/bin/python -m app.pipeline
 """
 
+import re
 from datetime import datetime
 
 from .config import (
@@ -45,9 +46,30 @@ LAST_RUN: dict = {
 }
 
 
+# Xato matnida maxfiy ma'lumot bo'lishi mumkin: masalan
+# GOOGLE_APPLICATION_CREDENTIALS ga yo'l o'rniga JSON kalit qo'yilsa,
+# google-auth butun kalitni xato matniga qo'shib yuboradi. /health esa ochiq
+# endpoint — shuning uchun tashqariga chiqishdan oldin tozalanadi.
+_SECRET_MARKERS = ('"private_key"', "-----BEGIN", "PRIVATE KEY")
+_SECRET_PATTERNS = [
+    re.compile(r"\b(?:gho_|ghp_|github_pat_|sk-ant-|sk-|AIza)[A-Za-z0-9_\-]{8,}"),
+    re.compile(r"\b\d{8,10}:[A-Za-z0-9_\-]{30,}"),  # Telegram bot tokeni
+]
+
+
+def redact_secrets(text: str) -> str:
+    """Maxfiy qiymatlarni xato matnidan olib tashlaydi."""
+    cut = min((i for i in (text.find(m) for m in _SECRET_MARKERS) if i != -1), default=-1)
+    if cut != -1:
+        text = f"{text[:cut]}<maxfiy ma'lumot olib tashlandi>"
+    for pattern in _SECRET_PATTERNS:
+        text = pattern.sub("<maxfiy>", text)
+    return text
+
+
 def format_error(error: BaseException, limit: int = 300) -> str:
     """Xatoni bitta qatorga jamlaydi (JSON javobiga qo'yish uchun)."""
-    text = " ".join(f"{type(error).__name__}: {error}".split())
+    text = redact_secrets(" ".join(f"{type(error).__name__}: {error}".split()))
     return text if len(text) <= limit else f"{text[: limit - 1]}…"
 
 
