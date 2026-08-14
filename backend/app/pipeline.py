@@ -81,6 +81,39 @@ def is_fresh_for_channel(published_at: datetime | None) -> bool:
     return datetime.utcnow() - published_at <= timedelta(hours=AUTO_TELEGRAM_MAX_AGE_HOURS)
 
 
+def _unique_slug(db, title: str) -> str:
+    base = slugify(title) or "maqola"
+    slug = base
+    counter = 2
+    while db.query(Article).filter(Article.slug == slug).first():
+        slug = f"{base}-{counter}"
+        counter += 1
+    return slug
+
+
+def _build_article(db, analysis: dict, news: dict, categories: dict, *,
+                   status: str, slug: str, image_url: str | None) -> Article:
+    category = categories.get(analysis["kategoriya"])
+    return Article(
+        title=analysis["sarlavha"],
+        seo_title=analysis["seo_sarlavha"],
+        slug=slug,
+        summary=analysis["xulosa"],
+        content=analysis["maqola"],
+        practical_note=analysis["amaliy_ahamiyat"],
+        tags=analysis["teglar"],
+        importance=analysis["ahamiyati"],
+        original_title=news["title"],
+        original_url=news["url"],
+        source_name=news["source"],
+        image_url=image_url,
+        category_id=category.id if category else None,
+        source_published_at=news["published_at"],
+        status=status,
+        published_at=datetime.utcnow() if status == "published" else None,
+    )
+
+
 def format_error(error: BaseException, limit: int = 300) -> str:
     """Xatoni bitta qatorga jamlaydi (JSON javobiga qo'yish uchun)."""
     text = redact_secrets(" ".join(f"{type(error).__name__}: {error}".split()))
@@ -141,12 +174,18 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
                 rejected_title = str(analysis.get("sarlavha") or "").strip() or "(sarlavha yo'q)"
                 print(f"   ✗ Quality gate rad etdi: {'; '.join(quality.errors)}")
                 print(f"     ↳ model sarlavhasi: {rejected_title[:100]}")
+                # Rad etilgan nomzod ham bazaga yoziladi. Aks holda dublikat
+                # filtri uni ko'rmaydi va u har siklda qayta tahlil qilinaveradi.
+                db.add(_build_article(
+                    db, analysis, news, categories,
+                    status="rejected",
+                    slug=_unique_slug(db, analysis["sarlavha"]),
+                    image_url=news["image_url"],
+                ))
+                db.commit()
                 continue
 
-            slug = slugify(analysis["sarlavha"])
-            if db.query(Article).filter(Article.slug == slug).first():
-                slug = f"{slug}-{saved + 1}"
-
+            slug = _unique_slug(db, analysis["sarlavha"])
             auto_publish = AUTO_PUBLISH and analysis["ahamiyati"] >= AUTO_PUBLISH_MIN_IMPORTANCE
 
             # Rasm zanjiri: RSS -> maqola sahifasidan og:image -> (ixtiyoriy) Gemini
@@ -156,23 +195,11 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
                 if image_url:
                     print("   ✓ Rasm generatsiya qilindi")
 
-            article = Article(
-                title=analysis["sarlavha"],
-                seo_title=analysis["seo_sarlavha"],
-                slug=slug,
-                summary=analysis["xulosa"],
-                content=analysis["maqola"],
-                practical_note=analysis["amaliy_ahamiyat"],
-                tags=analysis["teglar"],
-                importance=analysis["ahamiyati"],
-                original_title=news["title"],
-                original_url=news["url"],
-                source_name=news["source"],
-                image_url=image_url,
-                category_id=categories.get(analysis["kategoriya"], None) and categories[analysis["kategoriya"]].id,
-                source_published_at=news["published_at"],
+            article = _build_article(
+                db, analysis, news, categories,
                 status="published" if auto_publish else "pending",
-                published_at=datetime.utcnow() if auto_publish else None,
+                slug=slug,
+                image_url=image_url,
             )
             db.add(article)
             db.commit()
