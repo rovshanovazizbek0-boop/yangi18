@@ -1,5 +1,6 @@
 import asyncio
 import os
+import traceback
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,7 +18,7 @@ from .config import (
 )
 from .database import Base, SessionLocal, engine
 from .models import Article
-from .pipeline import run_pipeline
+from .pipeline import LAST_RUN, format_error, run_pipeline
 from .routers import admin, categories, news
 from .seed import seed_categories
 
@@ -26,6 +27,7 @@ PIPELINE_STATE = {
     "last_started_at": None,
     "last_completed_at": None,
     "last_error_at": None,
+    "last_error": None,
     "last_saved": None,
 }
 
@@ -45,6 +47,8 @@ async def pipeline_loop_task():
         except Exception as error:
             PIPELINE_STATE["status"] = "error"
             PIPELINE_STATE["last_error_at"] = datetime.now(timezone.utc).isoformat()
+            PIPELINE_STATE["last_error"] = format_error(error)
+            traceback.print_exc()
             print(f"Pipeline xatosi: {error}")
         await asyncio.sleep(int(os.getenv("PIPELINE_INTERVAL", "3600")))
 
@@ -115,7 +119,7 @@ def health():
             "status": "ok",
             "database": "ok",
             "latest_article_at": latest.created_at if latest else None,
-            "pipeline": PIPELINE_STATE,
+            "pipeline": {**PIPELINE_STATE, "last_run": LAST_RUN},
         }
     finally:
         db.close()

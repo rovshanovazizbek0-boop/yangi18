@@ -13,6 +13,7 @@ Muntazam ishlashi uchun cron'ga qo'ying, masalan har soatda:
 from datetime import datetime
 
 from .config import (
+    AI_PROVIDER,
     AUTO_PUBLISH,
     AUTO_PUBLISH_MIN_IMPORTANCE,
     AUTO_TELEGRAM,
@@ -30,19 +31,51 @@ from .services.quality import evaluate_candidate
 from .services.telegram import send_to_channel
 from .utils import slugify
 
+# Oxirgi ishga tushirish tafsilotlari — /health orqali ko'rinadi, shuning uchun
+# server loglariga kirmasdan ham nima yiqilganini bilish mumkin.
+LAST_RUN: dict = {
+    "provider": AI_PROVIDER,
+    "collected": None,
+    "saved": None,
+    "analysis_errors": None,
+    "quality_rejected": None,
+    "telegram_sent": None,
+    "last_analysis_error": None,
+    "last_telegram_error": None,
+}
+
+
+def format_error(error: BaseException, limit: int = 300) -> str:
+    """Xatoni bitta qatorga jamlaydi (JSON javobiga qo'yish uchun)."""
+    text = " ".join(f"{type(error).__name__}: {error}".split())
+    return text if len(text) <= limit else f"{text[: limit - 1]}…"
+
 
 def run_pipeline(per_feed: int = 5) -> int:
     Base.metadata.create_all(engine)
     db = SessionLocal()
     saved = 0
+    collected = 0
     analysis_errors = 0
     quality_rejected = 0
+    telegram_sent = 0
+    LAST_RUN.update({
+        "provider": AI_PROVIDER,
+        "collected": 0,
+        "saved": 0,
+        "analysis_errors": 0,
+        "quality_rejected": 0,
+        "telegram_sent": 0,
+        "last_analysis_error": None,
+        "last_telegram_error": None,
+    })
     try:
         seed_categories(db)
         categories = {c.slug: c for c in db.query(Category).all()}
 
         print("📡 Yangiliklar yig'ilmoqda...")
         fresh = collect_news(db, per_feed=per_feed)
+        collected = len(fresh)
         print(f"   {len(fresh)} ta yangi yangilik topildi.")
 
         for i, news in enumerate(fresh, 1):
@@ -56,6 +89,7 @@ def run_pipeline(per_feed: int = 5) -> int:
                 )
             except Exception as error:
                 analysis_errors += 1
+                LAST_RUN["last_analysis_error"] = format_error(error)
                 print(f"   ✗ Tahlil xatosi: {error}")
                 continue
 
@@ -116,8 +150,10 @@ def run_pipeline(per_feed: int = 5) -> int:
                     send_to_channel(article)
                     article.sent_to_telegram = True
                     db.commit()
+                    telegram_sent += 1
                     print("   ✓ Telegram kanalga yuborildi")
                 except Exception as error:
+                    LAST_RUN["last_telegram_error"] = format_error(error)
                     print(f"   ✗ Telegram xatosi: {error}")
 
         if fresh and saved == 0 and analysis_errors == len(fresh):
@@ -130,6 +166,14 @@ def run_pipeline(per_feed: int = 5) -> int:
         )
         return saved
     finally:
+        # Xato bilan tugasa ham hisoblagichlar /health uchun yangilanadi.
+        LAST_RUN.update({
+            "collected": collected,
+            "saved": saved,
+            "analysis_errors": analysis_errors,
+            "quality_rejected": quality_rejected,
+            "telegram_sent": telegram_sent,
+        })
         db.close()
 
 
