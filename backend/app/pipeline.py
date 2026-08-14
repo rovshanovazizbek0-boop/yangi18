@@ -27,7 +27,7 @@ from .config import (
 from .database import Base, SessionLocal, engine
 from .models import Article, Category
 from .seed import seed_categories
-from .services.ai_agent import analyze_news
+from .services.ai_agent import active_model, analyze_news
 from .services.collector import collect_news, fetch_og_image
 from .services.image_gen import generate_image
 from .services.quality import evaluate_candidate
@@ -38,6 +38,7 @@ from .utils import slugify
 # server loglariga kirmasdan ham nima yiqilganini bilish mumkin.
 LAST_RUN: dict = {
     "provider": AI_PROVIDER,
+    "model": active_model(),
     "collected": None,
     "saved": None,
     "analysis_errors": None,
@@ -131,6 +132,7 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
     telegram_skipped_old = 0
     LAST_RUN.update({
         "provider": AI_PROVIDER,
+        "model": active_model(),
         "collected": 0,
         "saved": 0,
         "analysis_errors": 0,
