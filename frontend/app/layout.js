@@ -42,7 +42,12 @@ export const metadata = {
     statusBarStyle: "black-translucent",
   },
   verification: {
-    google: "jXooaK9j5y0IH4ngJRPi--LR795mmAU5b_Qebo4QBjs",
+    // Har bir Search Console mulki/hisobi uchun alohida token — eskisini
+    // olib tashlamang, aks holda o'sha mulk tasdiqsiz qoladi.
+    google: [
+      "jXooaK9j5y0IH4ngJRPi--LR795mmAU5b_Qebo4QBjs",
+      "mCSw8SxCBwqH-MU2iaUcjd3PlBTqjv9MLuWjJpvcHWg",
+    ],
   },
 };
 
