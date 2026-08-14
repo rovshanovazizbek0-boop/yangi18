@@ -4,6 +4,7 @@ RSS 2.0 va Atom formatlarini stdlib (xml.etree) bilan o'qiydi —
 tashqi parser kutubxonalariga bog'liq emas.
 """
 
+import html
 import re
 from datetime import datetime
 from email.utils import parsedate_to_datetime
@@ -48,16 +49,24 @@ def _parse_date(value: str | None) -> datetime | None:
         return None
 
 
+def _clean_url(value: str | None) -> str | None:
+    """RSS ichidagi HTML entity'larni ochadi: `?a=1&#038;b=2` -> `?a=1&b=2`.
+    Aks holda bunday URL Telegram va boshqa mijozlarda buzuq bo'ladi."""
+    if not value:
+        return None
+    return html.unescape(value).strip() or None
+
+
 def _first_image(item: ElementTree.Element, html_text: str) -> str | None:
     for tag in (f"{MEDIA}content", f"{MEDIA}thumbnail"):
         el = item.find(tag)
         if el is not None and el.get("url"):
-            return el.get("url")
+            return _clean_url(el.get("url"))
     enclosure = item.find("enclosure")
     if enclosure is not None and str(enclosure.get("type", "")).startswith("image"):
-        return enclosure.get("url")
+        return _clean_url(enclosure.get("url"))
     match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', html_text or "")
-    return match.group(1) if match else None
+    return _clean_url(match.group(1)) if match else None
 
 
 def _parse_feed(xml_text: str) -> list[dict]:
@@ -72,7 +81,7 @@ def _parse_feed(xml_text: str) -> list[dict]:
         )
         entries.append({
             "title": (item.findtext("title") or "").strip(),
-            "url": (item.findtext("link") or "").strip(),
+            "url": _clean_url(item.findtext("link")) or "",
             "summary": _strip_html(raw_html),
             "published": _parse_date(item.findtext("pubDate")),
             "image": _first_image(item, raw_html),
@@ -88,7 +97,7 @@ def _parse_feed(xml_text: str) -> list[dict]:
         raw_html = entry.findtext(f"{ATOM}content") or entry.findtext(f"{ATOM}summary") or ""
         entries.append({
             "title": (entry.findtext(f"{ATOM}title") or "").strip(),
-            "url": link.strip(),
+            "url": _clean_url(link) or "",
             "summary": _strip_html(raw_html),
             "published": _parse_date(
                 entry.findtext(f"{ATOM}published") or entry.findtext(f"{ATOM}updated")
@@ -110,13 +119,15 @@ def fetch_og_image(url: str) -> str | None:
     (RSS'da rasm bo'lmaganda zaxira usul)."""
     try:
         with httpx.Client(timeout=15, follow_redirects=True, headers=HEADERS) as client:
-            html = client.get(url).text[:200_000]
+            page = client.get(url).text[:200_000]
     except Exception:
         return None
     for pattern in _OG_PATTERNS:
-        match = re.search(pattern, html, re.IGNORECASE)
-        if match and match.group(1).startswith("http"):
-            return match.group(1)
+        match = re.search(pattern, page, re.IGNORECASE)
+        if match:
+            image_url = _clean_url(match.group(1))
+            if image_url and image_url.startswith("http"):
+                return image_url
     return None
 
 
