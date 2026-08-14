@@ -1,0 +1,57 @@
+# Render bepul tarifda trafik bo'lmasa konteynerni to'xtatadi va u bilan birga
+# yangilik yig'uvchi sikl ham to'xtaydi. Bu workflow backend'ni uyg'oq tutadi
+# hamda pipeline holatini har ishga tushganda qayd etib boradi.
+name: Backendni uygoq tutish
+
+on:
+  schedule:
+    # Har 5 daqiqada. GitHub jadvalni kechiktirishi mumkin, shuning uchun
+    # Render'ning ~15 daqiqalik uyqu chegarasiga nisbatan zaxira olingan.
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: keep-awake
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: /health ni chaqirish
+        env:
+          URL: https://yangi18.onrender.com/health
+        run: |
+          set -euo pipefail
+
+          code=$(curl -sS -o health.json -w '%{http_code}' --max-time 120 "$URL" || echo "000")
+          echo "HTTP $code"
+
+          if [ "$code" != "200" ]; then
+            echo "::error::Backend javob bermadi (HTTP $code)"
+            cat health.json 2>/dev/null || true
+            exit 1
+          fi
+
+          status=$(jq -r '.pipeline.status // "-"' health.json)
+          started=$(jq -r '.pipeline.last_started_at // "-"' health.json)
+          saved=$(jq -r '.pipeline.last_run.saved // "-"' health.json)
+          sent=$(jq -r '.pipeline.last_run.telegram_sent // "-"' health.json)
+          error=$(jq -r '.pipeline.last_error // "-"' health.json)
+
+          {
+            echo "### Backend uygoq"
+            echo ""
+            echo "| Maydon | Qiymat |"
+            echo "| --- | --- |"
+            echo "| pipeline | \`$status\` |"
+            echo "| oxirgi sikl | \`$started\` |"
+            echo "| saqlangan | \`$saved\` |"
+            echo "| telegramga ketgan | \`$sent\` |"
+            echo "| oxirgi xato | \`$error\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$status" = "error" ]; then
+            echo "::warning::Pipeline xato holatida: $error"
+          fi
