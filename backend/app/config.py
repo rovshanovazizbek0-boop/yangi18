@@ -70,6 +70,11 @@ AUTO_PUBLISH_MIN_IMPORTANCE = int(os.getenv("AUTO_PUBLISH_MIN_IMPORTANCE", "1"))
 # Muhim yangiliklarni Telegram kanalga avtomatik yuborish
 AUTO_TELEGRAM = _bool("AUTO_TELEGRAM", "true")
 AUTO_TELEGRAM_MIN_IMPORTANCE = int(os.getenv("AUTO_TELEGRAM_MIN_IMPORTANCE", "4"))
+# Kanalga faqat yangi material ketsin: manba shundan oldin chiqargan maqola
+# saytga chiqaveradi (arxiv va SEO uchun foydali), lekin kanalga yuborilmaydi.
+# Yangi manba qo'shilganda uning arxivi kanalga to'kilib ketmasligi uchun ham
+# kerak. 0 qilinsa cheklov o'chadi.
+AUTO_TELEGRAM_MAX_AGE_HOURS = int(os.getenv("AUTO_TELEGRAM_MAX_AGE_HOURS", "48"))
 
 # Rasm topilmaganda Gemini bilan generatsiya qilish (pullik — standart o'chiq)
 IMAGE_GENERATION = _bool("IMAGE_GENERATION", "false")

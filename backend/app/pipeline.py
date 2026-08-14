@@ -11,13 +11,14 @@ Muntazam ishlashi uchun cron'ga qo'ying, masalan har soatda:
 """
 
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .config import (
     AI_PROVIDER,
     AUTO_PUBLISH,
     AUTO_PUBLISH_MIN_IMPORTANCE,
     AUTO_TELEGRAM,
+    AUTO_TELEGRAM_MAX_AGE_HOURS,
     AUTO_TELEGRAM_MIN_IMPORTANCE,
     IMAGE_GENERATION,
     PIPELINE_PER_FEED,
@@ -42,6 +43,7 @@ LAST_RUN: dict = {
     "analysis_errors": None,
     "quality_rejected": None,
     "telegram_sent": None,
+    "telegram_skipped_old": None,
     "last_analysis_error": None,
     "last_telegram_error": None,
 }
@@ -68,6 +70,17 @@ def redact_secrets(text: str) -> str:
     return text
 
 
+def is_fresh_for_channel(published_at: datetime | None) -> bool:
+    """Manba maqolani yaqinda chiqarganmi.
+
+    Sana noma'lum bo'lsa yuboraveramiz — ba'zi manbalar sana bermaydi va
+    haqiqiy yangilikni shu sababdan yo'qotib qo'yish yomonroq.
+    """
+    if AUTO_TELEGRAM_MAX_AGE_HOURS <= 0 or published_at is None:
+        return True
+    return datetime.utcnow() - published_at <= timedelta(hours=AUTO_TELEGRAM_MAX_AGE_HOURS)
+
+
 def format_error(error: BaseException, limit: int = 300) -> str:
     """Xatoni bitta qatorga jamlaydi (JSON javobiga qo'yish uchun)."""
     text = redact_secrets(" ".join(f"{type(error).__name__}: {error}".split()))
@@ -82,6 +95,7 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
     analysis_errors = 0
     quality_rejected = 0
     telegram_sent = 0
+    telegram_skipped_old = 0
     LAST_RUN.update({
         "provider": AI_PROVIDER,
         "collected": 0,
@@ -89,6 +103,7 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
         "analysis_errors": 0,
         "quality_rejected": 0,
         "telegram_sent": 0,
+        "telegram_skipped_old": 0,
         "last_analysis_error": None,
         "last_telegram_error": None,
     })
@@ -166,22 +181,27 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
             if auto_publish:
                 print("   ✓ Saytga chiqarildi")
 
-            # Muhim yangiliklarni Telegram kanalga avtomatik yuborish
+            # Muhim va yangi yangiliklarni Telegram kanalga avtomatik yuborish
             if (
                 auto_publish
                 and AUTO_TELEGRAM
                 and TELEGRAM_BOT_TOKEN
                 and analysis["ahamiyati"] >= AUTO_TELEGRAM_MIN_IMPORTANCE
             ):
-                try:
-                    send_to_channel(article)
-                    article.sent_to_telegram = True
-                    db.commit()
-                    telegram_sent += 1
-                    print("   ✓ Telegram kanalga yuborildi")
-                except Exception as error:
-                    LAST_RUN["last_telegram_error"] = format_error(error)
-                    print(f"   ✗ Telegram xatosi: {error}")
+                if not is_fresh_for_channel(news["published_at"]):
+                    telegram_skipped_old += 1
+                    age = datetime.utcnow() - news["published_at"]
+                    print(f"   ↷ Telegram: manba {age.days} kun oldin chiqargan — yuborilmadi")
+                else:
+                    try:
+                        send_to_channel(article)
+                        article.sent_to_telegram = True
+                        db.commit()
+                        telegram_sent += 1
+                        print("   ✓ Telegram kanalga yuborildi")
+                    except Exception as error:
+                        LAST_RUN["last_telegram_error"] = format_error(error)
+                        print(f"   ✗ Telegram xatosi: {error}")
 
         if fresh and saved == 0 and analysis_errors == len(fresh):
             raise RuntimeError("Barcha yangi yangiliklar AI tahlilida xatoga uchradi")
@@ -200,6 +220,7 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
             "analysis_errors": analysis_errors,
             "quality_rejected": quality_rejected,
             "telegram_sent": telegram_sent,
+            "telegram_skipped_old": telegram_skipped_old,
         })
         db.close()
 
