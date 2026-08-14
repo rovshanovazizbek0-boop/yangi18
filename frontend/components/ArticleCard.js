@@ -1,11 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
+import { formatDate } from "../lib/date";
 
 export default function ArticleCard({ article, compact = false, priority = false }) {
   const stars = "⭐".repeat(Math.max(1, Math.min(5, article.importance)));
-  const date = article.published_at
-    ? new Date(article.published_at).toLocaleDateString("uz-UZ")
-    : "";
+  const date = formatDate(article.published_at);
 
   if (compact) {
     return (

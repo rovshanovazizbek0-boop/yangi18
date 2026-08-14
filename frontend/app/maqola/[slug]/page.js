@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import AdPlaceholder from "../../../components/AdPlaceholder";
 import { apiGet } from "../../../lib/api";
+import { formatDateTime } from "../../../lib/date";
 import { SITE_URL, SITE_NAME } from "../../../lib/site";
 
 const getArticle = cache((slug) => apiGet(`/api/news/${slug}`));
@@ -75,9 +76,7 @@ export default async function ArticlePage({ params }) {
   if (!article) notFound();
 
   const stars = "⭐".repeat(Math.max(1, Math.min(5, article.importance)));
-  const date = article.published_at
-    ? new Date(article.published_at).toLocaleString("uz-UZ")
-    : "";
+  const date = formatDateTime(article.published_at);
   const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(`${SITE_URL}/maqola/${article.slug}`)}&text=${encodeURIComponent(article.title)}`;
 
   return (
