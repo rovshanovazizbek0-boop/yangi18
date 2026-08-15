@@ -31,12 +31,22 @@ SYSTEM_PROMPT = """**Rol:** Sen sun'iy intellekt bo'yicha yetakchi o'zbek tahlil
 0. **Faktlarga sodiqlik — eng muhim qoida:** Faqat berilgan sarlavha va matndagi ma'lumotlardan foydalan. Yetishmaydigan tafsilotni taxmin qilma, raqam yoki iqtibos to'qima. Bu qoida quyidagi hajm talablaridan ustun turadi: manbada ma'lumot yetarli bo'lmasa, to'ldirish uchun to'qima — qisqaroq yozganing ma'qul.
 1. **Xulosa:** "xulosa" maydonida 4-6 jumlada, taxminan 400-700 belgi hajmida xulosa qil.
 2. **To'liq maqola:** "maqola" maydonida yangilikni o'zbek tilida jurnalistik uslubda **kamida 5, ko'pi bilan 7 paragrafda** yorit; umumiy hajmi **2500 belgidan kam bo'lmasin** (manba imkon bergan darajada). Paragraflarni bo'sh qator bilan ajrat. Har paragraf yangi ma'lumot bersin — oldingi jumlani boshqa so'zlar bilan takrorlama.
-3. **Baholash:** "ahamiyati" maydonida 1 dan 5 gacha butun son ber. Shkalaga qat'iy amal qil:
-   - 5 — sohani o'zgartiradigan voqea: yirik model relizi, katta sotib olish, tarmoqqa ta'sir qiluvchi qaror
-   - 4 — yetakchi kompaniyaning muhim mahsuloti, jiddiy investitsiya yoki e'tiborli tadqiqot natijasi
-   - 3 — qiziqarli, lekin tor doiradagi yangilik
-   - 2 — kichik yangilanish yoki ikkilamchi tafsilot
-   - 1 — ahamiyatsiz xabar
+3. **Baholash:** Avval "baho_sababi" maydonida bir jumlada yangilik qaysi daraja ta'rifiga
+   mos kelishini ayt, so'ng "ahamiyati" maydonida 1 dan 5 gacha butun son ber.
+   Shkala mutlaq: yangilikni o'z ichida emas, bir yillik AI yangiliklari oqimi bilan solishtir.
+   - 5 — yilda bir necha marta bo'ladigan voqea: yetakchi modelning yangi avlodi,
+     milliardlik sotib olish, butun tarmoqni o'zgartiradigan qaror yoki qonun
+   - 4 — oyning eng muhim voqealaridan biri: yirik kompaniyaning yangi mahsuloti,
+     e'tiborli tadqiqot natijasi, katta investitsiya yoki tarmoq miqyosidagi bahs
+   - 3 — haftaning odatiy, lekin e'tiborga loyiq xabari: sezilarli yangi funksiya,
+     muhim sud qarori, bozorga ta'sir qiluvchi qadam
+   - 2 — kundalik oqim: kichik funksiya yoki yangilanish, narx o'zgarishi, hamkorlik
+     e'loni, so'rovnoma natijasi, mish-mish, raqobatchining javobi
+   - 1 — ahamiyatsiz: qo'llanma va hujjatlar, marketing materiali, fikr-mulohaza
+     maqolasi, shaxsiy voqea yoki hazil, oldingi xabarning davomi
+   Kunlik oqimning ko'pchiligi 1-3 darajaga tushadi — bu normal. 4 ni faqat yangilik
+   haqiqatan o'sha oyning eng muhim voqealaridan biri bo'lsa qo'y, 5 ni esa deyarli
+   hech qachon. Ikki daraja orasida ikkilansang, doim pastrog'ini tanla.
 4. **Amaliy ahamiyat:** "amaliy_ahamiyat" maydonida ushbu yangilik dasturchilar yoki biznes egalari uchun qanday foyda yoki o'zgarish olib kelishini 1-2 jumlada tushuntir.
 5. **SEO:** "seo_sarlavha" maydonida qidiruv tizimlari uchun optimallashtirilgan, kalit so'zlarga boy o'zbekcha sarlavha yoz (60-70 belgi atrofida).
 6. **Teglar:** "teglar" maydonida 3-6 ta qisqa o'zbekcha teg ber.
@@ -49,6 +59,10 @@ CATEGORY_SLUGS = [
 ]
 
 # Kategoriya sluglari seed.py bilan mos bo'lishi shart.
+# Maydonlar tartibi muhim: model ularni shu ketma-ketlikda yozadi, shuning
+# uchun "ahamiyati" oxirida turadi — baho maqola yozib bo'lingandan keyin,
+# undan oldingi "baho_sababi" bilan asoslanib qo'yiladi. "baho_sababi"
+# saqlanmaydi; u faqat modelni raqamdan oldin o'ylashga majburlaydi.
 ANALYSIS_SCHEMA = {
     "type": "object",
     "properties": {
@@ -59,14 +73,27 @@ ANALYSIS_SCHEMA = {
         "maqola": {"type": "string"},
         "amaliy_ahamiyat": {"type": "string"},
         "teglar": {"type": "array", "items": {"type": "string"}},
+        "baho_sababi": {"type": "string"},
         "ahamiyati": {"type": "integer"},
     },
     "required": [
-        "kategoriya", "sarlavha", "seo_sarlavha", "xulosa",
-        "maqola", "amaliy_ahamiyat", "teglar", "ahamiyati",
+        "kategoriya", "sarlavha", "seo_sarlavha", "xulosa", "maqola",
+        "amaliy_ahamiyat", "teglar", "baho_sababi", "ahamiyati",
     ],
     "additionalProperties": False,
 }
+
+
+def _google_schema() -> dict:
+    """Gemini va Vertex uchun schema.
+
+    `propertyOrdering` bo'lmasa Google modellari maydonlarni o'z bilganicha
+    (ko'pincha alifbo tartibida) yozadi — unda "ahamiyati" eng birinchi
+    chiqadi va baho maqola yozilishidan oldin qo'yiladi.
+    """
+    schema = {k: v for k, v in ANALYSIS_SCHEMA.items() if k != "additionalProperties"}
+    schema["propertyOrdering"] = list(ANALYSIS_SCHEMA["properties"])
+    return schema
 
 
 def _validate(analysis: dict) -> dict:
@@ -86,7 +113,7 @@ def _analyze_with_gemini(user_text: str) -> dict:
         raise RuntimeError("GEMINI_API_KEY sozlanmagan")
 
     # Gemini responseSchema OpenAPI kichik to'plami — additionalProperties kerak emas
-    schema = {k: v for k, v in ANALYSIS_SCHEMA.items() if k != "additionalProperties"}
+    schema = _google_schema()
 
     url = (
         "https://generativelanguage.googleapis.com/v1beta/models/"
@@ -142,7 +169,7 @@ def _analyze_with_vertex(user_text: str) -> dict:
     if not _vertex_credentials.valid:
         _vertex_credentials.refresh(Request())
 
-    schema = {k: v for k, v in ANALYSIS_SCHEMA.items() if k != "additionalProperties"}
+    schema = _google_schema()
     url = (
         "https://aiplatform.googleapis.com/v1/projects/"
         f"{_vertex_project}/locations/{GOOGLE_CLOUD_LOCATION}/publishers/google/models/"

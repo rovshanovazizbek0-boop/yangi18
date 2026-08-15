@@ -64,10 +64,11 @@ PIPELINE_PER_FEED = int(os.getenv("PIPELINE_PER_FEED", "12"))
 # Avto-chop etish ixtiyoriy. Xavfsiz standartda maqolalar admin tasdig'ini kutadi.
 # Faqat editorial jarayon tayyor bo'lsa AUTO_PUBLISH=true qiling.
 AUTO_PUBLISH = _bool("AUTO_PUBLISH", "false")
-# Shu bahodan pastlari pending'da qoladi va admin tasdig'ini kutadi. 1 qilinsa
-# quality gate'dan o'tgan hamma narsa, jumladan model o'zi "ahamiyatsiz xabar"
-# deb baholagan maqolalar ham saytga chiqadi — kunlik oqim shundan shishadi.
-AUTO_PUBLISH_MIN_IMPORTANCE = int(os.getenv("AUTO_PUBLISH_MIN_IMPORTANCE", "3"))
+# Shu bahodan pastlari pending'da qoladi va admin tasdig'ini kutadi.
+# Kalibrlangan shkalada (ai_agent.SYSTEM_PROMPT) 1 — qo'llanma, marketing va
+# fikr-mulohaza materiallari; 2 dan boshlab haqiqiy yangilik. Shkala
+# o'zgartirilsa bu qiymatni ham qayta o'lchash kerak.
+AUTO_PUBLISH_MIN_IMPORTANCE = int(os.getenv("AUTO_PUBLISH_MIN_IMPORTANCE", "2"))
 
 # Muhim yangiliklarni Telegram kanalga avtomatik yuborish
 AUTO_TELEGRAM = _bool("AUTO_TELEGRAM", "true")

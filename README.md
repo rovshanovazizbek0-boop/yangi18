@@ -38,7 +38,8 @@ Har bir inglizcha yangilik uchun AI model (standart: **Gemini `gemini-3.5-flash-
 - `maqola` — to'liq o'zbekcha maqola (3-6 paragraf)
 - `amaliy_ahamiyat` — "Bu nima degani?" (dasturchilar/biznes uchun)
 - `teglar` — 3-6 ta teg
-- `ahamiyati` — 1-5 baho
+- `baho_sababi` — baho izohi (saqlanmaydi; modelni raqamdan oldin o'ylashga majburlaydi)
+- `ahamiyati` — 1-5 baho: 1 qo'llanma/marketing · 2 kundalik oqim · 3 haftaning xabari · 4 oyning voqeasi · 5 yilda bir necha marta
 
 Standart `AUTO_PUBLISH=false`: maqolalar quality gate'dan o'tgach `pending`
 holatida saqlanadi va **admin tahriri/tasdig'idan keyin** saytga chiqadi.
@@ -159,7 +160,7 @@ Sozlamalar (`.env`):
 | O'zgaruvchi | Standart | Tavsif |
 |---|---|---|
 | `AUTO_PUBLISH` | `false` | `true` — tekshiruvdan o'tgan maqolalarni avtomatik chiqaradi |
-| `AUTO_PUBLISH_MIN_IMPORTANCE` | `3` | Shu bahodan pastlari `pending`da qoladi |
+| `AUTO_PUBLISH_MIN_IMPORTANCE` | `2` | Shu bahodan pastlari `pending`da qoladi (1 — qo'llanma, marketing) |
 | `AUTO_TELEGRAM` | `true` | Muhim yangiliklarni kanalga avto-yuborish |
 | `AUTO_TELEGRAM_MIN_IMPORTANCE` | `4` | Kanalga yuborish uchun minimal baho |
 
