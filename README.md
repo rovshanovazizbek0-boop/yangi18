@@ -159,7 +159,7 @@ Sozlamalar (`.env`):
 | O'zgaruvchi | Standart | Tavsif |
 |---|---|---|
 | `AUTO_PUBLISH` | `false` | `true` — tekshiruvdan o'tgan maqolalarni avtomatik chiqaradi |
-| `AUTO_PUBLISH_MIN_IMPORTANCE` | `1` | Shu bahodan pastlari `pending`da qoladi |
+| `AUTO_PUBLISH_MIN_IMPORTANCE` | `3` | Shu bahodan pastlari `pending`da qoladi |
 | `AUTO_TELEGRAM` | `true` | Muhim yangiliklarni kanalga avto-yuborish |
 | `AUTO_TELEGRAM_MIN_IMPORTANCE` | `4` | Kanalga yuborish uchun minimal baho |
 

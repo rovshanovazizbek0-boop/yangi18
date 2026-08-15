@@ -21,6 +21,7 @@ from ..config import (
     GOOGLE_CLOUD_PROJECT,
     VERTEX_GEMINI_MODEL,
 )
+from ..tags import normalize_tags
 
 SYSTEM_PROMPT = """**Rol:** Sen sun'iy intellekt bo'yicha yetakchi o'zbek tahlilchisi va jurnalistisan.
 
@@ -73,7 +74,9 @@ def _validate(analysis: dict) -> dict:
     analysis["ahamiyati"] = max(1, min(5, int(analysis.get("ahamiyati", 3))))
     if analysis.get("kategoriya") not in CATEGORY_SLUGS:
         analysis["kategoriya"] = "startuplar"
-    analysis["teglar"] = [str(t) for t in (analysis.get("teglar") or [])][:6]
+    # Teglar sayt bo'ylab yagona yozuvga keltiriladi, aks holda "Gemini" va
+    # "gemini" alohida mavzu bo'lib ko'rinadi.
+    analysis["teglar"] = normalize_tags(analysis.get("teglar"))
     return analysis
 
 

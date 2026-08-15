@@ -1,6 +1,6 @@
 """Ommaviy yangiliklar API — faqat chop etilgan maqolalar."""
 
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import Article, Category
 from ..schemas import ArticleOut
+from ..tags import canonical_tag, tag_key
 
 router = APIRouter(prefix="/api/news", tags=["news"])
 
@@ -64,11 +65,33 @@ def daily_digest(db: Session = Depends(get_db)):
 
 @router.get("/trends")
 def trend_topics(db: Session = Depends(get_db), kunlar: int = 7, limit: int = 15):
-    """Trend mavzular — so'nggi kunlardagi eng ko'p uchragan teglar."""
+    """Trend mavzular — so'nggi kunlardagi eng ko'p uchragan teglar.
+
+    Teglar kaliti bo'yicha guruhlanadi, shuning uchun eski maqolalarda qolgan
+    "gemini" yozuvi "Gemini" bilan bitta mavzu bo'lib sanaladi. Ro'yxatda
+    guruhning eng ko'p uchragan kanonik yozuvi ko'rsatiladi.
+    """
     since = datetime.utcnow() - timedelta(days=kunlar)
     articles = published(db).filter(Article.published_at >= since).all()
-    counter = Counter(tag for a in articles for tag in (a.tags or []))
-    return [{"teg": tag, "soni": count} for tag, count in counter.most_common(limit)]
+
+    totals: Counter = Counter()
+    spellings: dict[str, Counter] = defaultdict(Counter)
+    for article in articles:
+        for tag in article.tags or []:
+            # Kalit kanonik yozuvdan olinadi: "AI", "sun'iy intellekt" va
+            # "Artificial Intelligence" turli kalit bersa ham, kanonik yozuvi
+            # bitta — guruhlash o'sha yerda birlashadi.
+            canonical = canonical_tag(tag)
+            if not canonical:
+                continue
+            key = tag_key(canonical)
+            totals[key] += 1
+            spellings[key][canonical] += 1
+
+    return [
+        {"teg": spellings[key].most_common(1)[0][0], "soni": count}
+        for key, count in totals.most_common(limit)
+    ]
 
 
 @router.get("/search", response_model=list[ArticleOut])

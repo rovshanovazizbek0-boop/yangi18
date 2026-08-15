@@ -10,7 +10,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from .bot.bot import main as run_bot
+from .backfill import backfill_tags
 from .config import (
+    AUTO_PUBLISH,
+    AUTO_PUBLISH_MIN_IMPORTANCE,
     FRONTEND_ORIGIN,
     MEDIA_DIR,
     PIPELINE_INTERVAL,
@@ -70,6 +73,9 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         seed_categories(db)
+        renamed = backfill_tags(db)
+        if renamed:
+            print(f"Teglar kanonik ko'rinishga keltirildi: {renamed} ta maqola.")
     finally:
         db.close()
 
@@ -121,7 +127,14 @@ def health():
             "status": "ok",
             "database": "ok",
             "latest_article_at": latest.created_at if latest else None,
-            "pipeline": {**PIPELINE_STATE, "last_run": LAST_RUN},
+            # Chop etish bo'sag'asi ham shu yerda: Render'dagi environment kod
+            # standartini bekor qilsa, buni taxmin qilib emas, ko'rib bilamiz.
+            "pipeline": {
+                **PIPELINE_STATE,
+                "auto_publish": AUTO_PUBLISH,
+                "auto_publish_min_importance": AUTO_PUBLISH_MIN_IMPORTANCE,
+                "last_run": LAST_RUN,
+            },
         }
     finally:
         db.close()
