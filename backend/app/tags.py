@@ -74,14 +74,20 @@ def _clean(tag: str) -> str:
 
 
 def _stable_case(tag: str) -> str:
-    """Notanish teg uchun barqaror yozuv: birinchi harf katta, qolgan so'zlar
-    kichik. Akronim va model nomlari ("GPT-5", "OpenAI") o'zgarishsiz qoladi."""
-    words = []
-    for word in tag.split(" "):
-        looks_like_name = any(c.isdigit() for c in word) or any(c.isupper() for c in word[1:])
-        words.append(word if looks_like_name else word.lower())
-    result = " ".join(words)
-    return result[:1].upper() + result[1:]
+    """Notanish teg uchun yozuv.
+
+    Modelning katta harflari saqlanadi: teglar orasida atoqli otlar ko'p
+    ("Sam Altman", "GPT-5", "OpenAI") va ularni kichik harfga tushirish nomni
+    buzadi. Faqat butunlay kichik harfda kelgan teg bosh harfi bilan
+    kattalashtiriladi.
+
+    Bir tushunchaning ikki yozuvi ("Video generatsiya" va "Video Generatsiya")
+    qolishi mumkin — ular `tag_key` bo'yicha baribir bitta guruhga tushadi,
+    takrorlanadigan muhim nomlar esa `_ALIAS_GROUPS` da belgilangan.
+    """
+    if any(character.isupper() for character in tag):
+        return tag
+    return tag[:1].upper() + tag[1:]
 
 
 def canonical_tag(tag: str) -> str:

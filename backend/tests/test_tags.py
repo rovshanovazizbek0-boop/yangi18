@@ -21,14 +21,21 @@ class CanonicalTagTests(unittest.TestCase):
         self.assertEqual(canonical_tag("artificial intelligence"), "Sun'iy intellekt")
         self.assertEqual(canonical_tag("Sun'iy Intellekt"), "Sun'iy intellekt")
 
-    def test_unknown_tag_keeps_a_stable_spelling(self):
+    def test_lowercase_tag_gets_a_capital(self):
         self.assertEqual(canonical_tag("video generatsiya"), "Video generatsiya")
-        self.assertEqual(canonical_tag("Video Generatsiya"), "Video generatsiya")
 
-    def test_model_names_and_acronyms_survive(self):
+    def test_names_keep_their_spelling(self):
+        self.assertEqual(canonical_tag("Sam Altman"), "Sam Altman")
         self.assertEqual(canonical_tag("GPT-5 narxi"), "GPT-5 narxi")
         self.assertEqual(canonical_tag("OpenAI"), "OpenAI")
         self.assertEqual(canonical_tag("xAI"), "xAI")
+
+    def test_variant_spellings_still_group_together(self):
+        """Yozuvi saqlansa ham, kalit bo'yicha bitta mavzu bo'lib qoladi."""
+        self.assertEqual(
+            tag_key(canonical_tag("Video Generatsiya")),
+            tag_key(canonical_tag("video generatsiya")),
+        )
 
     def test_hash_prefix_and_spacing_are_cleaned(self):
         self.assertEqual(canonical_tag("  #anthropic  "), "Anthropic")
