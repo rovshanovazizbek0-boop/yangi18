@@ -24,8 +24,8 @@ from .config import (
 from .database import Base, SessionLocal, engine
 from .models import Article
 from .pipeline import LAST_RUN, format_error, run_pipeline
-from .routers import admin, categories, news
-from .seed import seed_categories
+from .routers import admin, categories, news, tools
+from .seed import seed_categories, seed_tools
 
 PIPELINE_STATE = {
     "status": "not_started",
@@ -73,6 +73,9 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         seed_categories(db)
+        seeded_tools = seed_tools(db)
+        if seeded_tools:
+            print(f"Vositalar katalogi yangilandi: {seeded_tools} ta vosita.")
         renamed = backfill_tags(db)
         if renamed:
             print(f"Teglar kanonik ko'rinishga keltirildi: {renamed} ta maqola.")
@@ -107,6 +110,7 @@ app.add_middleware(
 
 app.include_router(news.router)
 app.include_router(categories.router)
+app.include_router(tools.router)
 app.include_router(admin.router)
 
 Path(MEDIA_DIR).mkdir(parents=True, exist_ok=True)

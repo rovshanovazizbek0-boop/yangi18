@@ -71,6 +71,30 @@ class ArticleUpdate(BaseModel):
         return cleaned[:6]
 
 
+class ToolSummaryOut(BaseModel):
+    """Katalog ro'yxati uchun — og'ir matnlarsiz."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    slug: str
+    name: str
+    vendor: str
+    tagline: str
+    tool_category: str
+    free_tier: bool | None
+    uz: dict
+    logo_url: str | None
+    checked_at: datetime | None
+
+
+class ToolOut(ToolSummaryOut):
+    description: str
+    plans: list
+    alternatives: list
+    official_url: str
+    news_category_slug: str | None
+
+
 class StatsOut(BaseModel):
     jami: int
     kutilmoqda: int

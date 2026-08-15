@@ -16,6 +16,12 @@ export default async function Header() {
             </span>
           </Link>
           <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
+            <Link
+              href="/vositalar"
+              className="flex items-center gap-1.5 text-sm text-slate-300 transition-colors hover:text-blue-400"
+            >
+              🧰 AI vositalari
+            </Link>
             <a
               href="https://t.me/aixabarlari"
               target="_blank"

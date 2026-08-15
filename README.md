@@ -44,6 +44,34 @@ Har bir inglizcha yangilik uchun AI model (standart: **Gemini `gemini-3.5-flash-
 Standart `AUTO_PUBLISH=false`: maqolalar quality gate'dan o'tgach `pending`
 holatida saqlanadi va **admin tahriri/tasdig'idan keyin** saytga chiqadi.
 
+## 🧰 AI vositalari katalogi
+
+`/vositalar` — yangiliklardan farqli, sekin eskiradigan va qidiruvda uzoq
+yashaydigan bo'lim. Ma'lumot **AI tomonidan yozilmaydi**: model "Uzcard
+ishlaydimi" degan savolga javob bilmaydi va to'qib qo'yadi.
+
+Yagona manba — [`backend/app/tools_seed.json`](backend/app/tools_seed.json).
+Ish tartibi: faylni tahrirlash → deploy → sayt yangilanadi (katalog har
+ishga tushishda shu fayldan o'qiladi).
+
+| Maydon | Nima yoziladi |
+|---|---|
+| `uz.vpn_kerakmi` | `true` / `false` / `null` (tekshirilmagan) |
+| `uz.tolov` | Qaysi karta o'tadi, qaysi biri yo'q |
+| `uz.tolov_yollari` | Amaliy yo'llar ro'yxati |
+| `uz.ozbek_tili` | `{"baho": 1-5, "izoh": "..."}` — o'z sinovingiz |
+| `uz.narx_somda` | Taxminiy so'mdagi narx |
+| `plans` | `[{"nom": "Plus", "narx_usd": 20, "davr": "oy"}]` |
+| `tekshirilgan` | `"2026-08-15"` — sahifada ko'rinadi |
+| `chop_etilgan` | `true` bo'lgandagina sayt va sitemap'ga chiqadi |
+
+Yangi vosita **qoralama** bo'lib qo'shiladi. Ma'lumot to'ldirilmagan sahifa
+qidiruvga chiqmasligi kerak, shuning uchun `chop_etilgan` ni faqat
+`uz` maydonlari va `tekshirilgan` sanasi to'ldirilgach `true` qiling.
+
+⚠️ Tekshirilmagan qiymatni `null` qoldiring. Sahifa uni "Hali tekshirilmagan"
+deb ochiq ko'rsatadi — noto'g'ri ma'lumot yozgandan ko'ra shu yaxshi.
+
 ---
 
 ## ⚡ Eng oson yo'l: Docker Compose (tavsiya etiladi)

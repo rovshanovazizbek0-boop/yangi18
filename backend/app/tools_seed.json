@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "chatgpt",
+    "name": "ChatGPT",
+    "vendor": "OpenAI",
+    "tagline": "Savolga javob beradi, matn yozadi, hujjat va rasmni tahlil qiladi",
+    "description": "ChatGPT — OpenAI ishlab chiqqan suhbat shaklidagi sun'iy intellekt xizmati. Unga oddiy tilda savol berasiz yoki topshiriq yozasiz, u esa matn bilan javob qaytaradi: xat yozadi, matnni qisqartiradi, tarjima qiladi, kod yozadi va yuklangan fayl yoki rasm mazmunini tushuntiradi.\n\nXizmat brauzerda ham, telefon ilovasida ham ishlaydi. Bepul reja mavjud, lekin eng kuchli modellar va yuqori limitlar pullik obunada ochiladi.",
+    "tool_category": "matn",
+    "free_tier": null,
+    "plans": [],
+    "uz": {
+      "vpn_kerakmi": null,
+      "tolov": null,
+      "tolov_yollari": [],
+      "ozbek_tili": null,
+      "narx_somda": null
+    },
+    "alternatives": [
+      "claude",
+      "gemini",
+      "deepseek"
+    ],
+    "official_url": "https://chatgpt.com",
+    "news_category_slug": "openai",
+    "tekshirilgan": null,
+    "chop_etilgan": false
+  },
+  {
+    "slug": "claude",
+    "name": "Claude",
+    "vendor": "Anthropic",
+    "tagline": "Uzun hujjatlar va jiddiy matn ishlari uchun AI yordamchi",
+    "description": "Claude — Anthropic kompaniyasining suhbat shaklidagi AI xizmati. U ayniqsa uzun matnlar bilan ishlashda kuchli: katta hujjatni o'qib chiqib xulosa qiladi, tahlil yozadi, kod yozadi va uni tushuntiradi.\n\nBrauzerda va mobil ilovada ishlaydi. Dasturchilar uchun alohida API mavjud, u orqali Claude'ni o'z dasturiga ulash mumkin.",
+    "tool_category": "matn",
+    "free_tier": null,
+    "plans": [],
+    "uz": {
+      "vpn_kerakmi": null,
+      "tolov": null,
+      "tolov_yollari": [],
+      "ozbek_tili": null,
+      "narx_somda": null
+    },
+    "alternatives": [
+      "chatgpt",
+      "gemini"
+    ],
+    "official_url": "https://claude.ai",
+    "news_category_slug": "claude",
+    "tekshirilgan": null,
+    "chop_etilgan": false
+  },
+  {
+    "slug": "gemini",
+    "name": "Gemini",
+    "vendor": "Google",
+    "tagline": "Google xizmatlari bilan bog'langan AI yordamchi",
+    "description": "Gemini — Google'ning sun'iy intellekt yordamchisi. Matn yozadi, savolga javob beradi, rasm va videoni tahlil qila oladi. Uning asosiy farqi — Google ekotizimiga yaqinligi: Gmail, Google Docs va Android bilan bog'lanadi.\n\nAlohida sayt va ilova sifatida ham, Google qidiruvi ichida ham ishlaydi.",
+    "tool_category": "matn",
+    "free_tier": null,
+    "plans": [],
+    "uz": {
+      "vpn_kerakmi": null,
+      "tolov": null,
+      "tolov_yollari": [],
+      "ozbek_tili": null,
+      "narx_somda": null
+    },
+    "alternatives": [
+      "chatgpt",
+      "claude"
+    ],
+    "official_url": "https://gemini.google.com",
+    "news_category_slug": "gemini",
+    "tekshirilgan": null,
+    "chop_etilgan": false
+  },
+  {
+    "slug": "midjourney",
+    "name": "Midjourney",
+    "vendor": "Midjourney",
+    "tagline": "Matnli tavsif bo'yicha rasm yaratadi",
+    "description": "Midjourney — matnli tavsifdan rasm yaratuvchi xizmat. Siz nima ko'rishni xohlashingizni yozasiz, u esa bir necha variant chizib beradi. Natijalari badiiy sifati bilan ajralib turadi, shuning uchun dizaynerlar va marketologlar orasida keng tarqalgan.\n\nDastlab faqat Discord orqali ishlagan, keyinchalik veb-interfeys ham qo'shilgan.",
+    "tool_category": "rasm",
+    "free_tier": null,
+    "plans": [],
+    "uz": {
+      "vpn_kerakmi": null,
+      "tolov": null,
+      "tolov_yollari": [],
+      "ozbek_tili": null,
+      "narx_somda": null
+    },
+    "alternatives": [],
+    "official_url": "https://www.midjourney.com",
+    "news_category_slug": "startuplar",
+    "tekshirilgan": null,
+    "chop_etilgan": false
+  },
+  {
+    "slug": "cursor",
+    "name": "Cursor",
+    "vendor": "Anysphere",
+    "tagline": "AI ichiga qurilgan kod muharriri",
+    "description": "Cursor — dasturchilar uchun mo'ljallangan kod muharriri. Tashqi ko'rinishi VS Code'ga o'xshaydi, lekin AI to'g'ridan-to'g'ri ichiga qurilgan: butun loyihani ko'rib, kod yozadi, xatoni topadi va o'zgarishlarni tushuntiradi.\n\nKompyuterga o'rnatiladigan dastur sifatida ishlaydi, Windows, macOS va Linux uchun mavjud.",
+    "tool_category": "kod",
+    "free_tier": null,
+    "plans": [],
+    "uz": {
+      "vpn_kerakmi": null,
+      "tolov": null,
+      "tolov_yollari": [],
+      "ozbek_tili": null,
+      "narx_somda": null
+    },
+    "alternatives": [],
+    "official_url": "https://cursor.com",
+    "news_category_slug": "dasturlash",
+    "tekshirilgan": null,
+    "chop_etilgan": false
+  }
+]

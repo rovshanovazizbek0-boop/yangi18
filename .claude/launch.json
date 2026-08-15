@@ -1,0 +1,38 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "biznesxabar",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "C:\\Users\\pc\\Desktop\\loyihalarim\\biznes-xabar\\frontend", "run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "futbolxabar",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "C:\\Users\\pc\\Desktop\\loyihalarim\\futbol-xabar\\frontend", "run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "aixabar",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "frontend", "run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "aixabar-backend",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-c",
+        "import os,sys; os.chdir('backend'); sys.path.insert(0,'.'); os.environ['RUN_BACKGROUND_SERVICES']='false'; import uvicorn; uvicorn.run('app.main:app', host='127.0.0.1', port=8000)"
+      ],
+      "port": 8000
+    },
+    {
+      "name": "trendoai",
+      "runtimeExecutable": "C:\\Users\\pc\\Desktop\\loyihalarim\\trendo ai\\venv\\Scripts\\python.exe",
+      "runtimeArgs": ["C:\\Users\\pc\\Desktop\\loyihalarim\\trendo ai\\app.py"],
+      "port": 5000
+    }
+  ]
+}

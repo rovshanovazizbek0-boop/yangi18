@@ -33,9 +33,10 @@ async function fetchAllArticles() {
 }
 
 export default async function sitemap() {
-  const [articles, categories] = await Promise.all([
+  const [articles, categories, tools] = await Promise.all([
     fetchAllArticles(),
     fetchJson(`${API_URL}/api/categories`),
+    fetchJson(`${API_URL}/api/tools`),
   ]);
 
   const articleUrls = (articles || []).map((article) => ({
@@ -52,7 +53,16 @@ export default async function sitemap() {
     priority: 0.8,
   }));
 
-  const staticUrls = ["/haqida", "/aloqa", "/maxfiylik"].map((path) => ({
+  // Vosita sahifalari yangilikdan sekin eskiradi, lekin qidiruvda uzoq
+  // yashaydi — shuning uchun ustuvorligi maqoladan yuqori.
+  const toolUrls = (tools || []).map((tool) => ({
+    url: `${SITE_URL}/vositalar/${tool.slug}`,
+    lastModified: tool.checked_at ? new Date(tool.checked_at) : new Date(),
+    changeFrequency: "monthly",
+    priority: 0.8,
+  }));
+
+  const staticUrls = ["/vositalar", "/haqida", "/aloqa", "/maxfiylik"].map((path) => ({
     url: `${SITE_URL}${path}`,
     lastModified: new Date(),
     changeFrequency: "monthly",
@@ -67,6 +77,7 @@ export default async function sitemap() {
       priority: 1.0,
     },
     ...categoryUrls,
+    ...toolUrls,
     ...staticUrls,
     ...articleUrls,
   ];
