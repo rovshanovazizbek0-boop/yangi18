@@ -14,6 +14,9 @@ from .backfill import backfill_tags
 from .config import (
     AUTO_PUBLISH,
     AUTO_PUBLISH_MIN_IMPORTANCE,
+    AUTO_TELEGRAM,
+    AUTO_TELEGRAM_MAX_AGE_HOURS,
+    AUTO_TELEGRAM_MIN_IMPORTANCE,
     FRONTEND_ORIGIN,
     MEDIA_DIR,
     PIPELINE_INTERVAL,
@@ -131,14 +134,21 @@ def health():
             "status": "ok",
             "database": "ok",
             "latest_article_at": latest.created_at if latest else None,
-            # Chop etish bo'sag'asi ham shu yerda: Render'dagi environment kod
-            # standartini bekor qilsa, buni taxmin qilib emas, ko'rib bilamiz.
-            "pipeline": {
-                **PIPELINE_STATE,
+            # Amaldagi chegaralar: Render'dagi environment kod standartini
+            # bekor qilsa, buni taxmin qilib emas, ko'rib bilamiz. Bu loyihada
+            # render.yaml yo'q — qiymatlar faqat panelda, shuning uchun /health
+            # ularni ko'rishning yagona yo'li.
+            "publish": {
                 "auto_publish": AUTO_PUBLISH,
                 "auto_publish_min_importance": AUTO_PUBLISH_MIN_IMPORTANCE,
-                "last_run": LAST_RUN,
+                "auto_telegram": AUTO_TELEGRAM,
+                "auto_telegram_min_importance": AUTO_TELEGRAM_MIN_IMPORTANCE,
+                # Kanalga yuborishni jimgina to'xtatadigan uchinchi shart:
+                # manba shundan oldin chiqargan maqola saytga chiqadi, lekin
+                # kanalga ketmaydi (last_run.telegram_skipped_old bilan juft).
+                "auto_telegram_max_age_hours": AUTO_TELEGRAM_MAX_AGE_HOURS,
             },
+            "pipeline": {**PIPELINE_STATE, "last_run": LAST_RUN},
         }
     finally:
         db.close()
