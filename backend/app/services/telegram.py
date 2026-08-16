@@ -115,7 +115,7 @@ def send_to_channel(article: Article) -> None:
         if error is None:
             return
         # Rasm o'tmadi — post butunlay yo'qolmasligi uchun matn bilan davom etamiz.
-        print(f"   ⚠ Rasmli post chiqmadi ({error}) — matnli post yuborilmoqda")
+        print(f"   WARNING: Rasmli post chiqmadi ({error}); matnli post yuborilmoqda")
 
     payload = {
         "chat_id": TELEGRAM_CHANNEL_ID,

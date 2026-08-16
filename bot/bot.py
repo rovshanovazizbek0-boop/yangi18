@@ -197,7 +197,7 @@ async def main():
         print("TELEGRAM_BOT_TOKEN sozlanmagan — bot ishga tushirilmadi.")
         return
     bot = Bot(token=BOT_TOKEN)
-    print("🤖 Bot ishga tushdi...")
+    print("BOT: Bot ishga tushdi...")
     await dp.start_polling(bot)
 
 

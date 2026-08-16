@@ -1,9 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
+import { unstable_rethrow } from "next/navigation";
 import { apiGet } from "../lib/api";
 
 export default async function Header() {
-  const categories = (await apiGet("/api/categories")) || [];
+  // Backend vaqtincha ishlamasa statik sahifalar ham yiqilib ketmasin.
+  // Kontent sahifalarining o'zi API xatosini yashirmay error boundary'ga beradi.
+  let categories = [];
+  try {
+    categories = (await apiGet("/api/categories")) || [];
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("Header kategoriyalarini olib bo'lmadi:", error);
+  }
 
   return (
     <header className="border-b border-slate-800">

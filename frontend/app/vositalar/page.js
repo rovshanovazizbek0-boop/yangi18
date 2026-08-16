@@ -2,6 +2,7 @@ import Link from "next/link";
 import { apiGet } from "../../lib/api";
 import { SITE_NAME, SITE_URL } from "../../lib/site";
 import { categoryName, hasUzData, NOT_CHECKED, yesNo } from "../../lib/tools";
+import { serializeJsonLd } from "../../lib/json-ld.mjs";
 
 export const metadata = {
   title: "AI vositalari katalogi — narxi va O'zbekistonda ishlashi",
@@ -83,7 +84,7 @@ export default async function ToolsPage() {
     <div className="py-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd(list)) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(collectionJsonLd(list)) }}
       />
 
       <h1 className="mb-3 text-2xl font-bold">🧰 AI vositalari katalogi</h1>

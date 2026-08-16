@@ -41,7 +41,7 @@ def generate_image(title: str, slug: str) -> str | None:
             timeout=120,
         )
         if response.status_code != 200:
-            print(f"   ✗ Rasm generatsiya xatosi {response.status_code}: {response.text[:200]}")
+            print(f"   ERROR: Rasm generatsiya xatosi {response.status_code}: {response.text[:200]}")
             return None
 
         parts = response.json()["candidates"][0]["content"]["parts"]
@@ -57,5 +57,5 @@ def generate_image(title: str, slug: str) -> str | None:
 
         return f"{BACKEND_PUBLIC_URL}/media/{file_path.name}"
     except Exception as error:
-        print(f"   ✗ Rasm generatsiya xatosi: {error}")
+        print(f"   ERROR: Rasm generatsiya xatosi: {error}")
         return None

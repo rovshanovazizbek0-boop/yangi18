@@ -6,6 +6,7 @@ import AdPlaceholder from "../../../components/AdPlaceholder";
 import { apiGet } from "../../../lib/api";
 import { formatDateTime } from "../../../lib/date";
 import { SITE_URL, SITE_NAME } from "../../../lib/site";
+import { serializeJsonLd } from "../../../lib/json-ld.mjs";
 
 const getArticle = cache((slug) => apiGet(`/api/news/${slug}`));
 
@@ -84,7 +85,7 @@ export default async function ArticlePage({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(articleJsonLd(article)),
+          __html: serializeJsonLd(articleJsonLd(article)),
         }}
       />
       <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-slate-400">

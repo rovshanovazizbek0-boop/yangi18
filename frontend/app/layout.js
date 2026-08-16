@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import PwaRegister from "../components/PwaRegister";
 import SubscribePopup from "../components/SubscribePopup";
 import { SITE_URL, SITE_NAME, SITE_ALT_NAMES } from "../lib/site";
+import { serializeJsonLd } from "../lib/json-ld.mjs";
 
 const DESCRIPTION =
   "Dunyodagi eng muhim AI yangiliklari — qisqa, tushunarli va o'zbek tilida. OpenAI, Gemini, Claude, xAI, Meta va boshqalar.";
@@ -99,7 +100,7 @@ export default function RootLayout({ children }) {
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(siteJsonLd) }}
         />
         <Header />
         <main className="mx-auto max-w-6xl px-4 pb-16">{children}</main>

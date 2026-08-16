@@ -8,7 +8,22 @@ os.environ["AUTO_PUBLISH"] = "false"
 os.environ["ADMIN_TOKEN"] = "1234567890123456789012345678901234567890"
 os.environ["DATABASE_URL"] = "sqlite://"
 
-from app.pipeline import format_error, is_fresh_for_channel
+from app.pipeline import (
+    _PROCESS_PIPELINE_LOCK,
+    format_error,
+    is_fresh_for_channel,
+    pipeline_run_lock,
+)
+
+
+class PipelineLockTests(unittest.TestCase):
+    def test_second_pipeline_in_the_same_process_is_skipped(self):
+        self.assertTrue(_PROCESS_PIPELINE_LOCK.acquire(blocking=False))
+        try:
+            with pipeline_run_lock() as acquired:
+                self.assertFalse(acquired)
+        finally:
+            _PROCESS_PIPELINE_LOCK.release()
 
 
 class ChannelFreshnessTests(unittest.TestCase):

@@ -1,18 +1,31 @@
 """Ommaviy yangiliklar API — faqat chop etilgan maqolalar."""
 
 from collections import Counter, defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from ..database import get_db
+from ..config import APP_TIMEZONE
 from ..models import Article, Category
 from ..schemas import ArticleOut
 from ..tags import canonical_tag, tag_key
 
 router = APIRouter(prefix="/api/news", tags=["news"])
+
+
+def local_day_start_utc(now: datetime | None = None) -> datetime:
+    """Tahririy kun boshini bazadagi UTC-naive formatida qaytaradi."""
+    current = now or datetime.now(timezone.utc)
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=timezone.utc)
+    local = current.astimezone(ZoneInfo(APP_TIMEZONE))
+    return local.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(
+        timezone.utc
+    ).replace(tzinfo=None)
 
 
 def published(db: Session):
@@ -54,7 +67,7 @@ def top_news(db: Session = Depends(get_db), kunlar: int = 1, limit: int = Query(
 @router.get("/digest", response_model=list[ArticleOut])
 def daily_digest(db: Session = Depends(get_db)):
     """Bugungi AI dayjesti — bugun chop etilgan barcha yangiliklar."""
-    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    today = local_day_start_utc()
     return (
         published(db)
         .filter(Article.published_at >= today)

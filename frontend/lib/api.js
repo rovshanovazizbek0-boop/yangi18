@@ -1,3 +1,6 @@
+import { fetchJson } from "./api-core.mjs";
+import { unstable_rethrow } from "next/navigation";
+
 // Server (SSR) konteyner ichida backend'ga ichki tarmoq orqali murojaat qiladi
 // (API_URL_INTERNAL), brauzer esa tashqi manzildan (NEXT_PUBLIC_API_URL).
 const isServer = typeof window === "undefined";
@@ -12,11 +15,12 @@ export async function apiGet(path, params = {}) {
     if (value !== undefined && value !== null) url.searchParams.set(key, value);
   });
   try {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
+    return await fetchJson(url);
+  } catch (error) {
+    // Next.js prerender/dynamic-render signallarini oddiy tarmoq xatosi deb
+    // o'rab yubormaslik kerak; framework ularni o'zi boshqaradi.
+    unstable_rethrow(error);
+    throw error;
   }
 }
 

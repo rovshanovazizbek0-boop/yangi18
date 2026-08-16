@@ -92,6 +92,8 @@ Shundan so'ng:
 Loglarni ko'rish: `docker compose logs -f pipeline` · To'xtatish: `docker compose down`
 
 Serverga qo'yganda `.env`da `NEXT_PUBLIC_API_URL`, `FRONTEND_ORIGIN`, `SITE_URL` qiymatlarini o'z domeningizga almashtiring.
+Dayjest va "bugungi" chegarasi standartda `APP_TIMEZONE=Asia/Tashkent`
+bo'yicha hisoblanadi.
 
 Render kabi bitta web service ishlatilsa `RUN_BACKGROUND_SERVICES=true` qoldiring.
 Docker Compose backend uchun uni avtomatik o'chiradi, chunki pipeline va bot
@@ -110,7 +112,16 @@ pip install -r requirements.txt
 cp .env.example .env        # GEMINI_API_KEY, ADMIN_TOKEN va boshqalarni to'ldiring
 
 # Serverni ishga tushirish (http://localhost:8000, hujjatlar: /docs)
+alembic upgrade head
 uvicorn app.main:app --reload
+```
+
+Baza sxemasi o'zgarganda yangi migratsiya yarating:
+
+```bash
+cd backend
+alembic revision --autogenerate -m "o'zgarish nomi"
+alembic upgrade head
 ```
 
 **Yangiliklarni yig'ish va tahlil qilish** (qo'lda yoki cron orqali):
@@ -179,6 +190,8 @@ To'liq interaktiv hujjatlar: `http://localhost:8000/docs`
 
 1. Cron har soatda `python -m app.pipeline` ni ishga tushiradi
 2. RSS'dan yangiliklar yig'iladi, dublikatlar va AI relevance tekshiriladi, model maqolani o'zbekcha tayyorlaydi
+   - qisqa RSS xulosasi bo'lsa, faqat o'sha public sayt ichidan maqola paragraflari olinadi
+   - yaqin ma'nodagi sarlavhalar 30 kunlik oynada bitta voqea sifatida filtrlanadi
 3. Inglizcha sarlavha, AI'ga aloqasiz manba yoki sifatsiz maydonlar quality gate'da rad etiladi
 4. Qolgan maqolalar `pending` bo'lib, admin panelda tahrirlanadi va tasdiqlanadi
 5. Tasdiqlangan maqolani admin Telegram kanalga yuborishi mumkin

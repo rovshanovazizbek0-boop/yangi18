@@ -11,7 +11,11 @@ Muntazam ishlashi uchun cron'ga qo'ying, masalan har soatda:
 """
 
 import re
+from contextlib import contextmanager
 from datetime import datetime, timedelta
+from threading import Lock
+
+from sqlalchemy import text
 
 from .config import (
     AI_PROVIDER,
@@ -47,7 +51,46 @@ LAST_RUN: dict = {
     "telegram_skipped_old": None,
     "last_analysis_error": None,
     "last_telegram_error": None,
+    "skipped_locked": False,
 }
+
+_PROCESS_PIPELINE_LOCK = Lock()
+_POSTGRES_PIPELINE_LOCK_KEY = 2_026_081_601
+
+
+@contextmanager
+def pipeline_run_lock():
+    """Bitta process va PostgreSQL klasterida faqat bitta pipeline'ni o'tkazadi."""
+    if not _PROCESS_PIPELINE_LOCK.acquire(blocking=False):
+        yield False
+        return
+
+    connection = None
+    postgres_acquired = False
+    try:
+        if engine.dialect.name == "postgresql":
+            # Session commitlardan keyin connection'ni poolga qaytarishi mumkin;
+            # advisory lock uchun butun sikl davomida alohida connection ushlaymiz.
+            connection = engine.connect()
+            postgres_acquired = bool(connection.execute(
+                text("SELECT pg_try_advisory_lock(:key)"),
+                {"key": _POSTGRES_PIPELINE_LOCK_KEY},
+            ).scalar())
+            if not postgres_acquired:
+                yield False
+                return
+        yield True
+    finally:
+        if connection is not None:
+            try:
+                if postgres_acquired:
+                    connection.execute(
+                        text("SELECT pg_advisory_unlock(:key)"),
+                        {"key": _POSTGRES_PIPELINE_LOCK_KEY},
+                    )
+            finally:
+                connection.close()
+        _PROCESS_PIPELINE_LOCK.release()
 
 
 # Xato matnida maxfiy ma'lumot bo'lishi mumkin: masalan
@@ -121,7 +164,7 @@ def format_error(error: BaseException, limit: int = 300) -> str:
     return text if len(text) <= limit else f"{text[: limit - 1]}…"
 
 
-def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
+def _run_pipeline_unlocked(per_feed: int = PIPELINE_PER_FEED) -> int:
     Base.metadata.create_all(engine)
     db = SessionLocal()
     saved = 0
@@ -141,18 +184,19 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
         "telegram_skipped_old": 0,
         "last_analysis_error": None,
         "last_telegram_error": None,
+        "skipped_locked": False,
     })
     try:
         seed_categories(db)
         categories = {c.slug: c for c in db.query(Category).all()}
 
-        print("📡 Yangiliklar yig'ilmoqda...")
+        print("INFO: Yangiliklar yig'ilmoqda...")
         fresh = collect_news(db, per_feed=per_feed)
         collected = len(fresh)
         print(f"   {len(fresh)} ta yangi yangilik topildi.")
 
         for i, news in enumerate(fresh, 1):
-            print(f"🤖 [{i}/{len(fresh)}] {news['title'][:65]}")
+            print(f"AI: [{i}/{len(fresh)}] {news['title'][:65]}")
             try:
                 analysis = analyze_news(
                     title=news["title"],
@@ -163,18 +207,18 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
             except Exception as error:
                 analysis_errors += 1
                 LAST_RUN["last_analysis_error"] = format_error(error)
-                print(f"   ✗ Tahlil xatosi: {error}")
+                print(f"   ERROR: Tahlil xatosi: {error}")
                 continue
 
             quality = evaluate_candidate(analysis, news)
             for warning in quality.warnings:
-                print(f"   ⚠ Quality warning: {warning}")
+                print(f"   WARNING: Quality warning: {warning}")
             if not quality.ok:
                 quality_rejected += 1
                 # Model qanday sarlavha yozganini ko'rsatamiz — aks holda gate
                 # haq bo'ldimi yoki yo'qmi, logdan aniqlab bo'lmaydi.
                 rejected_title = str(analysis.get("sarlavha") or "").strip() or "(sarlavha yo'q)"
-                print(f"   ✗ Quality gate rad etdi: {'; '.join(quality.errors)}")
+                print(f"   ERROR: Quality gate rad etdi: {'; '.join(quality.errors)}")
                 print(f"     ↳ model sarlavhasi: {rejected_title[:100]}")
                 # Rad etilgan nomzod ham bazaga yoziladi. Aks holda dublikat
                 # filtri uni ko'rmaydi va u har siklda qayta tahlil qilinaveradi.
@@ -195,7 +239,7 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
             if not image_url and IMAGE_GENERATION:
                 image_url = generate_image(analysis["sarlavha"], slug)
                 if image_url:
-                    print("   ✓ Rasm generatsiya qilindi")
+                    print("   OK: Rasm generatsiya qilindi")
 
             article = _build_article(
                 db, analysis, news, categories,
@@ -208,7 +252,7 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
             saved += 1
 
             if auto_publish:
-                print("   ✓ Saytga chiqarildi")
+                print("   OK: Saytga chiqarildi")
 
             # Muhim va yangi yangiliklarni Telegram kanalga avtomatik yuborish
             if (
@@ -220,24 +264,24 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
                 if not is_fresh_for_channel(news["published_at"]):
                     telegram_skipped_old += 1
                     age = datetime.utcnow() - news["published_at"]
-                    print(f"   ↷ Telegram: manba {age.days} kun oldin chiqargan — yuborilmadi")
+                    print(f"   SKIP: Telegram: manba {age.days} kun oldin chiqargan; yuborilmadi")
                 else:
                     try:
                         send_to_channel(article)
                         article.sent_to_telegram = True
                         db.commit()
                         telegram_sent += 1
-                        print("   ✓ Telegram kanalga yuborildi")
+                        print("   OK: Telegram kanalga yuborildi")
                     except Exception as error:
                         LAST_RUN["last_telegram_error"] = format_error(error)
-                        print(f"   ✗ Telegram xatosi: {error}")
+                        print(f"   ERROR: Telegram xatosi: {error}")
 
         if fresh and saved == 0 and analysis_errors == len(fresh):
             raise RuntimeError("Barcha yangi yangiliklar AI tahlilida xatoga uchradi")
 
         mode = "saytga chiqarildi (avto)" if AUTO_PUBLISH else "pending — admin tasdig'ini kutmoqda"
         print(
-            f"\n✅ {saved} ta maqola saqlandi ({mode}). "
+            f"\nOK: {saved} ta maqola saqlandi ({mode}). "
             f"Quality gate rad etdi: {quality_rejected}."
         )
         return saved
@@ -252,6 +296,15 @@ def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
             "telegram_skipped_old": telegram_skipped_old,
         })
         db.close()
+
+
+def run_pipeline(per_feed: int = PIPELINE_PER_FEED) -> int:
+    with pipeline_run_lock() as acquired:
+        if not acquired:
+            LAST_RUN["skipped_locked"] = True
+            print("SKIP: Boshqa pipeline sikli hali ishlayapti")
+            return 0
+        return _run_pipeline_unlocked(per_feed)
 
 
 if __name__ == "__main__":

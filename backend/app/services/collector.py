@@ -5,16 +5,28 @@ tashqi parser kutubxonalariga bog'liq emas.
 """
 
 import html
+import ipaddress
 import re
-from datetime import datetime
+import socket
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
+from html.parser import HTMLParser
+from urllib.parse import urljoin, urlparse
 from xml.etree import ElementTree
 
 import httpx
 from sqlalchemy.orm import Session
 
+from ..config import (
+    ARTICLE_FETCH_WORKERS,
+    DUPLICATE_LOOKBACK_DAYS,
+    FETCH_FULL_ARTICLE,
+    FULL_ARTICLE_MAX_CHARS,
+    FULL_ARTICLE_MIN_SOURCE_CHARS,
+)
 from ..models import Article
-from ..utils import title_hash
+from ..utils import title_hash, titles_semantically_similar
 
 FEEDS = [
     {"name": "OpenAI Blog", "url": "https://openai.com/news/rss.xml"},
@@ -41,17 +53,146 @@ def _strip_html(text: str) -> str:
     return re.sub(r"<[^>]+>", " ", text or "").strip()
 
 
+class _ParagraphExtractor(HTMLParser):
+    """Maqoladagi <article><p> paragraflarini, bo'lmasa barcha <p>larni oladi."""
+
+    _IGNORED = {"script", "style", "nav", "footer", "header", "aside", "form"}
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.ignored_depth = 0
+        self.article_depth = 0
+        self.current: list[str] | None = None
+        self.current_in_article = False
+        self.article_paragraphs: list[str] = []
+        self.all_paragraphs: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        tag = tag.lower()
+        if tag in self._IGNORED:
+            self.ignored_depth += 1
+        if tag == "article":
+            self.article_depth += 1
+        if tag == "p" and self.ignored_depth == 0:
+            self.current = []
+            self.current_in_article = self.article_depth > 0
+
+    def handle_endtag(self, tag: str) -> None:
+        tag = tag.lower()
+        if tag == "p" and self.current is not None:
+            paragraph = " ".join("".join(self.current).split())
+            if len(paragraph) >= 40:
+                self.all_paragraphs.append(paragraph)
+                if self.current_in_article:
+                    self.article_paragraphs.append(paragraph)
+            self.current = None
+        if tag == "article" and self.article_depth:
+            self.article_depth -= 1
+        if tag in self._IGNORED and self.ignored_depth:
+            self.ignored_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if self.current is not None and self.ignored_depth == 0:
+            self.current.append(data)
+
+
+def _extract_article_text(page: str) -> str:
+    parser = _ParagraphExtractor()
+    try:
+        parser.feed(page)
+    except Exception:
+        return ""
+    paragraphs = parser.article_paragraphs or parser.all_paragraphs
+    return "\n\n".join(paragraphs)[:FULL_ARTICLE_MAX_CHARS]
+
+
+def _site_suffix(hostname: str | None) -> str:
+    parts = (hostname or "").rstrip(".").lower().split(".")
+    return ".".join(parts[-2:]) if len(parts) >= 2 else (hostname or "").lower()
+
+
+def _same_site(url: str, feed_url: str) -> bool:
+    return bool(_site_suffix(urlparse(url).hostname)) and (
+        _site_suffix(urlparse(url).hostname) == _site_suffix(urlparse(feed_url).hostname)
+    )
+
+
+def _is_public_http_url(url: str) -> bool:
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username:
+        return False
+    try:
+        addresses = {
+            item[4][0]
+            for item in socket.getaddrinfo(
+                parsed.hostname,
+                parsed.port or (443 if parsed.scheme == "https" else 80),
+                type=socket.SOCK_STREAM,
+            )
+        }
+        return bool(addresses) and all(ipaddress.ip_address(address).is_global for address in addresses)
+    except (OSError, ValueError):
+        return False
+
+
+def fetch_article_text(url: str, feed_url: str, client: httpx.Client) -> str:
+    """Faqat o'sha public saytda qolgan redirectlardan maqola matnini oladi."""
+    current = url
+    for _ in range(4):
+        if not _same_site(current, feed_url) or not _is_public_http_url(current):
+            return ""
+        try:
+            response = client.get(current, follow_redirects=False)
+        except Exception:
+            return ""
+        if response.status_code in {301, 302, 303, 307, 308}:
+            location = response.headers.get("location")
+            if not location:
+                return ""
+            current = urljoin(current, location)
+            continue
+        if response.status_code != 200:
+            return ""
+        if "html" not in response.headers.get("content-type", "").lower():
+            return ""
+        return _extract_article_text(response.text[:1_000_000])
+    return ""
+
+
+def _enrich_short_articles(items: list[dict]) -> None:
+    if not FETCH_FULL_ARTICLE:
+        return
+    short = [item for item in items if len(item["content"]) < FULL_ARTICLE_MIN_SOURCE_CHARS]
+    if not short:
+        return
+
+    def enrich(item: dict, client: httpx.Client) -> None:
+        extracted = fetch_article_text(item["url"], item["_feed_url"], client)
+        if len(extracted) >= max(800, len(item["content"]) + 200):
+            item["content"] = extracted
+
+    workers = max(1, min(ARTICLE_FETCH_WORKERS, 8))
+    with httpx.Client(timeout=15, follow_redirects=False, headers=HEADERS) as client:
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            list(executor.map(lambda item: enrich(item, client), short))
+
+
 def _parse_date(value: str | None) -> datetime | None:
     if not value:
         return None
     try:
-        return parsedate_to_datetime(value).replace(tzinfo=None)  # RFC 822 (RSS)
+        parsed = parsedate_to_datetime(value)  # RFC 822 (RSS)
     except Exception:
-        pass
-    try:
-        return datetime.fromisoformat(value.replace("Z", "+00:00")).replace(tzinfo=None)  # ISO (Atom)
-    except Exception:
-        return None
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))  # ISO (Atom)
+        except Exception:
+            return None
+
+    # Bazada sanalar UTC, lekin timezone'siz saqlanadi. Offsetni shunchaki
+    # olib tashlash vaqtni bir necha soatga surib yuboradi; avval UTC'ga o'tamiz.
+    if parsed.tzinfo is not None:
+        parsed = parsed.astimezone(timezone.utc).replace(tzinfo=None)
+    return parsed
 
 
 def _clean_url(value: str | None) -> str | None:
@@ -140,6 +281,12 @@ def collect_news(db: Session, per_feed: int = 5) -> list[dict]:
     """RSS/Atom manbalardan yangi (bazada yo'q) yangiliklarni qaytaradi."""
     existing_urls = {u for (u,) in db.query(Article.original_url).all()}
     existing_hashes = {title_hash(t) for (t,) in db.query(Article.original_title).all()}
+    recent_since = datetime.utcnow() - timedelta(days=max(1, DUPLICATE_LOOKBACK_DAYS))
+    recent_titles = [
+        title for (title,) in db.query(Article.original_title).filter(
+            Article.created_at >= recent_since
+        ).all() if title
+    ]
 
     fresh: list[dict] = []
     successful_feeds = 0
@@ -151,7 +298,7 @@ def collect_news(db: Session, per_feed: int = 5) -> list[dict]:
                 entries = _parse_feed(response.text)
                 successful_feeds += 1
             except Exception as error:
-                print(f"  ✗ Manba o'qilmadi ({feed['name']}): {error}")
+                print(f"  ERROR: Manba o'qilmadi ({feed['name']}): {error}")
                 continue
 
             for entry in entries[:per_feed]:
@@ -161,6 +308,8 @@ def collect_news(db: Session, per_feed: int = 5) -> list[dict]:
                 # Dublikat: URL yoki normallashtirilgan sarlavha bo'yicha
                 if url in existing_urls or title_hash(title) in existing_hashes:
                     continue
+                if any(titles_semantically_similar(title, old) for old in recent_titles):
+                    continue
 
                 fresh.append({
                     "title": title,
@@ -169,11 +318,16 @@ def collect_news(db: Session, per_feed: int = 5) -> list[dict]:
                     "source": feed["name"],
                     "image_url": entry["image"],
                     "published_at": entry["published"],
+                    "_feed_url": feed["url"],
                 })
                 existing_urls.add(url)
                 existing_hashes.add(title_hash(title))
+                recent_titles.append(title)
 
     if successful_feeds == 0:
         raise RuntimeError("Barcha RSS manbalarini o'qish muvaffaqiyatsiz tugadi")
 
+    _enrich_short_articles(fresh)
+    for item in fresh:
+        item.pop("_feed_url", None)
     return fresh

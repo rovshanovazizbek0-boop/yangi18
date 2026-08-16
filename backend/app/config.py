@@ -54,11 +54,21 @@ def _bool(name: str, default: str) -> bool:
 RUN_BACKGROUND_SERVICES = _bool("RUN_BACKGROUND_SERVICES", "true")
 
 # Sikllar orasidagi tanaffus. Qisqaroq oraliq = yangilik tezroq chiqadi.
-PIPELINE_INTERVAL = int(os.getenv("PIPELINE_INTERVAL", "900"))
+PIPELINE_INTERVAL = int(os.getenv("PIPELINE_INTERVAL", "3600"))
 # Har manbadan o'qiladigan eng yangi yozuvlar soni. Manba bir siklda shundan
 # ko'p maqola chiqarsa, ortiqchasi butunlay yo'qoladi — keyingi sikl ham
 # faqat eng yangilariga qaraydi.
 PIPELINE_PER_FEED = int(os.getenv("PIPELINE_PER_FEED", "12"))
+
+# Bir voqea turli manbalarda sal boshqacha sarlavha bilan chiqishi mumkin.
+DUPLICATE_LOOKBACK_DAYS = int(os.getenv("DUPLICATE_LOOKBACK_DAYS", "30"))
+
+# RSS faqat qisqa xulosa bersa, o'sha saytning maqola sahifasidan asosiy
+# paragraflarni olish. So'rovlar parallel, lekin cheklangan holda bajariladi.
+FETCH_FULL_ARTICLE = _bool("FETCH_FULL_ARTICLE", "true")
+FULL_ARTICLE_MIN_SOURCE_CHARS = int(os.getenv("FULL_ARTICLE_MIN_SOURCE_CHARS", "1800"))
+FULL_ARTICLE_MAX_CHARS = int(os.getenv("FULL_ARTICLE_MAX_CHARS", "12000"))
+ARTICLE_FETCH_WORKERS = int(os.getenv("ARTICLE_FETCH_WORKERS", "4"))
 
 
 # Avto-chop etish ixtiyoriy. Xavfsiz standartda maqolalar admin tasdig'ini kutadi.
@@ -88,3 +98,6 @@ BACKEND_PUBLIC_URL = os.getenv("BACKEND_PUBLIC_URL", "http://localhost:8000")
 
 # Frontend manzili (CORS uchun)
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
+
+# Saytning tahririy kuni va dayjest chegarasi shu vaqt zonasida hisoblanadi.
+APP_TIMEZONE = os.getenv("APP_TIMEZONE", "Asia/Tashkent")

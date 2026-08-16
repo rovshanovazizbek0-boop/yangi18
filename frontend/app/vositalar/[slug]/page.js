@@ -5,6 +5,7 @@ import { apiGet } from "../../../lib/api";
 import { formatDate } from "../../../lib/date";
 import { SITE_NAME, SITE_URL } from "../../../lib/site";
 import { categoryName, hasUzData, NOT_CHECKED, yesNo } from "../../../lib/tools";
+import { serializeJsonLd } from "../../../lib/json-ld.mjs";
 
 const getTool = cache((slug) => apiGet(`/api/tools/${slug}`));
 
@@ -119,7 +120,7 @@ export default async function ToolPage({ params }) {
     <article className="mx-auto max-w-3xl py-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(toolJsonLd(tool)) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(toolJsonLd(tool)) }}
       />
 
       <nav className="mb-3 text-sm text-slate-400" aria-label="Yo'l">
