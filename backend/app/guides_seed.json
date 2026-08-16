@@ -1,0 +1,355 @@
+[
+  {
+    "slug": "ai-bilan-ishlashni-boshlash",
+    "title": "Sun'iy intellekt bilan ishlashni boshlash: yangi foydalanuvchi uchun yo'l xaritasi",
+    "seo_title": "Sun'iy intellektdan foydalanishni boshlash — amaliy qo'llanma",
+    "description": "AI vositasini tanlash, xavfsiz savol berish va natijani tekshirishni oddiy misollar bilan o'rganing.",
+    "excerpt": "ChatGPT, Gemini yoki Claude'dan qaysi birini tanlashdan oldin vazifani aniqlash, yaxshi topshiriq yozish va javobni tekshirish usulini o'rganing.",
+    "intro": "Sun'iy intellekt tayyor javoblar ombori emas. U siz bergan vazifa, kontekst va cheklovlarga qarab matn, reja yoki tahlil tayyorlaydigan yordamchi. Eng yaxshi natija model nomidan ko'ra vazifani aniq tushuntirish va javobni tekshirishga bog'liq.",
+    "provider": "umumiy",
+    "difficulty": "boshlangich",
+    "duration_minutes": 12,
+    "related_category_slug": null,
+    "position": 10,
+    "tags": ["Sun'iy intellekt", "Boshlang'ich", "AI savodxonlik"],
+    "sections": [
+      {
+        "title": "1. Avval vazifani aniqlang",
+        "body": [
+          "AI'ga “menga yordam ber” deyish juda umumiy. Natijani ishlatadigan joyingizni, kim uchun tayyorlanishini va qanday ko'rinishda kerakligini oldindan belgilang.",
+          "Masalan, “ingliz tilini o'rganish” o'rniga “A2 darajadagi o'quvchi uchun har kuni 20 daqiqalik, 14 kunlik ingliz tili rejasini jadval ko'rinishida tuz” aniqroq vazifa hisoblanadi."
+        ],
+        "steps": [
+          "Natija nima bo'lishini bir jumlada yozing.",
+          "Kim foydalanishini belgilang.",
+          "Hajm, uslub va formatni ko'rsating.",
+          "Natijani baholash uchun mezon qo'shing."
+        ]
+      },
+      {
+        "title": "2. Vazifaga mos vositani tanlang",
+        "body": [
+          "Oddiy matn, reja va g'oya uchun ommabop suhbat AI'larining bepul rejasi yetarli bo'lishi mumkin. Google xizmatlari bilan ishlashda Gemini, uzun hujjatlar bilan ishlashda Claude, dastur kodi bilan ishlashda esa maxsus kod muharriri qulay bo'lishi mumkin.",
+          "Bitta brendga bog'lanib qolmang: muhim ishda bir xil savolni ikki vositada sinab, natijalarni solishtiring. Funksiyalar va limitlar tez o'zgaradi, shuning uchun rasmiy yordam sahifasini tekshiring."
+        ]
+      },
+      {
+        "title": "3. Xavfsiz ishlash qoidalari",
+        "body": [
+          "AI suhbatiga pasport, karta, parol, yopiq shartnoma, mijozlar ro'yxati yoki ish joyingizning maxfiy ma'lumotini yubormang. Hujjat kerak bo'lsa, shaxsiy va maxfiy qismlarni avval olib tashlang.",
+          "Tibbiy, huquqiy va moliyaviy qarorni faqat AI javobiga asoslamang. Bunday javob boshlang'ich tushuntirish bo'lishi mumkin, yakuniy maslahat emas."
+        ],
+        "steps": [
+          "Maxfiy ma'lumotni olib tashlang yoki almashtiring.",
+          "Muhim faktlar uchun manba so'rang.",
+          "Manbani alohida ochib tekshiring.",
+          "Yakuniy qarorni mas'ul mutaxassis bilan tasdiqlang."
+        ],
+        "tip": "AI ishonchli ohangda xato javob berishi mumkin. Ishonchli ohang — fakt to'g'ri degani emas."
+      },
+      {
+        "title": "4. Birinchi amaliy mashq",
+        "body": [
+          "O'zingiz biladigan mavzuni tanlang. AI'dan shu mavzu bo'yicha reja tayyorlashni so'rang, keyin javobdagi kamchiliklarni topib, ikkinchi topshiriqda tuzatishni talab qiling. Shu mashq AI bilan iterativ ishlashni ko'rsatadi."
+        ],
+        "example": {
+          "label": "Sinab ko'rish uchun prompt",
+          "text": "Sen amaliy reja tuzuvchi yordamchisan. Men [mavzu]ni [maqsad] uchun o'rganmoqchiman. Hozirgi darajam: [daraja]. Menga 7 kunlik reja tuz. Har kun uchun vazifa, taxminiy vaqt va natijani tekshirish usulini jadvalda ber. Noma'lum joy bo'lsa, avval savol ber."
+        }
+      }
+    ],
+    "faq": [
+      {"question": "Boshlash uchun pullik obuna kerakmi?", "answer": "Yo'q. Asosiy yozish, rejalash va o'rganish mashqlarini ko'p vositalarning bepul rejasi bilan boshlash mumkin. Limit yoki maxsus funksiya kerak bo'lgandagina pullik rejani ko'rib chiqing."},
+      {"question": "AI javobiga ishonish mumkinmi?", "answer": "Javob g'oya va qoralama sifatida foydali, lekin muhim fakt, raqam, iqtibos va qarorlar mustaqil manba bilan tekshirilishi kerak."}
+    ],
+    "sources": [
+      {"title": "Google Gemini Apps yordam markazi", "url": "https://support.google.com/gemini/"},
+      {"title": "OpenAI — ChatGPT bo'yicha yordam", "url": "https://help.openai.com/en/collections/3742473-chatgpt"},
+      {"title": "Anthropic — Claude yordam markazi", "url": "https://support.anthropic.com/"}
+    ],
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan_sana": "2026-08-16",
+    "yangilangan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "chatgpt-uchun-togri-prompt-yozish",
+    "title": "ChatGPT uchun to'g'ri prompt yozish: 5 qismli amaliy formula",
+    "seo_title": "ChatGPT uchun to'g'ri prompt yozish — misollar bilan",
+    "description": "ChatGPT'ga aniq topshiriq berishning rol, vazifa, kontekst, format va mezondan iborat formulasini o'rganing.",
+    "excerpt": "Noaniq savolni aniq promptga aylantirish, javobni bosqichma-bosqich yaxshilash va tayyor prompt shablonlaridan foydalanishni o'rganing.",
+    "intro": "Yaxshi prompt uzun bo'lishi shart emas. U modelga vazifani, kerakli kontekstni va yaxshi natija qanday ko'rinishini tushuntirishi kerak. Eng qulay formula: rol + vazifa + kontekst + format + mezon.",
+    "provider": "chatgpt",
+    "difficulty": "boshlangich",
+    "duration_minutes": 15,
+    "related_category_slug": "openai",
+    "position": 20,
+    "tags": ["ChatGPT", "Prompt", "OpenAI"],
+    "sections": [
+      {
+        "title": "1. Promptning besh qismi",
+        "body": [
+          "Rol modelning qanday nuqtai nazardan javob berishini belgilaydi. Vazifa nima qilish kerakligini, kontekst esa kim uchun va nima sababdan kerakligini aytadi. Format natijani tartiblaydi, mezon esa sifat chegarasini belgilaydi.",
+          "Har bir topshiriqda beshala qism majburiy emas. Oddiy savolda vazifa va format yetadi; murakkab ishda esa kontekst va mezon katta farq qiladi."
+        ],
+        "steps": [
+          "Rol: “Sen tajribali muharrirsan.”",
+          "Vazifa: “Quyidagi matnni qisqartir.”",
+          "Kontekst: “Bu Telegram kanalidagi yangi o'quvchilar uchun.”",
+          "Format: “3 ta qisqa xatboshi va sarlavha ber.”",
+          "Mezon: “Faktlarni o'zgartirma, jargon ishlatma.”"
+        ]
+      },
+      {
+        "title": "2. Noaniq promptni yaxshilash",
+        "body": [
+          "“Biznes reja yoz” kabi promptda mahsulot, auditoriya, bozor va kerakli hajm noma'lum. Model bu bo'shliqlarni taxmin bilan to'ldiradi. Taxminlar ko'paygan sari natija siz istagandan uzoqlashadi.",
+          "Ma'lumot yetishmasa, modeldan javob berishdan oldin savol berishni so'rang. Bu usul murakkab vazifalarda uydirma farazlarni kamaytiradi."
+        ],
+        "example": {
+          "label": "Yaxshilangan prompt",
+          "text": "Sen kichik biznes maslahatchisisan. Toshkentda ofislarga sog'lom tushlik yetkazib berish xizmati uchun bir sahifalik boshlang'ich reja tuz. Auditoriya — 10–50 xodimli kompaniyalar. Jadvalda mijoz muammosi, taklif, sotuv kanali, asosiy xarajat va birinchi 30 kunlik sinovni ko'rsat. Raqamni bilmasang to'qima, taxmin deb belgilagin. Avval yetishmayotgan 3 ta savolni ber."
+        }
+      },
+      {
+        "title": "3. Javobni bir urinishda mukammal kutmang",
+        "body": [
+          "Birinchi javobni qoralama deb ko'ring. Qaysi joy foydali yoki noto'g'ri ekanini ayting va faqat kerakli qismini qayta ishlashni so'rang. OpenAI ham aniq topshiriq va iterativ yaxshilashni tavsiya qiladi.",
+          "“Yaxshiroq yoz” o'rniga “ikkinchi xatboshini 50 so'zga tushir, rasmiy ohangni saqla va bitta aniq misol qo'sh” deyish samaraliroq."
+        ],
+        "steps": [
+          "Birinchi javobdan foydali qismlarni ajrating.",
+          "Bitta muammoni aniq ko'rsating.",
+          "Qayta yozish mezonini bering.",
+          "Yakuniy faktlarni tekshiring."
+        ]
+      },
+      {
+        "title": "4. Kundalik ish uchun shablon",
+        "body": [
+          "Quyidagi shablonni xat, post, reja, tahlil yoki o'quv materiali uchun moslashtirish mumkin. Qavs ichidagi qismlarni o'zingizning ma'lumotingiz bilan almashtiring."
+        ],
+        "example": {
+          "label": "Universal prompt shabloni",
+          "text": "Rol: sen [mutaxassislik] bo'yicha yordamchisan. Vazifa: [aniq natija]. Kontekst: bu [auditoriya] uchun, maqsad [maqsad]. Kirish ma'lumoti: [matn yoki faktlar]. Natijani [format] ko'rinishida ber. Cheklovlar: [hajm, ohang, ishlatmaslik kerak bo'lgan narsalar]. Sifat mezoni: [tekshirish sharti]. Ma'lumot yetishmasa, javobdan oldin savol ber."
+        }
+      }
+    ],
+    "faq": [
+      {"question": "Prompt o'zbek tilida yozilsa natija yomonlashadimi?", "answer": "Ko'p kundalik vazifalarda o'zbekcha prompt yetarli. Juda texnik yoki tor mavzuda atamaning inglizcha variantini qavs ichida qo'shish aniqlikni oshirishi mumkin."},
+      {"question": "Har safar rol berish kerakmi?", "answer": "Yo'q. Rol faqat kerakli nuqtai nazar yoki uslubni aniqlashtirganda foydali. Oddiy fakt savolida u shart emas."}
+    ],
+    "sources": [
+      {"title": "OpenAI — ChatGPT uchun prompt yozish tavsiyalari", "url": "https://help.openai.com/en/articles/10032626-prompt-engineering-best-practices-for-chatgpt"}
+    ],
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan_sana": "2026-08-16",
+    "yangilangan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "google-gemini-bilan-ishlash",
+    "title": "Google Gemini bilan ishlash: birinchi suhbatdan foydali natijagacha",
+    "seo_title": "Google Gemini'dan foydalanish — boshlang'ich qo'llanma",
+    "description": "Gemini'da suhbat boshlash, fayl bilan ishlash, javoblarni tekshirish va maxfiylik sozlamalariga e'tibor berishni o'rganing.",
+    "excerpt": "Gemini'ni oddiy savol-javobdan boshlab reja, tahlil va fayl bilan ishlashda xavfsiz qo'llash uchun amaliy yo'l xaritasi.",
+    "intro": "Gemini — Google'ning suhbat shaklidagi AI ilovasi. Undan g'oya topish, reja tuzish, murakkab matnni soddalashtirish va mavjud funksiyaga qarab fayllarni tahlil qilish uchun foydalanish mumkin. Funksiyalar hisob, hudud va obunaga qarab farq qilishi mumkin.",
+    "provider": "gemini",
+    "difficulty": "boshlangich",
+    "duration_minutes": 14,
+    "related_category_slug": "gemini",
+    "position": 30,
+    "tags": ["Gemini", "Google AI", "Qo'llanma"],
+    "sections": [
+      {
+        "title": "1. Birinchi suhbatni to'g'ri boshlash",
+        "body": [
+          "Gemini veb-ilovasini ochib, vazifani oddiy tilda yozing. Murakkab ishda maqsad, auditoriya va natija formatini alohida ko'rsating. Hisobga kirmasdan ishlash imkoniyati va funksiyalar hududga qarab o'zgarishi mumkin.",
+          "Javob ustida ishlash uchun shu suhbatni davom ettiring: model oldingi kontekstni ko'rib, keyingi tuzatishni tushunadi. Butunlay boshqa vazifa uchun yangi suhbat ochish kontekst aralashishini kamaytiradi."
+        ],
+        "example": {
+          "label": "Birinchi topshiriq",
+          "text": "Men kichik do'kon uchun haftalik Instagram reja tuzmoqchiman. Auditoriya — Toshkentdagi 20–35 yoshli xaridorlar. 7 kunlik jadval tuz: mavzu, post formati, qisqa g'oya va chaqiriq. Umumiy gaplardan qoch. Yetishmayotgan ma'lumot bo'lsa, avval savol ber."
+        }
+      },
+      {
+        "title": "2. Model va funksiyani vazifaga moslang",
+        "body": [
+          "Gemini interfeysida mavjud model tanlovi tezlik, kundalik vazifa yoki murakkab tahlil uchun turlicha bo'lishi mumkin. Model nomlari va limitlari tez yangilanadi; aynan hisobingizda ko'rinayotgan tavsifga qarab tanlang.",
+          "Oddiy xulosa va g'oya uchun tezroq variant yetarli. Murakkab mantiq, kod yoki katta fayl tahlilida kuchliroq model foydali, ammo javob baribir tekshiriladi."
+        ]
+      },
+      {
+        "title": "3. Fayl va manbalar bilan ishlash",
+        "body": [
+          "Fayl yuklash mavjud bo'lsa, “xulosa qil” bilan cheklanmay, kerakli ustun yoki savollarni yozing. Masalan, shartnomada muddat, to'lov, jarima va bekor qilish bandlarini jadvalga ajratishni so'rang.",
+          "Gemini ko'rsatgan havolani ochib, sana va asosiy da'voni manbaning o'zidan tekshiring. Manba borligi javobdagi barcha xulosa avtomatik to'g'ri degani emas."
+        ],
+        "steps": [
+          "Maxfiy qismlarni fayldan olib tashlang.",
+          "Tahlil savollarini oldindan yozing.",
+          "Javobda sahifa yoki bo'limga ishora so'rang.",
+          "Muhim xulosani asl fayl bilan solishtiring."
+        ]
+      },
+      {
+        "title": "4. Faoliyat va maxfiylikni boshqaring",
+        "body": [
+          "Shaxsiy, ish yoki o'quv hisoblarida ma'lumotni qayta ishlash shartlari bir xil bo'lmasligi mumkin. Google'ning Gemini Privacy Hub sahifasini va hisobingizdagi Activity sozlamalarini tekshiring.",
+          "Maxfiy ma'lumot uchun vaqtinchalik suhbat mavjud bo'lsa ham, tashkilotingiz siyosati va ma'lumot turiga mos kelishini avval tekshirish kerak."
+        ],
+        "tip": "Interfeys yoki model nomi o'zgarsa, pastdagi rasmiy manbadan amaldagi ko'rsatmani tekshiring."
+      }
+    ],
+    "faq": [
+      {"question": "Gemini javobidagi manbalarga to'liq ishonish mumkinmi?", "answer": "Yo'q. Havolani ochib, muallif, sana va da'vo manbada haqiqatan borligini tekshiring. AI manbani noto'g'ri talqin qilishi mumkin."},
+      {"question": "Qaysi Gemini modelini tanlash kerak?", "answer": "Kundalik vazifa uchun tez variantdan boshlang. Murakkab tahlil yoki kodlashda hisobingizda mavjud kuchliroq variantni sinang va bir xil prompt bilan natijani solishtiring."}
+    ],
+    "sources": [
+      {"title": "Google — Gemini Apps yordam markazi", "url": "https://support.google.com/gemini/"},
+      {"title": "Google — Gemini Apps Privacy Hub", "url": "https://support.google.com/gemini/answer/13594961"}
+    ],
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan_sana": "2026-08-16",
+    "yangilangan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "claude-bilan-hujjat-tahlil-qilish",
+    "title": "Claude bilan hujjat tahlil qilish: savoldan tekshiruv jadvaligacha",
+    "seo_title": "Claude bilan PDF va hujjat tahlil qilish — qo'llanma",
+    "description": "Claude'ga hujjat yuklash, aniq tahlil savoli berish, sahifa dalillarini so'rash va xulosani tekshirishni o'rganing.",
+    "excerpt": "PDF, DOCX yoki boshqa hujjatni shunchaki qisqartirish emas, balki mezonlar bo'yicha tahlil qilish va dalil bilan tekshirish usuli.",
+    "intro": "Claude uzun matn va hujjatlarni tahlil qilishda yordam berishi mumkin. Sifatli natija uchun faylni yuklashning o'zi yetmaydi: tahlil maqsadi, kerakli maydonlar va dalil formati aniq beriladi. Hujjat turi va hajm limitlari o'zgarishi mumkin.",
+    "provider": "claude",
+    "difficulty": "orta",
+    "duration_minutes": 16,
+    "related_category_slug": "claude",
+    "position": 40,
+    "tags": ["Claude", "Anthropic", "PDF", "Hujjat tahlili"],
+    "sections": [
+      {
+        "title": "1. Hujjatni tayyorlang",
+        "body": [
+          "Skan qilingan PDF matni o'qilmasligi yoki jadval tuzilishi noto'g'ri ajralishi mumkin. Faylni ochib, matn tanlanishini va muhim sahifalar ravshanligini tekshiring.",
+          "Ism, telefon, hisob raqami, tijorat siri va boshqa maxfiy ma'lumotlarni olib tashlang. Tashkilot hujjati bo'lsa, uni tashqi AI xizmatiga yuklashga ruxsat borligini tekshiring."
+        ],
+        "steps": [
+          "Fayl formati va o'qilishini tekshiring.",
+          "Maxfiy ma'lumotni niqoblang.",
+          "Tahlil qilinadigan sahifa yoki bo'limni belgilang.",
+          "Yakuniy natija formatini tanlang."
+        ]
+      },
+      {
+        "title": "2. “Xulosa qil” o'rniga mezon bering",
+        "body": [
+          "Umumiy xulosa muhim bandlarni o'tkazib yuborishi mumkin. Oldindan savollar ro'yxatini bering: tomonlar, muddat, to'lov, majburiyat, istisno, xavf va ochiq savollar.",
+          "Modeldan har bir xulosa yonida sahifa raqami yoki bo'lim nomini ko'rsatishni so'rang. Bu asl hujjat bilan tekshirishni tezlashtiradi."
+        ],
+        "example": {
+          "label": "Hujjat tahlili uchun prompt",
+          "text": "Ushbu hujjatni huquqiy maslahat bermasdan axborot tahlili sifatida ko'rib chiq. Jadvalda: mavzu, hujjatdagi qoida, tomon uchun amaliy ta'sir, sahifa/bo'lim va aniqlashtirilishi kerak bo'lgan savolni ber. Hujjatda yo'q ma'lumotni taxmin qilma. To'lov, muddat, bekor qilish va javobgarlik bandlarini alohida ajrat."
+        }
+      },
+      {
+        "title": "3. Qarama-qarshilik va bo'shliqlarni toping",
+        "body": [
+          "Birinchi tahlildan keyin qarama-qarshi bandlar, aniqlanmagan atamalar va sanalar o'rtasidagi farqlarni alohida so'rang. Bu yakuniy xulosa emas, tekshiruv ro'yxati bo'ladi.",
+          "AI topmagan muammo yo'q degani emas. Muhim shartnoma, moliyaviy hisobot yoki tibbiy hujjat mutaxassis tomonidan ko'rib chiqilishi kerak."
+        ]
+      },
+      {
+        "title": "4. Natijani tekshiring va qayta ishlating",
+        "body": [
+          "Jadvaldagi har bir muhim bandni asl sahifadan tekshiring. Noto'g'ri ishora bo'lsa, modelga tegishli parchani berib tuzatishni so'rang. So'ng rahbar, mijoz yoki jamoa uchun alohida qisqa versiya tayyorlating.",
+          "Bir xil hujjatlar muntazam keladigan bo'lsa, tekshirilgan savollar ro'yxatini shablon sifatida saqlang. Faylning o'zini emas, xavfsiz prompt va mezonlarni qayta ishlating."
+        ]
+      }
+    ],
+    "faq": [
+      {"question": "Claude hujjat bo'yicha yakuniy huquqiy xulosa bera oladimi?", "answer": "U bandlarni topish va savollar ro'yxatini tuzishda yordam beradi, lekin yakuniy huquqiy xulosa malakali mutaxassis tomonidan berilishi kerak."},
+      {"question": "Katta hujjatni bir marta yuklash kerakmi?", "answer": "Rasmiy limit va hujjat tuzilishiga qarab bo'limlarga ajratish foydali bo'lishi mumkin. Har bir bo'lim uchun bir xil mezon ishlating, oxirida umumiy taqqoslash qiling."}
+    ],
+    "sources": [
+      {"title": "Anthropic — Claude.ai qo'llaydigan hujjat turlari", "url": "https://support.anthropic.com/en/articles/8241126-what-kinds-of-documents-can-i-upload-to-claude-ai"}
+    ],
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan_sana": "2026-08-16",
+    "yangilangan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "cursor-ai-bilan-kod-yozish",
+    "title": "Cursor AI bilan kod yozish: xavfsiz va nazorat qilinadigan ish jarayoni",
+    "seo_title": "Cursor AI bilan kod yozish — boshlang'ich amaliy qo'llanma",
+    "description": "Cursor'da loyiha ochish, AI'ga kichik vazifa berish, diffni tekshirish va test bilan xatoni kamaytirishni o'rganing.",
+    "excerpt": "AI kod muharriridan foydalanishda eng muhim qoida — kichik o'zgarish, ko'rinadigan diff, majburiy test va qaytarish mumkin bo'lgan commit.",
+    "intro": "Cursor kod bazasini tushunishga yordam beradigan AI muharriridir. U kod yozishi va fayllarni o'zgartirishi mumkin, lekin ishlab chiqarilgan kod avtomatik ravishda xavfsiz yoki to'g'ri bo'lmaydi. Vazifani kichraytirish va har o'zgarishni tekshirish asosiy ish usulidir.",
+    "provider": "cursor",
+    "difficulty": "orta",
+    "duration_minutes": 18,
+    "related_category_slug": "dasturlash",
+    "position": 50,
+    "tags": ["Cursor", "AI Dasturlash", "Kod", "Git"],
+    "sections": [
+      {
+        "title": "1. Loyihani xavfsiz tayyorlang",
+        "body": [
+          "Mavjud loyihani ochishdan oldin Git holatini tekshiring va o'zingizning o'zgarishlaringizni commit qiling. Shunda AI noto'g'ri o'zgartirish qilsa, farqni ko'rish va qaytarish oson bo'ladi.",
+          "`.env`, kalitlar, foydalanuvchi ma'lumoti va production bazasi nusxasini kontekstga kiritmang. Maxfiy fayllar loyiha ignore qoidalarida borligini tekshiring."
+        ],
+        "steps": [
+          "Git statusni tekshiring.",
+          "Ishlayotgan holat uchun commit yarating.",
+          "Test buyrug'ini oldindan ishga tushiring.",
+          "Maxfiy fayllarni kontekstdan chiqaring."
+        ]
+      },
+      {
+        "title": "2. Katta topshiriqni kichik qadamga bo'ling",
+        "body": [
+          "“Ilovani yaxshila” kabi vazifa juda keng. Bitta endpoint, komponent yoki xatoni tanlang. Qaysi fayllar tegishi mumkinligi, qabul mezoni va ishlatiladigan testni yozing.",
+          "Avval reja so'rash foydali: agent kodni o'zgartirmasdan sabab, tegishli fayllar va test rejasini tushuntirsin. Rejani ko'rib chiqqachgina implementatsiyani boshlating."
+        ],
+        "example": {
+          "label": "Kod vazifasi uchun prompt",
+          "text": "Avval faqat tahlil qil, fayllarni o'zgartirma. Login formasida server xatosi foydalanuvchiga ko'rinmayapti. Sababini top, tegishli fayllarni sanab ber va eng kichik tuzatish hamda test rejasini yoz. Mavjud API formatini o'zgartirma. Men rejani tasdiqlagandan keyin kodga o'tamiz."
+        }
+      },
+      {
+        "title": "3. Diffni satrma-satr tekshiring",
+        "body": [
+          "AI yozgan kodni natija ishlayotgani uchun darhol qabul qilmang. Keraksiz fayl o'zgarishi, yashirin konfiguratsiya, olib tashlangan tekshiruv, yangi dependency va xato boshqaruvini ko'ring.",
+          "Tushunmagan kodni modeldan sodda tilda izohlashni so'rang, ammo izohning o'zi tekshiruv emas. Rasmiy kutubxona hujjati va mavjud loyiha uslubiga solishtiring."
+        ],
+        "steps": [
+          "O'zgargan fayllar ro'yxatini tekshiring.",
+          "Har diff blokining vazifaga aloqasini aniqlang.",
+          "Xavfsizlik va xato holatlarini ko'ring.",
+          "Keraksiz dependency yoki refaktorlarni olib tashlang."
+        ]
+      },
+      {
+        "title": "4. Test — yakuniy shart",
+        "body": [
+          "Agentdan mavjud testlarni ishga tushirishni va yangi xatti-harakat uchun test qo'shishni so'rang. Faqat yangi test emas, butun tegishli test to'plami o'tishi kerak.",
+          "Test natijasini o'zingiz ko'ring. So'ng kichik, mazmunli commit yarating. Katta avtomatik o'zgarishni bitta commitga yashirish keyingi tekshiruvni qiyinlashtiradi."
+        ],
+        "tip": "AI tezlik beradi; javobgarlik esa kodni qabul qilgan odamda qoladi."
+      }
+    ],
+    "faq": [
+      {"question": "Cursor dasturlashni bilmagan odam uchun yetarlimi?", "answer": "Prototipni tezlashtirishi mumkin, lekin xato, xavfsizlik va deployment muammolarini baholash uchun asosiy dasturlash hamda Git tushunchalari baribir kerak."},
+      {"question": "Agentga butun loyihani o'zgartirishga ruxsat berish kerakmi?", "answer": "Avval kichik va qaytariladigan vazifadan boshlang. Reja, diff va test nazorati shakllangandan keyingina kengroq vazifa bering."}
+    ],
+    "sources": [
+      {"title": "Cursor — o'rnatish qo'llanmasi", "url": "https://docs.cursor.com/get-started/installation"},
+      {"title": "Cursor — 5 daqiqalik boshlang'ich qo'llanma", "url": "https://docs.cursor.com/en/get-started/quickstart"}
+    ],
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan_sana": "2026-08-16",
+    "yangilangan": "2026-08-16",
+    "chop_etilgan": true
+  }
+]

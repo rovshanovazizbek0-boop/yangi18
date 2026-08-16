@@ -95,6 +95,42 @@ class ToolOut(ToolSummaryOut):
     news_category_slug: str | None
 
 
+class GuideSummaryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    slug: str
+    title: str
+    seo_title: str
+    description: str
+    excerpt: str
+    provider: str
+    difficulty: str
+    duration_minutes: int
+    tags: list
+    related_category_slug: str | None
+    generation_type: str
+    source_article_id: int | None
+    verified_at: datetime | None
+    published_at: datetime | None
+    updated_at: datetime
+
+    @field_serializer("verified_at", "published_at", "updated_at")
+    def _dates_as_utc(self, value: datetime | None) -> str | None:
+        if value is None:
+            return None
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.isoformat()
+
+
+class GuideOut(GuideSummaryOut):
+    intro: str
+    sections: list
+    faq: list
+    sources: list
+
+
 class StatsOut(BaseModel):
     jami: int
     kutilmoqda: int

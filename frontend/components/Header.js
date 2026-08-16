@@ -7,11 +7,18 @@ export default async function Header() {
   // Backend vaqtincha ishlamasa statik sahifalar ham yiqilib ketmasin.
   // Kontent sahifalarining o'zi API xatosini yashirmay error boundary'ga beradi.
   let categories = [];
+  let hasTools = false;
   try {
     categories = (await apiGet("/api/categories")) || [];
   } catch (error) {
     unstable_rethrow(error);
     console.error("Header kategoriyalarini olib bo'lmadi:", error);
+  }
+  try {
+    hasTools = ((await apiGet("/api/tools")) || []).length > 0;
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("Header vositalarini olib bo'lmadi:", error);
   }
 
   return (
@@ -26,11 +33,19 @@ export default async function Header() {
           </Link>
           <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
             <Link
-              href="/vositalar"
-              className="flex items-center gap-1.5 text-sm text-slate-300 transition-colors hover:text-blue-400"
+              href="/organish"
+              className="flex items-center gap-1.5 text-sm font-semibold text-emerald-400 transition-colors hover:text-emerald-300"
             >
-              🧰 AI vositalari
+              🎓 AI&apos;ni o&apos;rganish
             </Link>
+            {hasTools && (
+              <Link
+                href="/vositalar"
+                className="flex items-center gap-1.5 text-sm text-slate-300 transition-colors hover:text-blue-400"
+              >
+                🧰 AI vositalari
+              </Link>
+            )}
             <a
               href="https://t.me/aixabarlari"
               target="_blank"
@@ -82,6 +97,12 @@ export default async function Header() {
             </span>
           </summary>
           <nav className="mt-2 grid grid-cols-2 gap-2 text-sm" aria-label="Mobil AI mavzulari">
+            <Link
+              href="/organish"
+              className="col-span-2 rounded-lg border border-emerald-800 bg-emerald-500/5 px-3 py-2 font-semibold text-emerald-400"
+            >
+              🎓 AI&apos;ni o&apos;rganish
+            </Link>
             {categories.map((cat) => (
               <Link
                 key={cat.slug}

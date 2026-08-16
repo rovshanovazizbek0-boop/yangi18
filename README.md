@@ -149,6 +149,9 @@ Sahifalar:
 - `/` — so'nggi yangiliklar, Top 10, bugungi dayjest, trend mavzular, qidiruv
 - `/kategoriya/[slug]` — kategoriya bo'yicha
 - `/maqola/[slug]` — to'liq maqola (SEO meta, teglar, ulashish)
+- `/organish` — AI vositalarini o'rganish uchun tekshirilgan qo'llanmalar
+- `/organish/[slug]` — qadamlar, prompt misollari, FAQ, rasmiy manbalar va tegishli trendlar
+- `/vositalar` — AI vositalari katalogi
 - `/qidiruv?q=...` — qidiruv
 - `/admin` — admin panel (token bilan kirish)
 
@@ -174,6 +177,9 @@ Bot funksiyalari: 📰 bugungi yangiliklar · 🗓 haftalik dayjest · 📂 kate
 | GET | `/api/news/search?q=` | Qidiruv |
 | GET | `/api/news/{slug}` | Bitta maqola |
 | GET | `/api/categories` | Kategoriyalar |
+| GET | `/api/guides` | Chop etilgan qo'llanmalar (`provider`, `kategoriya`, `limit`) |
+| GET | `/api/guides/{slug}` | Bitta to'liq qo'llanma |
+| GET | `/api/tools` | AI vositalari katalogi |
 | GET | `/health` | API, baza va oxirgi pipeline holati |
 | GET | `/api/admin/articles` | Admin: maqolalar ro'yxati (`X-Admin-Token`) |
 | PUT | `/api/admin/articles/{id}` | Admin: tahrirlash |
@@ -183,6 +189,15 @@ Bot funksiyalari: 📰 bugungi yangiliklar · 🗓 haftalik dayjest · 📂 kate
 | GET | `/api/admin/stats` | Admin: statistika |
 
 To'liq interaktiv hujjatlar: `http://localhost:8000/docs`
+
+### Kunlik AI qo'llanma
+
+`AUTO_DAILY_GUIDE=true` bo'lsa pipeline Toshkent kuni bo'yicha kuniga ko'pi
+bilan bitta qo'llanma yaratadi. Manba sifatida oxirgi 72 soatdagi eng muhim,
+hali ishlatilmagan chop etilgan maqola olinadi. Natija kamida 4 bo'lim, FAQ,
+teglar va yaroqli manba URL'i bo'yicha alohida quality gate'dan o'tgandagina
+`/organish` bo'limiga avtomatik chiqadi. Holati `/health` ichidagi
+`pipeline.last_run.daily_guide_status` maydonida ko'rinadi.
 
 ## Ish oqimi (workflow)
 

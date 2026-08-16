@@ -7,6 +7,7 @@ import { apiGet } from "../../../lib/api";
 import { formatDateTime } from "../../../lib/date";
 import { SITE_URL, SITE_NAME } from "../../../lib/site";
 import { serializeJsonLd } from "../../../lib/json-ld.mjs";
+import { seoDescription } from "../../../lib/seo.mjs";
 
 const getArticle = cache((slug) => apiGet(`/api/news/${slug}`));
 
@@ -16,11 +17,12 @@ export async function generateMetadata({ params }) {
   if (!article) notFound();
 
   const title = article.seo_title || article.title;
+  const description = seoDescription(article.summary);
   const url = `/maqola/${article.slug}`;
 
   return {
     title,
-    description: article.summary,
+    description,
     keywords: article.tags || [],
     alternates: { canonical: url },
     openGraph: {
@@ -29,7 +31,7 @@ export async function generateMetadata({ params }) {
       siteName: SITE_NAME,
       locale: "uz_UZ",
       title,
-      description: article.summary,
+      description,
       publishedTime: article.published_at || article.created_at,
       section: article.category?.name,
       tags: article.tags || [],
@@ -37,7 +39,7 @@ export async function generateMetadata({ params }) {
     twitter: {
       card: "summary_large_image",
       title,
-      description: article.summary,
+      description,
     },
   };
 }
@@ -79,6 +81,9 @@ export default async function ArticlePage({ params }) {
   const stars = "⭐".repeat(Math.max(1, Math.min(5, article.importance)));
   const date = formatDateTime(article.published_at);
   const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(`${SITE_URL}/maqola/${article.slug}`)}&text=${encodeURIComponent(article.title)}`;
+  const relatedGuides = article.category
+    ? (await apiGet("/api/guides", { kategoriya: article.category.slug, limit: 2 })) || []
+    : [];
 
   return (
     <article className="mx-auto max-w-3xl py-8">
@@ -131,6 +136,22 @@ export default async function ArticlePage({ params }) {
           <div className="mb-1 text-sm font-bold text-blue-400">💡 BU NIMA DEGANI?</div>
           <p className="text-slate-200">{article.practical_note}</p>
         </div>
+      )}
+
+      {relatedGuides.length > 0 && (
+        <section className="mb-8 rounded-xl border border-emerald-900 bg-emerald-500/5 p-5">
+          <div className="mb-3 text-sm font-bold text-emerald-400">🎓 SHU MAVZUNI O&apos;RGANING</div>
+          <div className="space-y-3">
+            {relatedGuides.map((guide) => (
+              <div key={guide.id}>
+                <Link href={`/organish/${guide.slug}`} className="font-semibold text-slate-100 hover:text-emerald-400">
+                  {guide.title} →
+                </Link>
+                <p className="mt-1 text-sm text-slate-400">{guide.excerpt}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       <div className="mb-6 flex flex-wrap gap-2">

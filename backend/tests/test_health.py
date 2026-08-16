@@ -51,6 +51,9 @@ class HealthResponseTests(unittest.TestCase):
             "auto_telegram",
             "auto_telegram_min_importance",
             "auto_telegram_max_age_hours",
+            "auto_daily_guide",
+            "daily_guide_min_importance",
+            "daily_guide_lookback_hours",
         ):
             self.assertIn(key, publish)
 
@@ -63,6 +66,7 @@ class HealthResponseTests(unittest.TestCase):
         self.assertIn("last_error", pipeline)
         self.assertIn("saved", pipeline["last_run"])
         self.assertIn("telegram_sent", pipeline["last_run"])
+        self.assertIn("daily_guide_status", pipeline["last_run"])
 
     def test_active_model_is_reported(self):
         self.assertTrue(self.body()["pipeline"]["last_run"]["model"])

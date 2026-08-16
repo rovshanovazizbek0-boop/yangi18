@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { cache } from "react";
 import { apiGet } from "../../lib/api";
 import { SITE_NAME, SITE_URL } from "../../lib/site";
 import { categoryName, hasUzData, NOT_CHECKED, yesNo } from "../../lib/tools";
 import { serializeJsonLd } from "../../lib/json-ld.mjs";
 
-export const metadata = {
+const getTools = cache(() => apiGet("/api/tools"));
+
+const BASE_METADATA = {
   title: "AI vositalari katalogi — narxi va O'zbekistonda ishlashi",
   description:
     "ChatGPT, Claude, Gemini va boshqa sun'iy intellekt xizmatlari: nima qiladi, " +
@@ -18,6 +21,16 @@ export const metadata = {
     url: "/vositalar",
   },
 };
+
+export async function generateMetadata() {
+  const tools = (await getTools()) || [];
+  return {
+    ...BASE_METADATA,
+    robots: tools.length > 0
+      ? { index: true, follow: true }
+      : { index: false, follow: true },
+  };
+}
 
 function collectionJsonLd(tools) {
   return {
@@ -75,7 +88,7 @@ function ToolCard({ tool }) {
 
 export default async function ToolsPage() {
   const [tools, categories] = await Promise.all([
-    apiGet("/api/tools"),
+    getTools(),
     apiGet("/api/tools/kategoriyalar"),
   ]);
   const list = tools || [];

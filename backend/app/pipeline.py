@@ -19,6 +19,7 @@ from sqlalchemy import text
 
 from .config import (
     AI_PROVIDER,
+    AUTO_DAILY_GUIDE,
     AUTO_PUBLISH,
     AUTO_PUBLISH_MIN_IMPORTANCE,
     AUTO_TELEGRAM,
@@ -34,6 +35,7 @@ from .seed import seed_categories
 from .services.ai_agent import active_model, analyze_news
 from .services.collector import collect_news, fetch_og_image
 from .services.image_gen import generate_image
+from .services.daily_guide import create_daily_guide
 from .services.quality import evaluate_candidate
 from .services.telegram import send_to_channel
 from .utils import slugify
@@ -51,6 +53,9 @@ LAST_RUN: dict = {
     "telegram_skipped_old": None,
     "last_analysis_error": None,
     "last_telegram_error": None,
+    "daily_guide_status": None,
+    "daily_guide_slug": None,
+    "last_daily_guide_error": None,
     "skipped_locked": False,
 }
 
@@ -184,6 +189,9 @@ def _run_pipeline_unlocked(per_feed: int = PIPELINE_PER_FEED) -> int:
         "telegram_skipped_old": 0,
         "last_analysis_error": None,
         "last_telegram_error": None,
+        "daily_guide_status": "disabled" if not AUTO_DAILY_GUIDE else "pending",
+        "daily_guide_slug": None,
+        "last_daily_guide_error": None,
         "skipped_locked": False,
     })
     try:
@@ -275,6 +283,22 @@ def _run_pipeline_unlocked(per_feed: int = PIPELINE_PER_FEED) -> int:
                     except Exception as error:
                         LAST_RUN["last_telegram_error"] = format_error(error)
                         print(f"   ERROR: Telegram xatosi: {error}")
+
+        if AUTO_DAILY_GUIDE:
+            try:
+                guide_result = create_daily_guide(db)
+                LAST_RUN["daily_guide_status"] = guide_result["status"]
+                LAST_RUN["daily_guide_slug"] = guide_result.get("slug")
+                if guide_result["status"] == "created":
+                    print(f"   OK: Kunlik AI qo'llanma yaratildi: {guide_result['slug']}")
+                elif guide_result["status"] == "already_created":
+                    print("   SKIP: Bugungi AI qo'llanma avval yaratilgan")
+                else:
+                    print("   SKIP: Kunlik qo'llanma uchun yangi manba topilmadi")
+            except Exception as error:
+                LAST_RUN["daily_guide_status"] = "error"
+                LAST_RUN["last_daily_guide_error"] = format_error(error)
+                print(f"   ERROR: Kunlik AI qo'llanma xatosi: {error}")
 
         if fresh and saved == 0 and analysis_errors == len(fresh):
             raise RuntimeError("Barcha yangi yangiliklar AI tahlilida xatoga uchradi")

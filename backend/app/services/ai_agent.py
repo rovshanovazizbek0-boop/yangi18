@@ -84,15 +84,16 @@ ANALYSIS_SCHEMA = {
 }
 
 
-def _google_schema() -> dict:
+def _google_schema(source_schema: dict | None = None) -> dict:
     """Gemini va Vertex uchun schema.
 
     `propertyOrdering` bo'lmasa Google modellari maydonlarni o'z bilganicha
     (ko'pincha alifbo tartibida) yozadi — unda "ahamiyati" eng birinchi
     chiqadi va baho maqola yozilishidan oldin qo'yiladi.
     """
-    schema = {k: v for k, v in ANALYSIS_SCHEMA.items() if k != "additionalProperties"}
-    schema["propertyOrdering"] = list(ANALYSIS_SCHEMA["properties"])
+    source_schema = source_schema or ANALYSIS_SCHEMA
+    schema = {k: v for k, v in source_schema.items() if k != "additionalProperties"}
+    schema["propertyOrdering"] = list(source_schema["properties"])
     return schema
 
 
@@ -107,20 +108,25 @@ def _validate(analysis: dict) -> dict:
     return analysis
 
 
-def _analyze_with_gemini(user_text: str) -> dict:
+def _analyze_with_gemini(
+    user_text: str,
+    *,
+    system_prompt: str = SYSTEM_PROMPT,
+    response_schema: dict = ANALYSIS_SCHEMA,
+) -> dict:
     """Gemini API (generateContent) — strukturali JSON javob bilan."""
     if not GEMINI_API_KEY:
         raise RuntimeError("GEMINI_API_KEY sozlanmagan")
 
     # Gemini responseSchema OpenAPI kichik to'plami — additionalProperties kerak emas
-    schema = _google_schema()
+    schema = _google_schema(response_schema)
 
     url = (
         "https://generativelanguage.googleapis.com/v1beta/models/"
         f"{GEMINI_MODEL}:generateContent"
     )
     payload = {
-        "systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "systemInstruction": {"parts": [{"text": system_prompt}]},
         "contents": [{"role": "user", "parts": [{"text": user_text}]}],
         "generationConfig": {
             "responseMimeType": "application/json",
@@ -150,7 +156,12 @@ _vertex_credentials = None
 _vertex_project = ""
 
 
-def _analyze_with_vertex(user_text: str) -> dict:
+def _analyze_with_vertex(
+    user_text: str,
+    *,
+    system_prompt: str = SYSTEM_PROMPT,
+    response_schema: dict = ANALYSIS_SCHEMA,
+) -> dict:
     """Vertex AI generateContent — ADC/service account bilan server autentifikatsiyasi."""
     global _vertex_credentials, _vertex_project
 
@@ -169,14 +180,14 @@ def _analyze_with_vertex(user_text: str) -> dict:
     if not _vertex_credentials.valid:
         _vertex_credentials.refresh(Request())
 
-    schema = _google_schema()
+    schema = _google_schema(response_schema)
     url = (
         "https://aiplatform.googleapis.com/v1/projects/"
         f"{_vertex_project}/locations/{GOOGLE_CLOUD_LOCATION}/publishers/google/models/"
         f"{VERTEX_GEMINI_MODEL}:generateContent"
     )
     payload = {
-        "systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "systemInstruction": {"parts": [{"text": system_prompt}]},
         "contents": [{"role": "user", "parts": [{"text": user_text}]}],
         "generationConfig": {
             "responseMimeType": "application/json",
@@ -203,21 +214,30 @@ def _analyze_with_vertex(user_text: str) -> dict:
     return json.loads(text)
 
 
-def _analyze_with_claude(user_text: str) -> dict:
+def _analyze_with_claude(
+    user_text: str,
+    *,
+    system_prompt: str = SYSTEM_PROMPT,
+    response_schema: dict = ANALYSIS_SCHEMA,
+) -> dict:
     """Claude API — strukturali JSON javob bilan."""
     import anthropic  # ixtiyoriy provayder — faqat kerak bo'lganda import qilinadi
 
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY or None)
-    schema = dict(ANALYSIS_SCHEMA)
+    schema = dict(response_schema)
     schema["properties"] = dict(schema["properties"])
-    schema["properties"]["ahamiyati"] = {"type": "integer", "enum": [1, 2, 3, 4, 5]}
+    if "ahamiyati" in schema["properties"]:
+        schema["properties"]["ahamiyati"] = {
+            "type": "integer",
+            "enum": [1, 2, 3, 4, 5],
+        }
 
     response = client.messages.create(
         model=CLAUDE_MODEL,
         max_tokens=8192,
         system=[{
             "type": "text",
-            "text": SYSTEM_PROMPT,
+            "text": system_prompt,
             "cache_control": {"type": "ephemeral"},
         }],
         output_config={"format": {"type": "json_schema", "schema": schema}},
@@ -245,15 +265,40 @@ def active_model() -> str:
     return GEMINI_MODEL
 
 
+def generate_structured(
+    user_text: str,
+    *,
+    system_prompt: str,
+    response_schema: dict,
+) -> dict:
+    """Faol provayderdan berilgan schema bo'yicha JSON javob oladi."""
+    if AI_PROVIDER == "claude":
+        return _analyze_with_claude(
+            user_text,
+            system_prompt=system_prompt,
+            response_schema=response_schema,
+        )
+    if AI_PROVIDER == "vertex":
+        return _analyze_with_vertex(
+            user_text,
+            system_prompt=system_prompt,
+            response_schema=response_schema,
+        )
+    return _analyze_with_gemini(
+        user_text,
+        system_prompt=system_prompt,
+        response_schema=response_schema,
+    )
+
+
 def analyze_news(title: str, content: str, url: str = "", source: str = "") -> dict:
     """Bitta yangilikni tahlil qilib, o'zbekcha tayyor maqola ma'lumotlarini qaytaradi."""
     user_text = f"Title: {title}\nSource: {source}\nURL: {url}\n\n{content}"
 
-    if AI_PROVIDER == "claude":
-        analysis = _analyze_with_claude(user_text)
-    elif AI_PROVIDER == "vertex":
-        analysis = _analyze_with_vertex(user_text)
-    else:
-        analysis = _analyze_with_gemini(user_text)
+    analysis = generate_structured(
+        user_text,
+        system_prompt=SYSTEM_PROMPT,
+        response_schema=ANALYSIS_SCHEMA,
+    )
 
     return _validate(analysis)

@@ -22,6 +22,19 @@ class SchemaOrderTests(unittest.TestCase):
     def test_google_schema_drops_unsupported_keyword(self):
         self.assertNotIn("additionalProperties", _google_schema())
 
+    def test_custom_schema_gets_its_own_property_order(self):
+        custom = {
+            "type": "object",
+            "properties": {"title": {"type": "string"}, "body": {"type": "string"}},
+            "required": ["title", "body"],
+            "additionalProperties": False,
+        }
+
+        result = _google_schema(custom)
+
+        self.assertEqual(result["propertyOrdering"], ["title", "body"])
+        self.assertNotIn("additionalProperties", result)
+
     def test_prompt_states_the_whole_scale(self):
         for level in ("1 —", "2 —", "3 —", "4 —", "5 —"):
             self.assertIn(level, SYSTEM_PROMPT)

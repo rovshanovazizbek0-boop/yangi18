@@ -89,6 +89,12 @@ AUTO_TELEGRAM_MIN_IMPORTANCE = int(os.getenv("AUTO_TELEGRAM_MIN_IMPORTANCE", "4"
 # kerak. 0 qilinsa cheklov o'chadi.
 AUTO_TELEGRAM_MAX_AGE_HOURS = int(os.getenv("AUTO_TELEGRAM_MAX_AGE_HOURS", "48"))
 
+# Har tahririy kunda eng muhim, hali ishlatilmagan maqoladan bitta amaliy
+# qo'llanma yaratish. Alohida quality gate sifatsiz natijani chop ettirmaydi.
+AUTO_DAILY_GUIDE = _bool("AUTO_DAILY_GUIDE", "true")
+DAILY_GUIDE_MIN_IMPORTANCE = int(os.getenv("DAILY_GUIDE_MIN_IMPORTANCE", "2"))
+DAILY_GUIDE_LOOKBACK_HOURS = int(os.getenv("DAILY_GUIDE_LOOKBACK_HOURS", "72"))
+
 # Rasm topilmaganda Gemini bilan generatsiya qilish (pullik — standart o'chiq)
 IMAGE_GENERATION = _bool("IMAGE_GENERATION", "false")
 GEMINI_IMAGE_MODEL = os.getenv("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-image")

@@ -32,23 +32,48 @@ async function fetchAllArticles() {
   return articles;
 }
 
+function validDate(value) {
+  if (!value) return undefined;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
+
+function newestDate(values) {
+  const dates = values.map(validDate).filter(Boolean);
+  if (dates.length === 0) return undefined;
+  return new Date(Math.max(...dates.map((date) => date.getTime())));
+}
+
 export default async function sitemap() {
-  const [articles, categories, tools] = await Promise.all([
+  const [articles, categories, tools, guides] = await Promise.all([
     fetchAllArticles(),
     fetchJson(`${API_URL}/api/categories`),
     fetchJson(`${API_URL}/api/tools`),
+    fetchJson(`${API_URL}/api/guides?limit=100`),
   ]);
+
+  const newestArticle = newestDate(
+    (articles || []).map((article) => article.published_at || article.created_at),
+  );
+  const categoryDates = new Map();
+  for (const article of articles || []) {
+    const slug = article.category?.slug;
+    const date = validDate(article.published_at || article.created_at);
+    if (!slug || !date) continue;
+    const current = categoryDates.get(slug);
+    if (!current || date > current) categoryDates.set(slug, date);
+  }
 
   const articleUrls = (articles || []).map((article) => ({
     url: `${SITE_URL}/maqola/${article.slug}`,
-    lastModified: article.published_at ? new Date(article.published_at) : new Date(),
+    lastModified: validDate(article.published_at || article.created_at),
     changeFrequency: "weekly",
     priority: 0.7,
   }));
 
   const categoryUrls = (categories || []).map((cat) => ({
     url: `${SITE_URL}/kategoriya/${cat.slug}`,
-    lastModified: new Date(),
+    lastModified: categoryDates.get(cat.slug),
     changeFrequency: "daily",
     priority: 0.8,
   }));
@@ -57,14 +82,25 @@ export default async function sitemap() {
   // yashaydi — shuning uchun ustuvorligi maqoladan yuqori.
   const toolUrls = (tools || []).map((tool) => ({
     url: `${SITE_URL}/vositalar/${tool.slug}`,
-    lastModified: tool.checked_at ? new Date(tool.checked_at) : new Date(),
+    lastModified: validDate(tool.checked_at),
     changeFrequency: "monthly",
     priority: 0.8,
   }));
 
-  const staticUrls = ["/vositalar", "/haqida", "/aloqa", "/maxfiylik"].map((path) => ({
+  const guideUrls = (guides || []).map((guide) => ({
+    url: `${SITE_URL}/organish/${guide.slug}`,
+    lastModified: validDate(guide.updated_at || guide.verified_at || guide.published_at),
+    changeFrequency: "monthly",
+    priority: 0.85,
+  }));
+
+  const newestGuide = newestDate(
+    (guides || []).map((guide) => guide.updated_at || guide.verified_at || guide.published_at),
+  );
+  const staticPaths = ["/haqida", "/aloqa", "/maxfiylik"];
+  if ((tools || []).length > 0) staticPaths.unshift("/vositalar");
+  const staticUrls = staticPaths.map((path) => ({
     url: `${SITE_URL}${path}`,
-    lastModified: new Date(),
     changeFrequency: "monthly",
     priority: 0.4,
   }));
@@ -72,12 +108,19 @@ export default async function sitemap() {
   return [
     {
       url: SITE_URL,
-      lastModified: new Date(),
-      changeFrequency: "always",
+      lastModified: newestArticle,
+      changeFrequency: "hourly",
       priority: 1.0,
+    },
+    {
+      url: `${SITE_URL}/organish`,
+      lastModified: newestGuide,
+      changeFrequency: "weekly",
+      priority: 0.9,
     },
     ...categoryUrls,
     ...toolUrls,
+    ...guideUrls,
     ...staticUrls,
     ...articleUrls,
   ];

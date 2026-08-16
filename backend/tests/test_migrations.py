@@ -29,7 +29,10 @@ class MigrationTests(unittest.TestCase):
             engine = create_engine(url)
             try:
                 tables = set(inspect(engine).get_table_names())
-                self.assertTrue({"alembic_version", "articles", "categories", "tools"} <= tables)
+                self.assertTrue(
+                    {"alembic_version", "articles", "categories", "tools", "guides"}
+                    <= tables
+                )
             finally:
                 engine.dispose()
 

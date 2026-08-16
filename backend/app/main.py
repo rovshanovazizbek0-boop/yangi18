@@ -14,9 +14,12 @@ from .backfill import backfill_tags
 from .config import (
     AUTO_PUBLISH,
     AUTO_PUBLISH_MIN_IMPORTANCE,
+    AUTO_DAILY_GUIDE,
     AUTO_TELEGRAM,
     AUTO_TELEGRAM_MAX_AGE_HOURS,
     AUTO_TELEGRAM_MIN_IMPORTANCE,
+    DAILY_GUIDE_LOOKBACK_HOURS,
+    DAILY_GUIDE_MIN_IMPORTANCE,
     FRONTEND_ORIGIN,
     MEDIA_DIR,
     PIPELINE_INTERVAL,
@@ -27,8 +30,8 @@ from .config import (
 from .database import Base, SessionLocal, engine
 from .models import Article
 from .pipeline import LAST_RUN, format_error, run_pipeline
-from .routers import admin, categories, news, tools
-from .seed import seed_categories, seed_tools
+from .routers import admin, categories, guides, news, tools
+from .seed import seed_categories, seed_guides, seed_tools
 
 PIPELINE_STATE = {
     "status": "not_started",
@@ -79,6 +82,9 @@ async def lifespan(app: FastAPI):
         seeded_tools = seed_tools(db)
         if seeded_tools:
             print(f"Vositalar katalogi yangilandi: {seeded_tools} ta vosita.")
+        seeded_guides = seed_guides(db)
+        if seeded_guides:
+            print(f"AI o'rganish bo'limi yangilandi: {seeded_guides} ta qo'llanma.")
         renamed = backfill_tags(db)
         if renamed:
             print(f"Teglar kanonik ko'rinishga keltirildi: {renamed} ta maqola.")
@@ -114,6 +120,7 @@ app.add_middleware(
 app.include_router(news.router)
 app.include_router(categories.router)
 app.include_router(tools.router)
+app.include_router(guides.router)
 app.include_router(admin.router)
 
 Path(MEDIA_DIR).mkdir(parents=True, exist_ok=True)
@@ -147,6 +154,9 @@ def health():
                 # manba shundan oldin chiqargan maqola saytga chiqadi, lekin
                 # kanalga ketmaydi (last_run.telegram_skipped_old bilan juft).
                 "auto_telegram_max_age_hours": AUTO_TELEGRAM_MAX_AGE_HOURS,
+                "auto_daily_guide": AUTO_DAILY_GUIDE,
+                "daily_guide_min_importance": DAILY_GUIDE_MIN_IMPORTANCE,
+                "daily_guide_lookback_hours": DAILY_GUIDE_LOOKBACK_HOURS,
             },
             "pipeline": {**PIPELINE_STATE, "last_run": LAST_RUN},
         }

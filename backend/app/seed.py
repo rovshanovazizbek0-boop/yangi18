@@ -4,9 +4,10 @@ from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-from .models import Category, Tool
+from .models import Category, Guide, Tool
 
 TOOLS_FILE = Path(__file__).with_name("tools_seed.json")
+GUIDES_FILE = Path(__file__).with_name("guides_seed.json")
 
 # Fayldan bazaga ko'chiriladigan maydonlar. `status` bu ro'yxatda yo'q — u
 # alohida, `chop_etilgan` bayrog'i orqali boshqariladi.
@@ -14,6 +15,12 @@ _TOOL_FIELDS = (
     "name", "vendor", "tagline", "description", "tool_category",
     "free_tier", "plans", "uz", "alternatives", "official_url",
     "logo_url", "news_category_slug",
+)
+
+_GUIDE_FIELDS = (
+    "title", "seo_title", "description", "excerpt", "intro", "sections",
+    "faq", "sources", "tags", "provider", "difficulty", "duration_minutes",
+    "related_category_slug", "position",
 )
 
 # TZ bo'yicha kategoriyalar
@@ -96,6 +103,58 @@ def seed_tools(db: Session) -> int:
         if checked_at != tool.checked_at:
             tool.checked_at = checked_at
             dirty = True
+
+        changed += dirty
+
+    if changed:
+        db.commit()
+    return changed
+
+
+def seed_guides(db: Session) -> int:
+    """Tekshirilgan o'quv qo'llanmalarini JSON fayldan idempotent yuklaydi."""
+    if not GUIDES_FILE.exists():
+        return 0
+
+    with GUIDES_FILE.open(encoding="utf-8") as fh:
+        entries = json.load(fh)
+
+    existing = {guide.slug: guide for guide in db.query(Guide).all()}
+    changed = 0
+
+    for entry in entries:
+        slug = entry.get("slug")
+        if not slug:
+            continue
+
+        guide = existing.get(slug)
+        is_new = guide is None
+        if is_new:
+            guide = Guide(slug=slug, status="draft", created_at=datetime.utcnow())
+            db.add(guide)
+
+        dirty = is_new
+        if "chop_etilgan" in entry:
+            status = "published" if entry["chop_etilgan"] else "draft"
+            if guide.status != status:
+                guide.status = status
+                dirty = True
+
+        for field in _GUIDE_FIELDS:
+            if field in entry and getattr(guide, field, None) != entry[field]:
+                setattr(guide, field, entry[field])
+                dirty = True
+
+        date_fields = {
+            "verified_at": "tekshirilgan",
+            "published_at": "chop_etilgan_sana",
+            "updated_at": "yangilangan",
+        }
+        for field, source in date_fields.items():
+            value = _parse_date(entry.get(source))
+            if value is not None and getattr(guide, field, None) != value:
+                setattr(guide, field, value)
+                dirty = True
 
         changed += dirty
 

@@ -89,3 +89,45 @@ class Tool(Base):
     checked_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="published", index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class Guide(Base):
+    """Doimiy o'quv qo'llanmasi.
+
+    Yangiliklardan alohida saqlanadi: yangilik vaqtga bog'liq, qo'llanma esa
+    tekshirilgan sana va rasmiy manbalar bilan muntazam yangilanadi.
+    """
+
+    __tablename__ = "guides"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    slug: Mapped[str] = mapped_column(String(180), unique=True, index=True)
+    title: Mapped[str] = mapped_column(String(240))
+    seo_title: Mapped[str] = mapped_column(String(240), default="")
+    description: Mapped[str] = mapped_column(String(320), default="")
+    excerpt: Mapped[str] = mapped_column(Text, default="")
+    intro: Mapped[str] = mapped_column(Text, default="")
+
+    # [{"title": str, "body": [str], "steps": [str], "example": {...}}]
+    sections: Mapped[list] = mapped_column(JSON, default=list)
+    # [{"question": str, "answer": str}]
+    faq: Mapped[list] = mapped_column(JSON, default=list)
+    # [{"title": str, "url": str}]
+    sources: Mapped[list] = mapped_column(JSON, default=list)
+    tags: Mapped[list] = mapped_column(JSON, default=list)
+
+    provider: Mapped[str] = mapped_column(String(50), default="umumiy", index=True)
+    difficulty: Mapped[str] = mapped_column(String(30), default="boshlangich")
+    duration_minutes: Mapped[int] = mapped_column(Integer, default=10)
+    related_category_slug: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    position: Mapped[int] = mapped_column(Integer, default=100)
+    status: Mapped[str] = mapped_column(String(20), default="draft", index=True)
+    generation_type: Mapped[str] = mapped_column(String(20), default="editorial")
+    source_article_id: Mapped[int | None] = mapped_column(
+        ForeignKey("articles.id"), nullable=True, unique=True, index=True
+    )
+
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    published_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
