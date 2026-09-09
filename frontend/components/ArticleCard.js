@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import ArticleImage from "./ArticleImage";
 import { formatDate } from "../lib/date";
 
 export default function ArticleCard({ article, compact = false, priority = false }) {
@@ -22,22 +22,12 @@ export default function ArticleCard({ article, compact = false, priority = false
 
   return (
     <article className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60 transition hover:border-blue-600">
-      {article.image_url ? (
-        <div className="relative h-44 w-full bg-slate-950">
-          <Image
-            src={article.image_url}
-            alt={`${article.title} maqolasi rasmi`}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 430px"
-            className="object-cover"
-            priority={priority}
-          />
-        </div>
-      ) : (
-        <div className="flex h-44 w-full items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 text-5xl">
-          🤖
-        </div>
-      )}
+      <ArticleImage
+        src={article.image_url}
+        alt={`${article.title} maqolasi rasmi`}
+        priority={priority}
+      />
+
       <div className="p-5">
         <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
           <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 font-semibold text-blue-400">

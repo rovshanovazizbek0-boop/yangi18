@@ -1,8 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import SingleArticleImage from "../../../components/SingleArticleImage";
 import AdPlaceholder from "../../../components/AdPlaceholder";
+
 import { apiGet } from "../../../lib/api";
 import { formatDateTime } from "../../../lib/date";
 import { SITE_URL, SITE_NAME } from "../../../lib/site";
@@ -108,18 +109,11 @@ export default async function ArticlePage({ params }) {
 
       <h1 className="mb-4 text-3xl font-bold leading-tight">{article.title}</h1>
 
-      {article.image_url && (
-        <div className="relative mb-6 aspect-video overflow-hidden rounded-xl bg-slate-900">
-          <Image
-            src={article.image_url}
-            alt={`${article.title} maqolasi rasmi`}
-            fill
-            sizes="(max-width: 768px) 100vw, 768px"
-            className="object-cover"
-            priority
-          />
-        </div>
-      )}
+      <SingleArticleImage
+        src={article.image_url}
+        alt={`${article.title} maqolasi rasmi`}
+      />
+
 
       <p className="mb-6 border-l-4 border-blue-500 pl-4 text-lg leading-relaxed text-slate-200">
         {article.summary}
