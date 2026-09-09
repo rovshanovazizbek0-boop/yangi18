@@ -195,16 +195,31 @@ def _analyze_with_vertex(
             "maxOutputTokens": 8192,
         },
     }
-    response = httpx.post(
-        url,
-        json=payload,
-        headers={"Authorization": f"Bearer {_vertex_credentials.token}"},
-        timeout=120,
-    )
-    if response.status_code != 200:
-        raise RuntimeError(
-            f"Vertex AI xatosi {response.status_code}: {response.text[:300]}"
-        )
+    
+    response = None
+    for attempt in range(3):
+        try:
+            response = httpx.post(
+                url,
+                json=payload,
+                headers={"Authorization": f"Bearer {_vertex_credentials.token}"},
+                timeout=120,
+            )
+            if response.status_code == 429 and attempt < 2:
+                import time
+                time.sleep(5 * (attempt + 1))
+                continue
+            break
+        except Exception:
+            if attempt == 2:
+                raise
+            import time
+            time.sleep(3)
+
+    if response is None or response.status_code != 200:
+        err_msg = response.text[:300] if response else "no response"
+        status = response.status_code if response else "N/A"
+        raise RuntimeError(f"Vertex AI xatosi {status}: {err_msg}")
 
     data = response.json()
     try:

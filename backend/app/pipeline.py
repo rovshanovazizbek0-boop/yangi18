@@ -93,9 +93,18 @@ def pipeline_run_lock():
                         text("SELECT pg_advisory_unlock(:key)"),
                         {"key": _POSTGRES_PIPELINE_LOCK_KEY},
                     )
+            except Exception as lock_err:
+                print(f"   ⚠ pg_advisory_unlock xatosi: {lock_err}")
             finally:
-                connection.close()
-        _PROCESS_PIPELINE_LOCK.release()
+                try:
+                    connection.close()
+                except Exception:
+                    pass
+        try:
+            _PROCESS_PIPELINE_LOCK.release()
+        except RuntimeError:
+            pass
+
 
 
 # Xato matnida maxfiy ma'lumot bo'lishi mumkin: masalan
@@ -204,7 +213,11 @@ def _run_pipeline_unlocked(per_feed: int = PIPELINE_PER_FEED) -> int:
         print(f"   {len(fresh)} ta yangi yangilik topildi.")
 
         for i, news in enumerate(fresh, 1):
+            if i > 1:
+                import time
+                time.sleep(1)
             print(f"AI: [{i}/{len(fresh)}] {news['title'][:65]}")
+
             try:
                 analysis = analyze_news(
                     title=news["title"],
