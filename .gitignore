@@ -13,6 +13,8 @@ frontend/.npm-cache-codex/
 # Muhit fayllari va lokal bazalar
 .env
 *.db
+frontend/.env*.local
+.vscode/
 
 # Maxfiy kalitlar va Google service-account credential fayllari
 *-sa.json

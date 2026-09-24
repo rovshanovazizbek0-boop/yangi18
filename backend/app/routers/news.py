@@ -22,7 +22,11 @@ def local_day_start_utc(now: datetime | None = None) -> datetime:
     current = now or datetime.now(timezone.utc)
     if current.tzinfo is None:
         current = current.replace(tzinfo=timezone.utc)
-    local = current.astimezone(ZoneInfo(APP_TIMEZONE))
+    try:
+        tz = ZoneInfo(APP_TIMEZONE)
+    except Exception:
+        tz = timezone(timedelta(hours=5))
+    local = current.astimezone(tz)
     return local.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(
         timezone.utc
     ).replace(tzinfo=None)

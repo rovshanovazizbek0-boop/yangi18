@@ -42,9 +42,13 @@ def format_post(article: Article, *, compact: bool = False) -> str:
 
 def post_keyboard(article: Article) -> dict:
     """Post ostida katta va aniq Telegram inline tugmalarini qaytaradi."""
+    base_url = (FRONTEND_ORIGIN or "").strip()
+    if not base_url or "localhost" in base_url or "127.0.0.1" in base_url:
+        base_url = "https://aixabar.uz"
+
     rows = [[{
         "text": "📖 Batafsil o‘qish",
-        "url": f"{FRONTEND_ORIGIN.rstrip('/')}/maqola/{article.slug}",
+        "url": f"{base_url.rstrip('/')}/maqola/{article.slug}",
     }]]
     if article.original_url:
         rows.append([{
