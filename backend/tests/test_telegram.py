@@ -9,7 +9,7 @@ os.environ["ADMIN_TOKEN"] = "1234567890123456789012345678901234567890"
 os.environ["DATABASE_URL"] = "sqlite://"
 
 from app.models import Article, Category
-from app.services.telegram import format_post, post_keyboard, send_to_channel
+from app.services.telegram import format_post, notify_subscribers, post_keyboard, send_to_channel
 
 
 class TelegramPostTests(unittest.TestCase):
@@ -116,6 +116,24 @@ class TelegramPostTests(unittest.TestCase):
             send_to_channel(self.article)
 
         self.assertIn("chat not found", str(ctx.exception))
+
+    @patch("app.services.telegram.TELEGRAM_BOT_TOKEN", "test-token")
+    @patch("app.services.telegram.storage.notification_subscribers", return_value=[101, 202])
+    @patch("app.services.telegram.storage.disable_notifications")
+    @patch("app.services.telegram.httpx.post")
+    def test_notify_subscribers_sends_and_disables_blocked_users(
+        self, http_post, disable_mock, _subscribers_mock
+    ):
+        http_post.side_effect = [
+            Mock(json=lambda: {"ok": True}),
+            Mock(json=lambda: {"ok": False, "description": "Forbidden: bot was blocked by the user"}),
+        ]
+
+        sent = notify_subscribers(self.article)
+
+        self.assertEqual(sent, 1)
+        self.assertEqual(http_post.call_count, 2)
+        disable_mock.assert_called_once_with(202)
 
 
 if __name__ == "__main__":

@@ -6,117 +6,334 @@
     "tagline": "Savolga javob beradi, matn yozadi, hujjat va rasmni tahlil qiladi",
     "description": "ChatGPT — OpenAI ishlab chiqqan suhbat shaklidagi sun'iy intellekt xizmati. Unga oddiy tilda savol berasiz yoki topshiriq yozasiz, u esa matn bilan javob qaytaradi: xat yozadi, matnni qisqartiradi, tarjima qiladi, kod yozadi va yuklangan fayl yoki rasm mazmunini tushuntiradi.\n\nXizmat brauzerda ham, telefon ilovasida ham ishlaydi. Bepul reja mavjud, lekin eng kuchli modellar va yuqori limitlar pullik obunada ochiladi.",
     "tool_category": "matn",
-    "free_tier": null,
-    "plans": [],
+    "free_tier": true,
+    "plans": [
+      { "nom": "Plus", "narx_usd": 20, "davr": "oy" },
+      { "nom": "Pro", "narx_usd": 200, "davr": "oy" }
+    ],
     "uz": {
-      "vpn_kerakmi": null,
-      "tolov": null,
-      "tolov_yollari": [],
-      "ozbek_tili": null,
-      "narx_somda": null
+      "vpn_kerakmi": false,
+      "tolov": "O'zbekiston banklarining xalqaro Visa va Mastercard kartalari hamda App Store / Google Play orqali",
+      "tolov_yollari": [
+        "O'zbekiston banklarining xalqaro Visa / Mastercard kartalari (3D Secure yoqilgan bo'lishi kerak)",
+        "iPhone (App Store) yoki Android (Google Play) ilovasi ichida ulangan xalqaro karta orqali"
+      ],
+      "ozbek_tili": {
+        "baho": 5,
+        "izoh": "Lotin va kirill alifbosida ravon yozadi, rasmiy va so'zlashuv uslubini yaxshi ajratadi"
+      },
+      "narx_somda": "Plus reja: oyiga taxminan 255 000 – 265 000 so'm (bank kursiga qarab)"
     },
     "alternatives": [
       "claude",
       "gemini",
-      "deepseek"
+      "deepseek",
+      "grok"
     ],
     "official_url": "https://chatgpt.com",
     "news_category_slug": "openai",
-    "tekshirilgan": null,
-    "chop_etilgan": false
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan": true
   },
   {
     "slug": "claude",
     "name": "Claude",
     "vendor": "Anthropic",
-    "tagline": "Uzun hujjatlar va jiddiy matn ishlari uchun AI yordamchi",
-    "description": "Claude — Anthropic kompaniyasining suhbat shaklidagi AI xizmati. U ayniqsa uzun matnlar bilan ishlashda kuchli: katta hujjatni o'qib chiqib xulosa qiladi, tahlil yozadi, kod yozadi va uni tushuntiradi.\n\nBrauzerda va mobil ilovada ishlaydi. Dasturchilar uchun alohida API mavjud, u orqali Claude'ni o'z dasturiga ulash mumkin.",
+    "tagline": "Uzun hujjatlar, tahlil va dasturlash ishlari uchun kuchli AI yordamchi",
+    "description": "Claude — Anthropic kompaniyasining suhbat shaklidagi AI xizmati. U ayniqsa uzun matnlar bilan ishlashda va kod yozishda kuchli: katta hujjatni o'qib chiqib xulosa qiladi, tahlil yozadi, murakkab dastur kodini yozadi va tushuntiradi.\n\nBrauzerda va mobil ilovada ishlaydi. Dasturchilar uchun alohida API va Claude Code vositasi mavjud.",
     "tool_category": "matn",
-    "free_tier": null,
-    "plans": [],
+    "free_tier": true,
+    "plans": [
+      { "nom": "Pro", "narx_usd": 20, "davr": "oy" },
+      { "nom": "Max", "narx_usd": 100, "davr": "oy" }
+    ],
     "uz": {
-      "vpn_kerakmi": null,
-      "tolov": null,
-      "tolov_yollari": [],
-      "ozbek_tili": null,
-      "narx_somda": null
+      "vpn_kerakmi": false,
+      "tolov": "O'zbekiston banklarining xalqaro Visa/Mastercard kartalari yoki mobil ilova obunasi orqali",
+      "tolov_yollari": [
+        "Xalqaro Visa va Mastercard kartalari (brauzer orqali Stripe to'lovi)",
+        "App Store va Google Play orqali mobil ilova ichida obuna"
+      ],
+      "ozbek_tili": {
+        "baho": 4,
+        "izoh": "O'zbek tilida mantiqiy va tahririy jihatdan toza matn yozadi, ba'zan kam uchraydigan atamalarni izohlash kerak bo'ladi"
+      },
+      "narx_somda": "Pro reja: oyiga taxminan 255 000 – 265 000 so'm"
     },
     "alternatives": [
       "chatgpt",
-      "gemini"
+      "gemini",
+      "deepseek",
+      "cursor"
     ],
     "official_url": "https://claude.ai",
     "news_category_slug": "claude",
-    "tekshirilgan": null,
-    "chop_etilgan": false
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan": true
   },
   {
     "slug": "gemini",
     "name": "Gemini",
     "vendor": "Google",
-    "tagline": "Google xizmatlari bilan bog'langan AI yordamchi",
-    "description": "Gemini — Google'ning sun'iy intellekt yordamchisi. Matn yozadi, savolga javob beradi, rasm va videoni tahlil qila oladi. Uning asosiy farqi — Google ekotizimiga yaqinligi: Gmail, Google Docs va Android bilan bog'lanadi.\n\nAlohida sayt va ilova sifatida ham, Google qidiruvi ichida ham ishlaydi.",
+    "tagline": "Google xizmatlari bilan bog'langan multimodal AI yordamchi",
+    "description": "Gemini — Google'ning sun'iy intellekt yordamchisi. Matn yozadi, savolga javob beradi, rasm, audio va uzun videolarni tahlil qila oladi. Uning asosiy ustunligi — Google ekotizimiga integratsiyasi: Gmail, Google Docs, Drive va Android qurilmalar bilan bevosita ishlaydi.\n\nAlohida sayt va ilova sifatida ham, Google One AI Premium obunasi tarkibida ham taqdim etiladi.",
     "tool_category": "matn",
-    "free_tier": null,
-    "plans": [],
+    "free_tier": true,
+    "plans": [
+      { "nom": "AI Pro (Google One)", "narx_usd": 20, "davr": "oy" }
+    ],
     "uz": {
-      "vpn_kerakmi": null,
-      "tolov": null,
-      "tolov_yollari": [],
-      "ozbek_tili": null,
-      "narx_somda": null
+      "vpn_kerakmi": false,
+      "tolov": "Google Play / Google Pay orqali O'zbekiston xalqaro Visa va Mastercard kartalari o'tadi",
+      "tolov_yollari": [
+        "Google One obunasi (Visa / Mastercard xalqaro kartasi bilan)",
+        "Android qurilmada Google Play orqali to'lov"
+      ],
+      "ozbek_tili": {
+        "baho": 5,
+        "izoh": "O'zbek tilidagi matn, ovoz va hujjatlarni juda yaxshi tushunadi hamda tabiiy tilda javob beradi"
+      },
+      "narx_somda": "AI Pro reja: oyiga taxminan 255 000 – 265 000 so'm (2 TB Google Drive xotirasi bilan)"
     },
     "alternatives": [
       "chatgpt",
-      "claude"
+      "claude",
+      "notebooklm"
     ],
     "official_url": "https://gemini.google.com",
     "news_category_slug": "gemini",
-    "tekshirilgan": null,
-    "chop_etilgan": false
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "deepseek",
+    "name": "DeepSeek",
+    "vendor": "DeepSeek",
+    "tagline": "Mantiqiy tahlil va dasturlash uchun bepul hamda ochiq AI model",
+    "description": "DeepSeek — Xitoyning DeepSeek laboratoriyasi tomonidan yaratilgan kuchli mantiqiy (reasoning) va suhbat modeli. U matematika, dasturlash va murakkab tahliliy masalalarni yechishda fikrlash zanjirini (DeepThink) ochiq ko'rsatib ishlaydi.\n\nVeb-sayt va mobil ilovasi foydalanuvchilar uchun bepul, dasturchilar uchun esa API narxi bozordagi eng arzon variantlardan biri hisoblanadi.",
+    "tool_category": "matn",
+    "free_tier": true,
+    "plans": [],
+    "uz": {
+      "vpn_kerakmi": false,
+      "tolov": "Oddiy foydalanuvchilar uchun veb va mobil ilova to'liq bepul; API uchun Visa/Mastercard ishlaydi",
+      "tolov_yollari": [
+        "Suhbat interfeysi bepul (karta talab qilinmaydi)",
+        "API balansi uchun xalqaro Visa / Mastercard kartalari"
+      ],
+      "ozbek_tili": {
+        "baho": 4,
+        "izoh": "O'zbek tilida savollarni yaxshi tushunadi va javob beradi; murakkab texnik atamalarda ba'zan rus yoki inglizcha izoh qo'shishi mumkin"
+      },
+      "narx_somda": "Bepul (veb va mobil ilova)"
+    },
+    "alternatives": [
+      "chatgpt",
+      "claude",
+      "gemini"
+    ],
+    "official_url": "https://chat.deepseek.com",
+    "news_category_slug": "deepseek",
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "grok",
+    "name": "Grok",
+    "vendor": "xAI",
+    "tagline": "Real vaqtdagi yangiliklar va tezkor tahlil uchun xAI yordamchisi",
+    "description": "Grok — Ilon Mask asos solgan xAI kompaniyasining sun'iy intellekt yordamchisi. U internet va X (Twitter) platformasidagi so'nggi ma'lumotlarni real vaqtda qidirib tahlil qila oladi, rasm yaratadi hamda murakkab masalalarda Think (chuqur fikrlash) rejimini qo'llaydi.\n\nAlohida grok.com saytida, mobil ilovada hamda X platformasi ichida ishlaydi.",
+    "tool_category": "matn",
+    "free_tier": true,
+    "plans": [
+      { "nom": "SuperGrok", "narx_usd": 30, "davr": "oy" }
+    ],
+    "uz": {
+      "vpn_kerakmi": false,
+      "tolov": "Xalqaro Visa va Mastercard kartalari yoki App Store / Google Play orqali",
+      "tolov_yollari": [
+        "Bepul reja kunlik limit bilan karta talab qilmaydi",
+        "SuperGrok yoki X Premium obunasi uchun xalqaro Visa / Mastercard"
+      ],
+      "ozbek_tili": {
+        "baho": 4,
+        "izoh": "O'zbek tilida erkin muloqot qiladi va yangiliklarni tez umumlashtirib beradi"
+      },
+      "narx_somda": "SuperGrok: oyiga taxminan 385 000 so'm"
+    },
+    "alternatives": [
+      "chatgpt",
+      "perplexity",
+      "gemini"
+    ],
+    "official_url": "https://grok.com",
+    "news_category_slug": "xai",
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "perplexity",
+    "name": "Perplexity",
+    "vendor": "Perplexity AI",
+    "tagline": "Manbalarni ko'rsatib javob beradigan AI qidiruv tizimi",
+    "description": "Perplexity — oddiy linklar ro'yxati o'rniga internetdagi ishonchli manbalarni o'qib, har bir jumlasiga havola (iqtibos) qo'ygan holda tayyor javob beradigan AI qidiruv xizmati. Tadqiqot, fakt-cheking va bozor tahlili uchun juda qulay.\n\nPro rejasida foydalanuvchi javob olish uchun GPT, Claude, Sonar yoki Grok modellaridan birini tanlashi mumkin.",
+    "tool_category": "qidiruv",
+    "free_tier": true,
+    "plans": [
+      { "nom": "Pro", "narx_usd": 20, "davr": "oy" }
+    ],
+    "uz": {
+      "vpn_kerakmi": false,
+      "tolov": "O'zbekiston xalqaro Visa va Mastercard kartalari hamda mobil ilova orqali",
+      "tolov_yollari": [
+        "Brauzerda xalqaro Visa / Mastercard kartasi orqali",
+        "App Store va Google Play ichida obuna"
+      ],
+      "ozbek_tili": {
+        "baho": 4,
+        "izoh": "O'zbek tilidagi savollarga xorijiy va mahalliy manbalarni jamlab, o'zbek tilida tushunarli xulosa chiqaradi"
+      },
+      "narx_somda": "Pro reja: oyiga taxminan 255 000 – 265 000 so'm"
+    },
+    "alternatives": [
+      "chatgpt",
+      "gemini",
+      "grok"
+    ],
+    "official_url": "https://www.perplexity.ai",
+    "news_category_slug": "startuplar",
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan": true
   },
   {
     "slug": "midjourney",
     "name": "Midjourney",
     "vendor": "Midjourney",
-    "tagline": "Matnli tavsif bo'yicha rasm yaratadi",
-    "description": "Midjourney — matnli tavsifdan rasm yaratuvchi xizmat. Siz nima ko'rishni xohlashingizni yozasiz, u esa bir necha variant chizib beradi. Natijalari badiiy sifati bilan ajralib turadi, shuning uchun dizaynerlar va marketologlar orasida keng tarqalgan.\n\nDastlab faqat Discord orqali ishlagan, keyinchalik veb-interfeys ham qo'shilgan.",
+    "tagline": "Matnli tavsif bo'yicha professional rasm va illyustratsiya yaratadi",
+    "description": "Midjourney — matnli tavsifdan rasm yaratuvchi yetakchi xizmat. Siz nima ko'rishni xohlashingizni yozasiz, u esa bir necha soniyada yuqori sifatli 4 ta variant chizib beradi. Natijalari fotorealizm va badiiy sifati bilan ajralib turadi, shuning uchun dizaynerlar, SMM mutaxassislari va marketologlar orasida keng tarqalgan.\n\nHozir Discord bilan bir qatorda to'liq veb-interfeysda ham ishlaydi.",
     "tool_category": "rasm",
-    "free_tier": null,
-    "plans": [],
+    "free_tier": false,
+    "plans": [
+      { "nom": "Basic", "narx_usd": 10, "davr": "oy" },
+      { "nom": "Standard", "narx_usd": 30, "davr": "oy" }
+    ],
     "uz": {
-      "vpn_kerakmi": null,
-      "tolov": null,
-      "tolov_yollari": [],
-      "ozbek_tili": null,
-      "narx_somda": null
+      "vpn_kerakmi": false,
+      "tolov": "Xalqaro Visa va Mastercard kartalari orqali (Stripe to'lov tizimi)",
+      "tolov_yollari": [
+        "O'zbekiston banklarining xalqaro Visa yoki Mastercard kartasi"
+      ],
+      "ozbek_tili": {
+        "baho": 2,
+        "izoh": "Promptlarni ingliz tilida yozish tavsiya etiladi — o'zbek tilidagi tavsiflarni to'liq tushunmasligi mumkin"
+      },
+      "narx_somda": "Basic reja: oyiga taxminan 128 000 – 132 000 so'm"
     },
-    "alternatives": [],
+    "alternatives": [
+      "chatgpt",
+      "gemini"
+    ],
     "official_url": "https://www.midjourney.com",
     "news_category_slug": "startuplar",
-    "tekshirilgan": null,
-    "chop_etilgan": false
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan": true
   },
   {
     "slug": "cursor",
     "name": "Cursor",
     "vendor": "Anysphere",
-    "tagline": "AI ichiga qurilgan kod muharriri",
-    "description": "Cursor — dasturchilar uchun mo'ljallangan kod muharriri. Tashqi ko'rinishi VS Code'ga o'xshaydi, lekin AI to'g'ridan-to'g'ri ichiga qurilgan: butun loyihani ko'rib, kod yozadi, xatoni topadi va o'zgarishlarni tushuntiradi.\n\nKompyuterga o'rnatiladigan dastur sifatida ishlaydi, Windows, macOS va Linux uchun mavjud.",
+    "tagline": "AI to'g'ridan-to'g'ri ichiga qurilgan zamonaviy kod muharriri",
+    "description": "Cursor — dasturchilar uchun mo'ljallangan kod muharriri (IDE). Tashqi ko'rinishi va kengaytmalari VS Code bilan bir xil, lekin AI bevosita muharrir ichiga qurilgan: butun loyiha fayllarini tushunadi, bir nechta faylga bir vaqtda kod yozadi, xatolarni topadi va terminal buyruqlarini bajaradi.\n\nWindows, macOS va Linux uchun kompyuterga o'rnatiladigan dastur sifatida ishlaydi.",
     "tool_category": "kod",
-    "free_tier": null,
-    "plans": [],
+    "free_tier": true,
+    "plans": [
+      { "nom": "Pro", "narx_usd": 20, "davr": "oy" },
+      { "nom": "Ultra", "narx_usd": 200, "davr": "oy" }
+    ],
     "uz": {
-      "vpn_kerakmi": null,
-      "tolov": null,
-      "tolov_yollari": [],
-      "ozbek_tili": null,
-      "narx_somda": null
+      "vpn_kerakmi": false,
+      "tolov": "O'zbekiston banklarining xalqaro Visa va Mastercard kartalari bevosita o'tadi",
+      "tolov_yollari": [
+        "Xalqaro Visa / Mastercard kartalari (Stripe orqali)"
+      ],
+      "ozbek_tili": {
+        "baho": 5,
+        "izoh": "Agent va chat oynasida o'zbek tilida topshiriq bersangiz, kod va izohlarni to'g'ri bajaradi"
+      },
+      "narx_somda": "Pro reja: oyiga taxminan 255 000 – 265 000 so'm"
     },
-    "alternatives": [],
+    "alternatives": [
+      "claude",
+      "chatgpt"
+    ],
     "official_url": "https://cursor.com",
     "news_category_slug": "dasturlash",
-    "tekshirilgan": null,
-    "chop_etilgan": false
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "elevenlabs",
+    "name": "ElevenLabs",
+    "vendor": "ElevenLabs",
+    "tagline": "Matnni tabiiy inson ovoziga aylantirish va dublyaj xizmati",
+    "description": "ElevenLabs — sun'iy intellekt yordamida matnni tabiiy ovozga (Text-to-Speech) aylantiruvchi, ovozni klonlovchi va videolarni boshqa tillarga avtomatik dublyaj qiluvchi platforma. YouTube kontent yaratuvchilari, podkasterlar va audiokitob tayyorlovchilar uchun eng ommabop vositalardan biri.\n\nKo'p tilli (Multilingual) modellari ohang, pauza va hissiyotni tabiiy yetkazib beradi.",
+    "tool_category": "ovoz",
+    "free_tier": true,
+    "plans": [
+      { "nom": "Starter", "narx_usd": 5, "davr": "oy" },
+      { "nom": "Creator", "narx_usd": 22, "davr": "oy" }
+    ],
+    "uz": {
+      "vpn_kerakmi": false,
+      "tolov": "O'zbekiston xalqaro Visa va Mastercard kartalari orqali",
+      "tolov_yollari": [
+        "Oyiga 10 daqiqagacha bepul reja mavjud",
+        "Pullik rejalar uchun xalqaro Visa / Mastercard kartalari"
+      ],
+      "ozbek_tili": {
+        "baho": 3,
+        "izoh": "Ko'p tilli model o'zbekcha matnni o'qiy oladi, lekin urg'ular to'g'ri chiqishi uchun tinish belgilarini aniq qo'yish kerak"
+      },
+      "narx_somda": "Starter reja: oyiga taxminan 65 000 so'm"
+    },
+    "alternatives": [
+      "gemini",
+      "chatgpt"
+    ],
+    "official_url": "https://elevenlabs.io",
+    "news_category_slug": "startuplar",
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "notebooklm",
+    "name": "NotebookLM",
+    "vendor": "Google",
+    "tagline": "O'z hujjatlaringiz asosida ishlaydigan shaxsiy AI tadqiqotchi",
+    "description": "NotebookLM — Google tomonidan yaratilgan tadqiqot va konspekt yordamchisi. U umumiy internetdan emas, aynan siz yuklagan PDF, Google Docs, veb-sahifa yoki YouTube videolar ichidan javob qidiradi va har bir javobda hujjatning qaysi joyidan olinganini ko'rsatadi.\n\nShuningdek, yuklangan materiallar asosida audio-sharh (podkast) va o'quv testlarini avtomatik tayyorlab beradi.",
+    "tool_category": "unumdorlik",
+    "free_tier": true,
+    "plans": [],
+    "uz": {
+      "vpn_kerakmi": false,
+      "tolov": "Google akkaunti bilan bepul ishlaydi (kengaytirilgan limitlar Google One AI Pro ichida)",
+      "tolov_yollari": [
+        "Oddiy Google akkaunti bilan bepul"
+      ],
+      "ozbek_tili": {
+        "baho": 5,
+        "izoh": "O'zbek va ingliz tilidagi PDF/hujjatlarni tahlil qilib, o'zbek tilida aniq konspekt va savol-javob tuzadi"
+      },
+      "narx_somda": "Bepul"
+    },
+    "alternatives": [
+      "gemini",
+      "claude",
+      "perplexity"
+    ],
+    "official_url": "https://notebooklm.google.com",
+    "news_category_slug": "gemini",
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan": true
   }
 ]

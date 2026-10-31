@@ -64,3 +64,8 @@ def get_saved(chat_id: int) -> list[tuple[str, str]]:
 def notification_subscribers() -> list[int]:
     with _connect() as conn:
         return [row[0] for row in conn.execute("SELECT chat_id FROM users WHERE notifications=1")]
+
+
+def disable_notifications(chat_id: int) -> None:
+    with _connect() as conn:
+        conn.execute("UPDATE users SET notifications=0 WHERE chat_id=?", (chat_id,))

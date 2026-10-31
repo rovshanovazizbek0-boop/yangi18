@@ -351,5 +351,212 @@
     "chop_etilgan_sana": "2026-08-16",
     "yangilangan": "2026-08-16",
     "chop_etilgan": true
+  },
+  {
+    "slug": "deepseek-bilan-mantiqiy-masalalar-yechish",
+    "title": "DeepSeek bilan mantiqiy tahlil va dasturlash masalalarini yechish",
+    "seo_title": "DeepSeek AI dan foydalanish — mantiqiy tahlil va kod qo'llanmasi",
+    "description": "DeepSeek'ning DeepThink rejimini yoqish, murakkab masalalarni bosqichma-bosqich yechish va natijani tekshirishni o'rganing.",
+    "excerpt": "DeepSeek modelida fikrlash zanjiri (DeepThink) qanday ishlashi, qaysi topshiriqlarda foydali ekani va xatolarni qanday tutish mumkinligini ko'rib chiqamiz.",
+    "intro": "DeepSeek oddiy suhbat rejimi bilan birga chuqur mantiqiy mulohaza (DeepThink) rejimini taqdim etadi. Bu rejim matematika, algoritm, moliyaviy hisob-kitob va ko'p shartli muammolarni yechishda modelning ichki tekshiruv qadamlarini ko'rish imkonini beradi.",
+    "provider": "deepseek",
+    "difficulty": "orta",
+    "duration_minutes": 14,
+    "related_category_slug": "deepseek",
+    "position": 60,
+    "tags": ["DeepSeek", "Mantiqiy tahlil", "AI Dasturlash"],
+    "sections": [
+      {
+        "title": "1. Qachon DeepThink rejimini yoqish kerak",
+        "body": [
+          "Oddiy tarjima, qisqa xat yoki umumiy ma'lumot uchun standart rejim tezroq javob beradi. Biroq bir nechta cheklovli jadval tuzish, kod xatosini topish yoki matematik hisob-kitobda DeepThink rejimini yoqish natija aniqligini oshiradi.",
+          "Fikrlash jarayoni ochiq ko'ringani sababli model qaysi taxminga tayanganini o'qib, noto'g'ri shartni darhol aniqlashingiz mumkin."
+        ],
+        "steps": [
+          "Masalada aniq shart va cheklovlar borligini tekshiring.",
+          "Suhbat oynasida DeepThink tugmasini yoqing.",
+          "Kirish ma'lumotlari va kutilayotgan chiqish formatini yozing.",
+          "Javobdan oldin fikrlash qadamlarini ko'zdan kechiring."
+        ]
+      },
+      {
+        "title": "2. Masalani shartlar ro'yxati sifatida bering",
+        "body": [
+          "Mantiqiy modellar uzun hikoyadan ko'ra raqamlangan shartlar ro'yxatini yaxshiroq qayta ishlaydi. Berilgan raqamlar, cheklovlar va taqiqlangan holatlarni alohida band qilib yozing.",
+          "Agar javobda bitta yechim emas, eng maqbul variant kerak bo'lsa, baholash mezonini (masalan, eng kam xarajat yoki eng qisqa vaqt) ko'rsating."
+        ],
+        "example": {
+          "label": "Mantiqiy tahlil uchun prompt",
+          "text": "Quyidagi vazifani bosqichma-bosqich tahlil qil: 3 nafar dasturchi 5 ta modulni 10 ish kunida tugatishi kerak. Shartlar: [1-shart], [2-shart]. Avval mumkin bo'lgan xatarlarni sanab chiq, so'ng kunlik ish taqsimotini jadvalda ber va har bir qadamni tekshir."
+        }
+      },
+      {
+        "title": "3. Kod va algoritmlarni tekshirish",
+        "body": [
+          "DeepSeek yozgan kodni ishlatishdan oldin chegaraviy holatlar (bo'sh ro'yxat, manfiy son, katta hajmdagi kirish) uchun test yozishni so'rang.",
+          "Modeldan nafaqat yechimni, balki algoritmning vaqt va xotira murakkabligini (Big-O) tushuntirishni talab qiling."
+        ],
+        "steps": [
+          "Yechim kodini alohida muhitda ishga tushiring.",
+          "3 ta oddiy va 3 ta chegaraviy test holatini tekshiring.",
+          "Xato chiqsa, traceback matnini to'liq ko'chirib bering.",
+          "Tuzatilgan variantni oldingi kod bilan solishtiring."
+        ]
+      },
+      {
+        "title": "4. Maxfiylik va ma'lumotlar xavfsizligi",
+        "body": [
+          "Ochiq veb-chatga kompaniya ichki kodi, API kalitlar yoki mijozlar bazasini yuklamang. Misol keltirish kerak bo'lsa, o'zgaruvchi nomlari va raqamlarni sun'iy ma'lumotga almashtiring."
+        ],
+        "tip": "Modelning fikrlash zanjiri uzun bo'lishi javob 100% to'g'ri degani emas — yakuniy raqamlarni har doim kalkulyator yoki test bilan tasdiqlang."
+      }
+    ],
+    "faq": [
+      {"question": "DeepSeek o'zbek tilida yaxshi ishlaydimi?", "answer": "Ha, shartlarni o'zbek tilida tushunadi va javob qaytaradi. Ichki mulohaza qadamlari ingliz tilida kechishi mumkin, lekin yakuniy javobni o'zbek tilida talab qilsangiz, to'liq o'zbekcha yozib beradi."},
+      {"question": "DeepThink rejimi nega sekinroq javob beradi?", "answer": "Chunki model yakuniy javobni yozishdan oldin bir nechta yechim yo'lini sinab ko'radi va o'zini tekshiradi."}
+    ],
+    "sources": [
+      {"title": "DeepSeek — rasmiy platforma va hujjatlar", "url": "https://api-docs.deepseek.com/"}
+    ],
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan_sana": "2026-08-16",
+    "yangilangan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "grok-bilan-real-vaqt-tahlili",
+    "title": "xAI Grok bilan real vaqtdagi yangiliklar va trendlarni tahlil qilish",
+    "seo_title": "Grok AI dan foydalanish — tezkor tahlil va qidiruv qo'llanmasi",
+    "description": "Grok yordamida so'nggi texnologik voqealarni o'rganish, turli manbalarni solishtirish va mish-mishlarni faktlardan ajratishni o'rganing.",
+    "excerpt": "Real vaqtdagi muhokamalar va yangiliklarni Grok orqali tezkor jamlash hamda birlamchi manbani tekshirish usullari.",
+    "intro": "Grok yangi e'lonlar, relizlar va ijtimoiy tarmoqdagi jonli muhokamalarni tez topishda qulay. Biroq tezkor oqimda tasdiqlanmagan xabarlar ham ko'p bo'lgani uchun Grok'ni faktlarni tekshiruvchi filtr sifatida ishlatish muhim.",
+    "provider": "xai",
+    "difficulty": "boshlangich",
+    "duration_minutes": 12,
+    "related_category_slug": "xai",
+    "position": 70,
+    "tags": ["Grok", "xAI", "Qidiruv", "Fakt-cheking"],
+    "sections": [
+      {
+        "title": "1. Mavzu va vaqt oralig'ini aniq belgilang",
+        "body": [
+          "So'nggi yangilikni so'rayotganda aniq sana yoki voqea nomini yozing. Aks holda model eski relizlar bilan yangi xabarlarni aralashtirib yuborishi mumkin."
+        ],
+        "steps": [
+          "Kompaniya yoki mahsulot nomini aniq yozing.",
+          "Vaqt oralig'ini ko'rsating (masalan, oxirgi 48 soat).",
+          "Rasmiy e'lon va foydalanuvchi fikrlarini alohida bo'limda so'rang.",
+          "Har bir da'vo uchun birlamchi manba havolasini talab qiling."
+        ]
+      },
+      {
+        "title": "2. Rasmiy fakt va taxminni ajrating",
+        "body": [
+          "Yangi AI modellari yoki texnologiya chiqishida ijtimoiy tarmoqlarda ko'p taxminlar tarqaladi. Grok'dan javobni ikki ustunga — tasdiqlangan rasmiy ma'lumot va tasdiqlanmagan xabarlarga ajratishni so'rang."
+        ],
+        "example": {
+          "label": "Yangilikni tekshirish prompti",
+          "text": "[Mavzu] bo'yicha so'nggi xabarlarni tahlil qil. Javobni 3 qismga bo'l: 1) Rasmiy tasdiqlangan faktlar (manbasi bilan), 2) Mustaqil ekspertlar fikri, 3) Hali tasdiqlanmagan taxminlar. O'zbek tilida qisqa va aniq yoz."
+        }
+      },
+      {
+        "title": "3. Texnik taqqoslash jadvalini tuzish",
+        "body": [
+          "Yangi xizmat yoki model chiqqanda uni mavjud muqobillari bilan solishtirish uchun aniq mezonlar (narx, kontekst oynasi, tezlik, ochiq kodlilik) bering."
+        ],
+        "steps": [
+          "Solishtiriladigan 2–3 ta mahsulotni tanlang.",
+          "Taqqoslash mezonlarini sanab bering.",
+          "Noma'lum ko'rsatkichlarni taxmin qilmasdan “noma'lum” deb yozishni buyuring.",
+          "Jadval yakunida qaysi holatda qaysi biri mosligini so'rang."
+        ]
+      },
+      {
+        "title": "4. Birlamchi manbani ochib ko'ring",
+        "body": [
+          "Muhim qaror yoki maqola yozishdan oldin Grok ko'rsatgan rasmiy blog, press-reliz yoki hujjat sahifasini albatta o'zingiz ochib tekshiring."
+        ],
+        "tip": "Tezkor yangilikda eng ko'p xato raqamlar va sanalarda bo'ladi — narx va sanani har doim rasmiy sahifadan tekshiring."
+      }
+    ],
+    "faq": [
+      {"question": "Grok'dan foydalanish uchun X (Twitter) obunasi shartmi?", "answer": "Yo'q, grok.com sayti va mobil ilovasida bepul limit doirasida alohida foydalanish mumkin."}
+    ],
+    "sources": [
+      {"title": "xAI — rasmiy hujjatlar va modellar", "url": "https://docs.x.ai/"}
+    ],
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan_sana": "2026-08-16",
+    "yangilangan": "2026-08-16",
+    "chop_etilgan": true
+  },
+  {
+    "slug": "notebooklm-bilan-hujjatlarni-organish",
+    "title": "Google NotebookLM bilan katta kitob va hujjatlarni tez o'rganish",
+    "seo_title": "NotebookLM qo'llanmasi — PDF va ma'ruzalarni AI bilan tahlil qilish",
+    "description": "NotebookLM'ga o'quv materiallari va hisobotlarni yuklab, faqat manbaga tayangan javoblar va konspektlar olishni o'rganing.",
+    "excerpt": "O'z PDF, Google Docs va ma'ruzalaringiz asosida to'qib chiqarilmagan, aniq iqtibosli javoblar olish bo'yicha amaliy qo'llanma.",
+    "intro": "Oddiy chatbotlar javob topolmasa umumiy bilimidan taxmin qilishi mumkin. Google NotebookLM esa faqat siz yuklagan manbalar ichida ishlaydi va har bir fikr yoniga qaysi sahifa yoki xatboshidan olinganini ko'rsatuvchi raqamli havola qo'yadi.",
+    "provider": "gemini",
+    "difficulty": "boshlangich",
+    "duration_minutes": 15,
+    "related_category_slug": "gemini",
+    "position": 80,
+    "tags": ["NotebookLM", "Google Gemini", "O'qish", "Hujjat tahlili"],
+    "sections": [
+      {
+        "title": "1. Manbalarni to'g'ri guruhlang",
+        "body": [
+          "Har bir mavzu yoki loyiha uchun alohida daftar (Notebook) oching. Bitta daftarga bir-biriga aloqador PDF kitoblar, ma'ruza matnlari yoki veb-maqolalarni joylang.",
+          "Skaner qilingan xira rasm-PDF o'rniga matni ajratiladigan toza PDF yoki Google Docs fayl yuklash javob sifatini ancha oshiradi."
+        ],
+        "steps": [
+          "Yangi Notebook yarating va mavzu nomini bering.",
+          "Tegishli PDF, Docs yoki havolalarni yuklang.",
+          "Keraksiz yoki eskirgan fayllarni ro'yxatdan o'chiring.",
+          "Avtomatik hosil bo'lgan umumiy sharhni ko'zdan kechiring."
+        ]
+      },
+      {
+        "title": "2. Iqtiboslar orqali faktni tekshiring",
+        "body": [
+          "NotebookLM bergan har bir xulosa yonida kichik raqamli belgi chiqadi. Uning ustiga bossangiz, chap oynada asl hujjatning aynan shu joyi ochiladi.",
+          "Bu xususiyat talabalar, yuristlar va tadqiqotchilar uchun AI javobini sanoqli soniyada asl matn bilan solishtirish imkonini beradi."
+        ],
+        "example": {
+          "label": "Manbalarni solishtirish prompti",
+          "text": "Yuklangan hujjatlarga tayanib [mavzu] bo'yicha asosiy qoidalarni ro'yxat qil. Agar ikki hujjatda farqli raqam yoki talab bo'lsa, ularni jadvalda yonma-yon ko'rsat va qaysi manbadan olinganini aniq yoz."
+        }
+      },
+      {
+        "title": "3. O'quv qo'llanma va savol-javob tayyorlash",
+        "body": [
+          "Yuklangan ma'ruza yoki kitob asosida imtihonga tayyorlanish uchun qisqa lug'at (glossariy), takrorlash savollari va xronologik jadval tuzishni buyurishingiz mumkin."
+        ],
+        "steps": [
+          "Mavzuning eng muhim 15 ta atamasidan lug'at tuzdiring.",
+          "O'zingizni sinash uchun 10 ta ochiq savol yozdiring.",
+          "Avval o'zingiz javob bering, so'ng manba bo'yicha tekshirtiring.",
+          "Muhim xulosalarni Notes bo'limiga saqlab qo'ying."
+        ]
+      },
+      {
+        "title": "4. Cheklovlarni yodda tuting",
+        "body": [
+          "NotebookLM siz yuklagan faylda yo'q ma'lumotni bilmaydi. Agar savolingizga “manbada bu haqda ma'lumot topilmadi” desa, bu xato emas — demak, javob uchun qo'shimcha hujjat yuklash kerak."
+        ],
+        "tip": "Maxfiy shaxsiy hujjatlarni yuklashdan oldin tashkilotingizning bulutli xizmatlar bo'yicha qoidalariga amal qiling."
+      }
+    ],
+    "faq": [
+      {"question": "NotebookLM o'zbek tilidagi PDF fayllarni o'qiy oladimi?", "answer": "Ha, matn qatlami mavjud bo'lgan o'zbekcha PDF va Google Docs hujjatlarini o'qib, o'zbek tilida xulosa va savol-javob tayyorlay oladi."}
+    ],
+    "sources": [
+      {"title": "Google NotebookLM — rasmiy yordam markazi", "url": "https://support.google.com/notebooklm/"}
+    ],
+    "tekshirilgan": "2026-08-16",
+    "chop_etilgan_sana": "2026-08-16",
+    "yangilangan": "2026-08-16",
+    "chop_etilgan": true
   }
 ]

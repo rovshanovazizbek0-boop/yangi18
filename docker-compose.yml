@@ -50,11 +50,13 @@ services:
       DAILY_GUIDE_LOOKBACK_HOURS: ${DAILY_GUIDE_LOOKBACK_HOURS:-72}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:3000}
       APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Tashkent}
+      BOT_DB_PATH: /app/data/bot.db
       MEDIA_DIR: /app/media
       BACKEND_PUBLIC_URL: ${BACKEND_PUBLIC_URL:-http://localhost:8000}
       RUN_BACKGROUND_SERVICES: "false"
     volumes:
       - media:/app/media
+      - botdata:/app/data
     ports:
       - "8000:8000"
     depends_on:
@@ -112,10 +114,12 @@ services:
       ARTICLE_FETCH_WORKERS: ${ARTICLE_FETCH_WORKERS:-4}
       IMAGE_GENERATION: ${IMAGE_GENERATION:-false}
       GEMINI_IMAGE_MODEL: ${GEMINI_IMAGE_MODEL:-gemini-3.1-flash-image}
+      BOT_DB_PATH: /app/data/bot.db
       MEDIA_DIR: /app/media
       BACKEND_PUBLIC_URL: ${BACKEND_PUBLIC_URL:-http://localhost:8000}
     volumes:
       - media:/app/media
+      - botdata:/app/data
     # Backend avval Alembic migratsiyalarini tugatib, health holatiga kelsin.
     depends_on:
       backend:
@@ -141,7 +145,8 @@ services:
     restart: unless-stopped
 
   bot:
-    build: ./bot
+    build: ./backend
+    command: ["python", "-m", "app.bot.bot"]
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       API_URL: http://backend:8000

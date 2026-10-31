@@ -37,7 +37,7 @@ from .services.collector import collect_news, fetch_og_image
 from .services.image_gen import generate_image
 from .services.daily_guide import create_daily_guide
 from .services.quality import evaluate_candidate
-from .services.telegram import send_to_channel
+from .services.telegram import notify_subscribers, send_to_channel
 from .utils import slugify
 
 # Oxirgi ishga tushirish tafsilotlari — /health orqali ko'rinadi, shuning uchun
@@ -289,6 +289,7 @@ def _run_pipeline_unlocked(per_feed: int = PIPELINE_PER_FEED) -> int:
                 else:
                     try:
                         send_to_channel(article)
+                        notify_subscribers(article)
                         article.sent_to_telegram = True
                         db.commit()
                         telegram_sent += 1

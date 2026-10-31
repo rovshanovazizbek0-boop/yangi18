@@ -10,7 +10,7 @@ from ..database import get_db
 from ..deps import require_admin
 from ..models import Article, Category
 from ..schemas import ArticleOut, ArticleUpdate, StatsOut
-from ..services.telegram import send_to_channel
+from ..services.telegram import notify_subscribers, send_to_channel
 
 router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
@@ -70,11 +70,12 @@ def send_article_to_telegram(article_id: int, db: Session = Depends(get_db)):
     article = get_article(db, article_id)
     try:
         send_to_channel(article)
+        notified = notify_subscribers(article)
     except Exception as error:
         raise HTTPException(status_code=502, detail=str(error))
     article.sent_to_telegram = True
     db.commit()
-    return {"ok": True, "xabar": "Telegram kanaliga yuborildi"}
+    return {"ok": True, "xabar": "Telegram kanaliga yuborildi", "obunachilar": notified}
 
 
 @router.delete("/articles/{article_id}")

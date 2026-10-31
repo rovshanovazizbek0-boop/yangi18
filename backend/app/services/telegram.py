@@ -5,6 +5,7 @@ import json
 
 import httpx
 
+from ..bot import storage
 from ..config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL_ID, FRONTEND_ORIGIN
 from ..models import Article
 
@@ -133,3 +134,44 @@ def send_to_channel(article: Article) -> None:
     data = response.json()
     if not data.get("ok"):
         raise RuntimeError(f"Telegram xatosi: {data.get('description')}")
+
+
+def notify_subscribers(article: Article) -> int:
+    """Botda bildirishnomani yoqqan obunachilarga yangi maqola haqida xabar yuboradi."""
+    if not TELEGRAM_BOT_TOKEN:
+        return 0
+
+    try:
+        subscribers = storage.notification_subscribers()
+    except Exception:
+        return 0
+
+    if not subscribers:
+        return 0
+
+    api = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
+    text = format_post(article, compact=True)
+    keyboard = post_keyboard(article)
+    sent = 0
+
+    for chat_id in subscribers:
+        payload = {
+            "chat_id": chat_id,
+            "text": text,
+            "parse_mode": "HTML",
+            "disable_web_page_preview": False,
+            "reply_markup": keyboard,
+        }
+        try:
+            response = httpx.post(f"{api}/sendMessage", json=payload, timeout=15)
+            data = response.json()
+            if data.get("ok"):
+                sent += 1
+            else:
+                description = str(data.get("description") or "").lower()
+                if "blocked" in description or "chat not found" in description or "deactivated" in description:
+                    storage.disable_notifications(chat_id)
+        except Exception as error:
+            print(f"   WARNING: Bot obunachisiga ({chat_id}) yuborilmadi: {error}")
+
+    return sent
