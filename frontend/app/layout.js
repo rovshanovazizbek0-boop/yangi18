@@ -110,6 +110,10 @@ export default function RootLayout({ children }) {
               AI&apos;ni o&apos;rganish
             </a>
             <span>•</span>
+            <a href="/vositalar" className="text-blue-400 hover:text-blue-300 transition-colors">
+              AI vositalari
+            </a>
+            <span>•</span>
             <a href="/haqida" className="text-slate-400 hover:text-white transition-colors">
               Biz haqimizda
             </a>

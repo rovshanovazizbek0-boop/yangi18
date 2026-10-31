@@ -3,30 +3,36 @@ bildirishnoma sozlamalari va saqlangan maqolalar."""
 
 import os
 import sqlite3
+from contextlib import contextmanager
 from pathlib import Path
 
 DB_PATH = Path(os.getenv("BOT_DB_PATH", Path(__file__).parent / "bot.db"))
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 
+@contextmanager
 def _connect():
     conn = sqlite3.connect(DB_PATH)
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS users ("
-        "  chat_id INTEGER PRIMARY KEY,"
-        "  notifications INTEGER DEFAULT 1,"
-        "  language TEXT DEFAULT 'uz'"
-        ")"
-    )
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS saved ("
-        "  chat_id INTEGER,"
-        "  article_slug TEXT,"
-        "  article_title TEXT,"
-        "  PRIMARY KEY (chat_id, article_slug)"
-        ")"
-    )
-    return conn
+    try:
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS users ("
+            "  chat_id INTEGER PRIMARY KEY,"
+            "  notifications INTEGER DEFAULT 1,"
+            "  language TEXT DEFAULT 'uz'"
+            ")"
+        )
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS saved ("
+            "  chat_id INTEGER,"
+            "  article_slug TEXT,"
+            "  article_title TEXT,"
+            "  PRIMARY KEY (chat_id, article_slug)"
+            ")"
+        )
+        with conn:
+            yield conn
+    finally:
+        conn.close()
 
 
 def ensure_user(chat_id: int):

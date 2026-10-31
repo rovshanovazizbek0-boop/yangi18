@@ -43,6 +43,7 @@ dp = Dispatcher()
 MENU = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="📰 Bugungi yangiliklar"), KeyboardButton(text="🗓 Haftalik dayjest")],
+        [KeyboardButton(text="🎓 AI'ni o'rganish"), KeyboardButton(text="🧰 AI vositalari")],
         [KeyboardButton(text="📂 Kategoriyalar"), KeyboardButton(text="🔍 Qidiruv")],
         [KeyboardButton(text="⭐ Saqlanganlar"), KeyboardButton(text="🔔 Bildirishnomalar")],
     ],
@@ -126,6 +127,43 @@ async def today_news(message: Message):
 async def weekly_digest(message: Message):
     articles = await api_get("/api/news/top", {"kunlar": 7, "limit": 10})
     await send_articles(message, articles, "So'nggi haftada yangiliklar topilmadi.", limit=10)
+
+
+@dp.message(F.text == "🎓 AI'ni o'rganish")
+async def learning_guides(message: Message):
+    guides = await api_get("/api/guides", {"limit": 10})
+    if not guides:
+        await message.answer("Hozircha o'quv qo'llanmalar topilmadi.")
+        return
+    base = public_site_url()
+    lines = [
+        f"• <a href=\"{base}/organish/{g['slug']}\">{html.escape(g['title'])}</a> "
+        f"(<i>{g.get('duration_minutes', 10)} daqiqa</i>)"
+        for g in guides
+    ]
+    await message.answer(
+        "<b>🎓 AI'ni o'rganish — amaliy qo'llanmalar:</b>\n\n" + "\n\n".join(lines),
+        parse_mode="HTML",
+        disable_web_page_preview=True,
+    )
+
+
+@dp.message(F.text == "🧰 AI vositalari")
+async def ai_tools(message: Message):
+    tools = await api_get("/api/tools")
+    if not tools:
+        await message.answer("Hozircha vositalar ro'yxati bo'sh.")
+        return
+    base = public_site_url()
+    lines = [
+        f"• <a href=\"{base}/vositalar/{t['slug']}\"><b>{html.escape(t['name'])}</b></a> — {html.escape(t.get('tagline', ''))}"
+        for t in tools[:12]
+    ]
+    await message.answer(
+        "<b>🧰 AI vositalari katalogi (narxi va O'zbekistonda ishlashi):</b>\n\n" + "\n\n".join(lines),
+        parse_mode="HTML",
+        disable_web_page_preview=True,
+    )
 
 
 @dp.message(F.text == "📂 Kategoriyalar")

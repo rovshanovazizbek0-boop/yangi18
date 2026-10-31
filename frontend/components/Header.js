@@ -99,10 +99,18 @@ export default async function Header() {
           <nav className="mt-2 grid grid-cols-2 gap-2 text-sm" aria-label="Mobil AI mavzulari">
             <Link
               href="/organish"
-              className="col-span-2 rounded-lg border border-emerald-800 bg-emerald-500/5 px-3 py-2 font-semibold text-emerald-400"
+              className={`${hasTools ? "" : "col-span-2 "}rounded-lg border border-emerald-800 bg-emerald-500/5 px-3 py-2 font-semibold text-emerald-400`}
             >
               🎓 AI&apos;ni o&apos;rganish
             </Link>
+            {hasTools && (
+              <Link
+                href="/vositalar"
+                className="rounded-lg border border-blue-800 bg-blue-500/5 px-3 py-2 font-semibold text-blue-400"
+              >
+                🧰 AI vositalari
+              </Link>
+            )}
             {categories.map((cat) => (
               <Link
                 key={cat.slug}
