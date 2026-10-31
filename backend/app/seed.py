@@ -4,10 +4,11 @@ from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-from .models import Category, Guide, Tool
+from .models import Article, Category, Guide, Tool
 
 TOOLS_FILE = Path(__file__).with_name("tools_seed.json")
 GUIDES_FILE = Path(__file__).with_name("guides_seed.json")
+ARTICLES_FILE = Path(__file__).with_name("articles_seed.json")
 
 # Fayldan bazaga ko'chiriladigan maydonlar. `status` bu ro'yxatda yo'q — u
 # alohida, `chop_etilgan` bayrog'i orqali boshqariladi.
@@ -161,3 +162,54 @@ def seed_guides(db: Session) -> int:
     if changed:
         db.commit()
     return changed
+
+
+def seed_articles(db: Session) -> int:
+    """Arxivdagi chop etilgan maqolalarni `articles_seed.json` dan idempotent yuklaydi."""
+    if not ARTICLES_FILE.exists():
+        return 0
+
+    with ARTICLES_FILE.open(encoding="utf-8") as fh:
+        entries = json.load(fh)
+
+    categories = {cat.slug: cat.id for cat in db.query(Category).all()}
+    existing_slugs = {slug for (slug,) in db.query(Article.slug).all()}
+    existing_urls = {url for (url,) in db.query(Article.original_url).all()}
+    added = 0
+
+    for entry in entries:
+        slug = entry.get("slug")
+        original_url = entry.get("original_url")
+        if not slug or not original_url:
+            continue
+        if slug in existing_slugs or original_url in existing_urls:
+            continue
+
+        article = Article(
+            title=entry["title"],
+            seo_title=entry.get("seo_title") or entry["title"],
+            slug=slug,
+            summary=entry.get("summary") or "",
+            content=entry.get("content") or "",
+            practical_note=entry.get("practical_note") or "",
+            tags=entry.get("tags") or [],
+            importance=int(entry.get("importance") or 3),
+            original_title=entry.get("original_title") or entry["title"],
+            original_url=original_url,
+            source_name=entry.get("source_name") or "",
+            image_url=entry.get("image_url"),
+            category_id=categories.get(entry.get("category_slug")),
+            status=entry.get("status") or "published",
+            sent_to_telegram=bool(entry.get("sent_to_telegram", True)),
+            source_published_at=_parse_date(entry.get("source_published_at")),
+            published_at=_parse_date(entry.get("published_at")) or datetime.utcnow(),
+            created_at=_parse_date(entry.get("created_at")) or datetime.utcnow(),
+        )
+        db.add(article)
+        existing_slugs.add(slug)
+        existing_urls.add(original_url)
+        added += 1
+
+    if added:
+        db.commit()
+    return added

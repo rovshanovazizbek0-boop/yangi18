@@ -13,7 +13,7 @@ os.environ.setdefault("DATABASE_URL", "sqlite://")
 
 from app import seed  # noqa: E402
 from app.database import Base  # noqa: E402
-from app.models import Tool  # noqa: E402
+from app.models import Article, Tool  # noqa: E402
 from app.routers.tools import get_tool, list_tools, tool_categories  # noqa: E402
 
 from fastapi import HTTPException  # noqa: E402
@@ -119,6 +119,18 @@ class ToolSeedTests(unittest.TestCase):
         for entry in entries:
             self.assertTrue(entry.get("name"), entry["slug"])
             self.assertTrue(entry.get("official_url", "").startswith("https://"), entry["slug"])
+
+    def test_articles_seed_file_is_valid_and_idempotent(self):
+        self.db.query(Article).delete()
+        self.db.commit()
+        seed.seed_categories(self.db)
+
+        first_added = seed.seed_articles(self.db)
+        second_added = seed.seed_articles(self.db)
+
+        self.assertGreater(first_added, 0)
+        self.assertEqual(second_added, 0)
+        self.assertEqual(self.db.query(Article).count(), first_added)
 
 
 class ToolApiTests(unittest.TestCase):

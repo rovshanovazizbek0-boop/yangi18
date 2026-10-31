@@ -8,7 +8,7 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine, inspect
 
-from app.database import Base
+from app.database import Base, FALLBACK_SQLITE_URL, normalize_database_url, resolve_database_url
 from app import models  # noqa: F401
 
 
@@ -51,6 +51,20 @@ class MigrationTests(unittest.TestCase):
                 self.assertIn("alembic_version", inspect(engine).get_table_names())
             finally:
                 engine.dispose()
+
+    def test_postgres_scheme_is_normalized(self):
+        self.assertEqual(
+            normalize_database_url("postgres://user:pass@host:5432/db"),
+            "postgresql+psycopg2://user:pass@host:5432/db",
+        )
+
+    @patch("app.database.create_engine")
+    def test_unreachable_postgres_falls_back_to_sqlite(self, mock_engine):
+        mock_engine.return_value.connect.side_effect = RuntimeError("connection refused")
+        self.assertEqual(
+            resolve_database_url("postgresql+psycopg2://user:pass@127.0.0.1:59999/db"),
+            FALLBACK_SQLITE_URL,
+        )
 
 
 if __name__ == "__main__":

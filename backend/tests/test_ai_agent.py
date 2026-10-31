@@ -1,6 +1,13 @@
 import unittest
+from unittest.mock import Mock, patch
 
-from app.services.ai_agent import ANALYSIS_SCHEMA, SYSTEM_PROMPT, _google_schema, _validate
+from app.services.ai_agent import (
+    ANALYSIS_SCHEMA,
+    SYSTEM_PROMPT,
+    _analyze_with_gemini,
+    _google_schema,
+    _validate,
+)
 
 
 class SchemaOrderTests(unittest.TestCase):
@@ -53,6 +60,24 @@ class ValidationTests(unittest.TestCase):
 
     def test_tags_are_normalized(self):
         self.assertEqual(_validate({"teglar": ["gemini", "AI"]})["teglar"], ["Gemini", "Sun'iy intellekt"])
+
+    @patch("app.services.ai_agent.GEMINI_API_KEY", "test-key")
+    @patch("time.sleep")
+    @patch("app.services.ai_agent.httpx.post")
+    def test_gemini_retries_on_429_and_returns_parsed_json(self, http_post, _sleep):
+        rate_limited = Mock(status_code=429, text="Resource exhausted")
+        success = Mock(
+            status_code=200,
+            json=lambda: {
+                "candidates": [{"content": {"parts": [{"text": '{"sarlavha": "Sinov"}'}]}}]
+            },
+        )
+        http_post.side_effect = [rate_limited, success]
+
+        result = _analyze_with_gemini("Test news")
+
+        self.assertEqual(result, {"sarlavha": "Sinov"})
+        self.assertEqual(http_post.call_count, 2)
 
 
 if __name__ == "__main__":

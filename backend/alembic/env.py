@@ -4,7 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.config import DATABASE_URL as DEFAULT_DATABASE_URL
-from app.database import Base
+from app.database import Base, resolve_database_url
 from app import models  # noqa: F401  # metadata'ga jadvallarni ro'yxatdan o'tkazadi
 
 config = context.config
@@ -13,7 +13,7 @@ if config.config_file_name is not None:
 
 import os
 
-database_url = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
+database_url = resolve_database_url(os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL))
 config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
 target_metadata = Base.metadata
 

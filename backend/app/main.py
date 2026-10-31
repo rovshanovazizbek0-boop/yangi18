@@ -31,7 +31,7 @@ from .database import Base, SessionLocal, engine
 from .models import Article
 from .pipeline import LAST_RUN, format_error, run_pipeline
 from .routers import admin, categories, guides, news, tools
-from .seed import seed_categories, seed_guides, seed_tools
+from .seed import seed_articles, seed_categories, seed_guides, seed_tools
 
 PIPELINE_STATE = {
     "status": "not_started",
@@ -79,6 +79,9 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         seed_categories(db)
+        seeded_articles = seed_articles(db)
+        if seeded_articles:
+            print(f"Maqolalar arxivi tiklandi: {seeded_articles} ta maqola.")
         seeded_tools = seed_tools(db)
         if seeded_tools:
             print(f"Vositalar katalogi yangilandi: {seeded_tools} ta vosita.")

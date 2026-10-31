@@ -29,7 +29,14 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 API_URL = os.getenv("API_URL", "http://localhost:8000")
-SITE_URL = os.getenv("SITE_URL", "http://localhost:3000")
+SITE_URL = os.getenv("SITE_URL") or os.getenv("FRONTEND_ORIGIN") or "https://aixabar.uz"
+
+
+def public_site_url() -> str:
+    base_url = (SITE_URL or "").strip()
+    if not base_url or "localhost" in base_url or "127.0.0.1" in base_url:
+        return "https://aixabar.uz"
+    return base_url.rstrip("/")
 
 dp = Dispatcher()
 
@@ -67,7 +74,7 @@ def article_text(article: dict) -> str:
 def article_buttons(article: dict) -> InlineKeyboardMarkup:
     rows = [[InlineKeyboardButton(
         text="📖 Batafsil o‘qish",
-        url=f"{SITE_URL.rstrip('/')}/maqola/{article['slug']}",
+        url=f"{public_site_url()}/maqola/{article['slug']}",
     )]]
     secondary_buttons = []
     if article.get("original_url"):
@@ -157,7 +164,7 @@ async def saved_articles(message: Message):
         await message.answer("Saqlangan maqolalar yo'q. Yangilik ostidagi ⭐ tugmasini bosing.")
         return
     lines = [
-        f"• <a href=\"{SITE_URL}/maqola/{slug}\">{html.escape(title)}</a>"
+        f"• <a href=\"{public_site_url()}/maqola/{slug}\">{html.escape(title)}</a>"
         for slug, title in saved[-20:]
     ]
     await message.answer(

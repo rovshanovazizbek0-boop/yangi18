@@ -15,6 +15,7 @@ frontend/.npm-cache-codex/
 *.db
 frontend/.env*.local
 .vscode/
+.agent_chat_history.json
 
 # Maxfiy kalitlar va Google service-account credential fayllari
 *-sa.json
