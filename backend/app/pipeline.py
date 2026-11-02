@@ -25,6 +25,7 @@ from .config import (
     AUTO_TELEGRAM,
     AUTO_TELEGRAM_MAX_AGE_HOURS,
     AUTO_TELEGRAM_MIN_IMPORTANCE,
+    CATEGORY_DEFAULT_COVERS,
     IMAGE_GENERATION,
     PIPELINE_PER_FEED,
     TELEGRAM_BOT_TOKEN,
@@ -261,6 +262,8 @@ def _run_pipeline_unlocked(per_feed: int = PIPELINE_PER_FEED) -> int:
                 image_url = generate_image(analysis["sarlavha"], slug)
                 if image_url:
                     print("   OK: Rasm generatsiya qilindi")
+            if not image_url:
+                image_url = CATEGORY_DEFAULT_COVERS.get(analysis.get("kategoriya"), CATEGORY_DEFAULT_COVERS.get("startuplar"))
 
             article = _build_article(
                 db, analysis, news, categories,

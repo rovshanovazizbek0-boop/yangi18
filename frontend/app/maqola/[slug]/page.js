@@ -112,6 +112,8 @@ export default async function ArticlePage({ params }) {
       <SingleArticleImage
         src={article.image_url}
         alt={`${article.title} maqolasi rasmi`}
+        category={article.category}
+        title={article.title}
       />
 
 

@@ -26,6 +26,8 @@ export default function ArticleCard({ article, compact = false, priority = false
         src={article.image_url}
         alt={`${article.title} maqolasi rasmi`}
         priority={priority}
+        category={article.category}
+        title={article.title}
       />
 
       <div className="p-5">
