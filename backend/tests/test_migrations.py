@@ -57,10 +57,14 @@ class MigrationTests(unittest.TestCase):
             normalize_database_url("postgres://user:pass@host:5432/db"),
             "postgresql+psycopg2://user:pass@host:5432/db",
         )
+        self.assertEqual(
+            normalize_database_url("postgresql://user:pass@host:5432/db"),
+            "postgresql+psycopg2://user:pass@host:5432/db",
+        )
 
     @patch("app.database.create_engine")
     def test_unreachable_postgres_falls_back_to_sqlite(self, mock_engine):
-        mock_engine.return_value.connect.side_effect = RuntimeError("connection refused")
+        mock_engine.side_effect = RuntimeError("connection refused")
         self.assertEqual(
             resolve_database_url("postgresql+psycopg2://user:pass@127.0.0.1:59999/db"),
             FALLBACK_SQLITE_URL,

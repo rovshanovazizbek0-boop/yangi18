@@ -10,6 +10,8 @@ def normalize_database_url(url: str) -> str:
     raw = (url or "").strip() or FALLBACK_SQLITE_URL
     if raw.startswith("postgres://"):
         return "postgresql+psycopg2://" + raw[len("postgres://") :]
+    if raw.startswith("postgresql://") and not raw.startswith("postgresql+"):
+        return "postgresql+psycopg2://" + raw[len("postgresql://") :]
     return raw
 
 
@@ -18,12 +20,13 @@ def resolve_database_url(url: str = DATABASE_URL) -> str:
     if normalized.startswith("sqlite"):
         return normalized
 
-    probe = create_engine(
-        normalized,
-        pool_pre_ping=True,
-        connect_args={"connect_timeout": 5},
-    )
+    probe = None
     try:
+        probe = create_engine(
+            normalized,
+            pool_pre_ping=True,
+            connect_args={"connect_timeout": 5},
+        )
         with probe.connect() as conn:
             conn.execute(text("SELECT 1"))
         return normalized
@@ -34,7 +37,8 @@ def resolve_database_url(url: str = DATABASE_URL) -> str:
         )
         return FALLBACK_SQLITE_URL
     finally:
-        probe.dispose()
+        if probe is not None:
+            probe.dispose()
 
 
 ACTIVE_DATABASE_URL = resolve_database_url(DATABASE_URL)
