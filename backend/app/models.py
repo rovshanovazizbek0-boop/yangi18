@@ -43,6 +43,7 @@ class Article(Base):
     # Holat oqimi: pending -> published (admin tasdiqlagach) yoki rejected
     status: Mapped[str] = mapped_column(String(20), default="pending", index=True)
     sent_to_telegram: Mapped[bool] = mapped_column(Boolean, default=False)
+    views_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
     source_published_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     published_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

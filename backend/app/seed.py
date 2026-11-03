@@ -204,6 +204,7 @@ def seed_articles(db: Session) -> int:
             source_published_at=_parse_date(entry.get("source_published_at")),
             published_at=_parse_date(entry.get("published_at")) or datetime.utcnow(),
             created_at=_parse_date(entry.get("created_at")) or datetime.utcnow(),
+            views_count=int(entry.get("views_count") or 0),
         )
         db.add(article)
         existing_slugs.add(slug)

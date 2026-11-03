@@ -170,6 +170,7 @@ def _build_article(db, analysis: dict, news: dict, categories: dict, *,
         source_published_at=news["published_at"],
         status=status,
         published_at=datetime.utcnow() if status == "published" else None,
+        views_count=0,
     )
 
 
