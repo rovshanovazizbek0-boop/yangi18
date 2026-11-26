@@ -10,12 +10,35 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./ainews.db")
 AI_PROVIDER = os.getenv("AI_PROVIDER", "gemini").strip().lower()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+_DEPRECATED_GEMINI_MODELS = (
+    "",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+)
+
+_raw_gemini_model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip()
+GEMINI_MODEL = (
+    "gemini-3.8-flash"
+    if _raw_gemini_model in _DEPRECATED_GEMINI_MODELS
+    else _raw_gemini_model
+)
+GEMINI_FALLBACK_MODELS = tuple(
+    m.strip()
+    for m in os.getenv(
+        "GEMINI_FALLBACK_MODELS", "gemini-4-hydrogen,gemini-3.5-flash-lite"
+    ).split(",")
+    if m.strip()
+)
 
 # Render kabi Google Cloud'dan tashqaridagi serverlar uchun Vertex AI + ADC.
 GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "")
 GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "global")
-VERTEX_GEMINI_MODEL = os.getenv("VERTEX_GEMINI_MODEL", "gemini-3.7-flash")
+_raw_vertex_model = os.getenv("VERTEX_GEMINI_MODEL", "gemini-3.8-flash").strip()
+VERTEX_GEMINI_MODEL = (
+    "gemini-3.8-flash"
+    if _raw_vertex_model in _DEPRECATED_GEMINI_MODELS
+    else _raw_vertex_model
+)
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-4-8")

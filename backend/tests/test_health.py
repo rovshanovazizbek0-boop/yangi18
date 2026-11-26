@@ -1,5 +1,6 @@
 import os
 import unittest
+from unittest.mock import Mock, patch
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -71,6 +72,23 @@ class HealthResponseTests(unittest.TestCase):
     def test_active_model_is_reported(self):
         self.assertTrue(self.body()["pipeline"]["last_run"]["model"])
         self.assertIn("provider", LAST_RUN)
+
+    def test_database_error_returns_degraded_payload_instead_of_crashing(self):
+        from app import main as app_main
+
+        broken_session = Mock()
+        broken_session.query.side_effect = RuntimeError(
+            "postgresql://user:supersecret@bad-host/db failed"
+        )
+        with patch.object(app_main, "SessionLocal", return_value=broken_session):
+            body = app_main.health()
+
+        self.assertEqual(body["status"], "degraded")
+        self.assertEqual(body["database"], "error")
+        self.assertIsNone(body["latest_article_at"])
+        self.assertIn("RuntimeError", body["database_error"])
+        self.assertNotIn("supersecret", body["database_error"])
+        broken_session.close.assert_called_once()
 
 
 if __name__ == "__main__":

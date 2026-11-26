@@ -124,6 +124,7 @@ def redact_secrets(text: str) -> str:
     cut = min((i for i in (text.find(m) for m in _SECRET_MARKERS) if i != -1), default=-1)
     if cut != -1:
         text = f"{text[:cut]}<maxfiy ma'lumot olib tashlandi>"
+    text = re.sub(r"(://[^:/\s]+:)[^@\s]+(@)", r"\1<maxfiy>\2", text)
     for pattern in _SECRET_PATTERNS:
         text = pattern.sub("<maxfiy>", text)
     return text

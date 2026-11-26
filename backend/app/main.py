@@ -138,30 +138,39 @@ def root():
 @app.get("/health")
 def health():
     db = SessionLocal()
+    db_status = "ok"
+    db_error = None
+    latest = None
     try:
         latest = db.query(Article).order_by(Article.created_at.desc()).first()
-        return {
-            "status": "ok",
-            "database": "ok",
-            "latest_article_at": latest.created_at if latest else None,
-            # Amaldagi chegaralar: Render'dagi environment kod standartini
-            # bekor qilsa, buni taxmin qilib emas, ko'rib bilamiz. Bu loyihada
-            # render.yaml yo'q — qiymatlar faqat panelda, shuning uchun /health
-            # ularni ko'rishning yagona yo'li.
-            "publish": {
-                "auto_publish": AUTO_PUBLISH,
-                "auto_publish_min_importance": AUTO_PUBLISH_MIN_IMPORTANCE,
-                "auto_telegram": AUTO_TELEGRAM,
-                "auto_telegram_min_importance": AUTO_TELEGRAM_MIN_IMPORTANCE,
-                # Kanalga yuborishni jimgina to'xtatadigan uchinchi shart:
-                # manba shundan oldin chiqargan maqola saytga chiqadi, lekin
-                # kanalga ketmaydi (last_run.telegram_skipped_old bilan juft).
-                "auto_telegram_max_age_hours": AUTO_TELEGRAM_MAX_AGE_HOURS,
-                "auto_daily_guide": AUTO_DAILY_GUIDE,
-                "daily_guide_min_importance": DAILY_GUIDE_MIN_IMPORTANCE,
-                "daily_guide_lookback_hours": DAILY_GUIDE_LOOKBACK_HOURS,
-            },
-            "pipeline": {**PIPELINE_STATE, "last_run": LAST_RUN},
-        }
+    except Exception as error:
+        db_status = "error"
+        db_error = format_error(error)
     finally:
         db.close()
+
+    return {
+        "status": "ok" if db_status == "ok" else "degraded",
+        "database": db_status,
+        "database_dialect": engine.dialect.name,
+        "database_error": db_error,
+        "latest_article_at": latest.created_at if latest else None,
+        # Amaldagi chegaralar: Render'dagi environment kod standartini
+        # bekor qilsa, buni taxmin qilib emas, ko'rib bilamiz. Bu loyihada
+        # render.yaml yo'q — qiymatlar faqat panelda, shuning uchun /health
+        # ularni ko'rishning yagona yo'li.
+        "publish": {
+            "auto_publish": AUTO_PUBLISH,
+            "auto_publish_min_importance": AUTO_PUBLISH_MIN_IMPORTANCE,
+            "auto_telegram": AUTO_TELEGRAM,
+            "auto_telegram_min_importance": AUTO_TELEGRAM_MIN_IMPORTANCE,
+            # Kanalga yuborishni jimgina to'xtatadigan uchinchi shart:
+            # manba shundan oldin chiqargan maqola saytga chiqadi, lekin
+            # kanalga ketmaydi (last_run.telegram_skipped_old bilan juft).
+            "auto_telegram_max_age_hours": AUTO_TELEGRAM_MAX_AGE_HOURS,
+            "auto_daily_guide": AUTO_DAILY_GUIDE,
+            "daily_guide_min_importance": DAILY_GUIDE_MIN_IMPORTANCE,
+            "daily_guide_lookback_hours": DAILY_GUIDE_LOOKBACK_HOURS,
+        },
+        "pipeline": {**PIPELINE_STATE, "last_run": LAST_RUN},
+    }
