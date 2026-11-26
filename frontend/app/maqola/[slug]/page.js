@@ -8,7 +8,7 @@ import { apiGet } from "../../../lib/api";
 import { formatDateTime } from "../../../lib/date";
 import { SITE_URL, SITE_NAME } from "../../../lib/site";
 import { serializeJsonLd } from "../../../lib/json-ld.mjs";
-import { seoDescription } from "../../../lib/seo.mjs";
+import { seoDescription, seoTitle } from "../../../lib/seo.mjs";
 
 const getArticle = cache((slug) => apiGet(`/api/news/${slug}`));
 
@@ -17,7 +17,9 @@ export async function generateMetadata({ params }) {
   const article = await getArticle(slug);
   if (!article) notFound();
 
-  const title = article.seo_title || article.title;
+  const rawTitle = article.seo_title || article.title;
+  const title = seoTitle(rawTitle);
+  const socialTitle = seoTitle(rawTitle, 90);
   const description = seoDescription(article.summary);
   const url = `/maqola/${article.slug}`;
 
@@ -31,7 +33,7 @@ export async function generateMetadata({ params }) {
       url,
       siteName: SITE_NAME,
       locale: "uz_UZ",
-      title,
+      title: socialTitle,
       description,
       publishedTime: article.published_at || article.created_at,
       section: article.category?.name,
@@ -39,7 +41,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: socialTitle,
       description,
     },
   };

@@ -6,7 +6,7 @@ import { apiGet } from "../../../lib/api";
 import { formatDate } from "../../../lib/date";
 import { difficultyName, providerName } from "../../../lib/guides";
 import { serializeJsonLd } from "../../../lib/json-ld.mjs";
-import { seoDescription } from "../../../lib/seo.mjs";
+import { seoDescription, seoTitle } from "../../../lib/seo.mjs";
 import { SITE_NAME, SITE_URL } from "../../../lib/site";
 
 const getGuide = cache((slug) => apiGet(`/api/guides/${slug}`));
@@ -16,7 +16,9 @@ export async function generateMetadata({ params }) {
   const guide = await getGuide(slug);
   if (!guide) notFound();
 
-  const title = guide.seo_title || guide.title;
+  const rawTitle = guide.seo_title || guide.title;
+  const title = seoTitle(rawTitle);
+  const socialTitle = seoTitle(rawTitle, 90);
   const description = seoDescription(guide.description || guide.excerpt);
   return {
     title,
@@ -26,14 +28,14 @@ export async function generateMetadata({ params }) {
     openGraph: {
       type: "article",
       url: `/organish/${guide.slug}`,
-      title,
+      title: socialTitle,
       description,
       publishedTime: guide.published_at,
       modifiedTime: guide.updated_at,
       siteName: SITE_NAME,
       locale: "uz_UZ",
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: { card: "summary_large_image", title: socialTitle, description },
   };
 }
 
