@@ -82,6 +82,30 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(result, {"sarlavha": "Sinov"})
         self.assertEqual(http_post.call_count, 2)
 
+    @patch("app.services.ai_agent.GEMINI_API_KEY", "key-0")
+    @patch("app.services.ai_agent.GEMINI_EXTRA_API_KEYS", ("key-1", "key-0"))
+    @patch("app.services.ai_agent.httpx.post")
+    def test_gemini_rotates_to_next_api_key_on_429(self, http_post):
+        used_keys = []
+
+        def fake_post(url, **kwargs):
+            key = kwargs["headers"]["x-goog-api-key"]
+            used_keys.append(key)
+            if key == "key-0":
+                return Mock(status_code=429, text="Quota exceeded")
+            return Mock(
+                status_code=200,
+                json=lambda: {
+                    "candidates": [{"content": {"parts": [{"text": '{"sarlavha": "Key1"}'}]}}]
+                },
+            )
+
+        http_post.side_effect = fake_post
+        result = _analyze_with_gemini("Test news")
+
+        self.assertEqual(result, {"sarlavha": "Key1"})
+        self.assertEqual(used_keys, ["key-0", "key-1"])
+
     def test_extract_response_text_skips_thought_part(self):
         payload = {
             "candidates": [

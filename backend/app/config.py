@@ -10,6 +10,15 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./ainews.db")
 AI_PROVIDER = os.getenv("AI_PROVIDER", "gemini").strip().lower()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+# Kvota (429) tugaganda navbatdagi kalitga o'tish uchun qo'shimcha kalitlar.
+GEMINI_EXTRA_API_KEYS = tuple(
+    key
+    for key in (
+        os.getenv(name, "").strip()
+        for name in ("GEMINI_API_KEY1", "GEMINI_API_KEY2", "GEMINI_API_KEY3")
+    )
+    if key
+)
 _DEPRECATED_GEMINI_MODELS = (
     "",
     "gemini-2.5-flash",

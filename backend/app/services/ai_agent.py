@@ -17,6 +17,7 @@ from ..config import (
     ANTHROPIC_API_KEY,
     CLAUDE_MODEL,
     GEMINI_API_KEY,
+    GEMINI_EXTRA_API_KEYS,
     GEMINI_FALLBACK_MODELS,
     GEMINI_MODEL,
     GOOGLE_CLOUD_LOCATION,
@@ -122,6 +123,32 @@ def _extract_response_text(data: dict) -> str:
     return parts[0]["text"]
 
 
+def _gemini_keys() -> list[str]:
+    """GEMINI_API_KEY va GEMINI_API_KEY1..3 — takrorlarsiz, tartib saqlangan."""
+    return list(
+        dict.fromkeys(
+            key for key in (GEMINI_API_KEY, *GEMINI_EXTRA_API_KEYS) if key
+        )
+    )
+
+
+def _post_gemini(url: str, payload: dict, keys: list[str]) -> httpx.Response:
+    """Kvota (429) tugasa navbatdagi API kalit bilan qayta urinadi."""
+    response = None
+    for index, key in enumerate(keys):
+        response = httpx.post(
+            url,
+            json=payload,
+            headers={"x-goog-api-key": key},
+            timeout=60,
+        )
+        if response.status_code != 429:
+            return response
+        if index + 1 < len(keys):
+            print(f"   WARNING: Gemini kvota (429): API kalit #{index + 2} ga o'tilmoqda")
+    return response
+
+
 def _analyze_with_gemini(
     user_text: str,
     *,
@@ -129,7 +156,8 @@ def _analyze_with_gemini(
     response_schema: dict = ANALYSIS_SCHEMA,
 ) -> dict:
     """Gemini API (generateContent) — model zaxira zanjiri bilan strukturali JSON javob."""
-    if not GEMINI_API_KEY:
+    keys = _gemini_keys()
+    if not keys:
         raise RuntimeError("GEMINI_API_KEY sozlanmagan")
 
     # Gemini responseSchema OpenAPI kichik to'plami — additionalProperties kerak emas
@@ -154,12 +182,7 @@ def _analyze_with_gemini(
         max_attempts = 2 if index == len(models) - 1 else 1
         for attempt in range(max_attempts):
             try:
-                response = httpx.post(
-                    url,
-                    json=payload,
-                    headers={"x-goog-api-key": GEMINI_API_KEY},
-                    timeout=60,
-                )
+                response = _post_gemini(url, payload, keys)
             except (httpx.TimeoutException, httpx.RequestError) as error:
                 last_error = f"Gemini API ({model}) tarmoq/timeout xatosi: {error}"
                 print(f"   WARNING: {last_error}")
@@ -337,7 +360,7 @@ def generate_structured(
                 response_schema=response_schema,
             )
         except Exception as error:
-            if GEMINI_API_KEY:
+            if _gemini_keys():
                 print(
                     f"   WARNING: Vertex AI ishlamadi ({error}); Gemini API zaxira yo'liga o'tilmoqda."
                 )
