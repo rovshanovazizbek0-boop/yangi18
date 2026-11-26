@@ -5,6 +5,13 @@ import re
 from urllib.parse import urlparse
 
 
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+
+from ..models import Article
+from ..tags import normalize_tags
+
+
 _AI_PATTERN = re.compile(
     r"\b(?:ai|artificial intelligence|machine learning|deep learning|llm|"
     r"chatgpt|openai|anthropic|claude|gemini|grok|xai|deepseek|qwen|"
@@ -13,11 +20,92 @@ _AI_PATTERN = re.compile(
 )
 
 _ENGLISH_TITLE_WORDS = {
-    "a", "after", "an", "and", "apps", "are", "ban", "block", "can",
-    "denies", "for", "from", "in", "is", "judge", "just", "launches",
-    "new", "of", "on", "request", "says", "seems", "the", "think", "to",
-    "with", "will", "your",
+    "a", "about", "achieves", "after", "agent", "agents", "an", "and",
+    "announces", "apps", "are", "ban", "block", "brings", "builds", "can",
+    "creates", "denies", "detects", "for", "from", "gets", "helps", "how",
+    "human", "in", "into", "is", "its", "judge", "just", "launches", "level",
+    "makes", "model", "models", "more", "new", "now", "of", "on", "over",
+    "releases", "request", "says", "seems", "sense", "shows", "smell", "the",
+    "think", "to", "uses", "using", "what", "why", "will", "with", "your",
 }
+
+TEXT_REPLACEMENTS = (
+    ("Â«", "«"),
+    ("Â»", "»"),
+    ("â€™", "’"),
+    ("â€œ", "“"),
+    ("â€ ", "”"),
+    ("â€“", "–"),
+    ("â€”", "—"),
+    ("deepfakt", "dipfeyk"),
+    ("Deepfakt", "Dipfeyk"),
+)
+
+_NAME_PATTERNS = (
+    (re.compile(r"\b(?:Jensen Xuang|Jensen Xuan|Jyensen Xuang|Jensen Huang)\b", re.IGNORECASE), "Jensen Huang"),
+    (re.compile(r"\b(?:Sem Oltman|Sam Oltman)\b", re.IGNORECASE), "Sam Altman"),
+    (re.compile(r"\bIlan Mask\b", re.IGNORECASE), "Ilon Mask"),
+    (re.compile(r"\bMark Sukerberg\b", re.IGNORECASE), "Mark Tsukerberg"),
+)
+
+
+def normalize_text(value: str | None) -> str:
+    """Kodlash (mojibake), atama va shaxs nomlari imlosini birxillashtiradi."""
+    text = str(value or "")
+    for broken, fixed in TEXT_REPLACEMENTS:
+        text = text.replace(broken, fixed)
+    for pattern, canonical in _NAME_PATTERNS:
+        text = pattern.sub(canonical, text)
+    text = re.sub(r"[ \t]{2,}", " ", text)
+    return text.strip()
+
+
+def normalize_analysis(analysis: dict) -> dict:
+    """AI javobidagi barcha matn maydonlari va teglarni kanonik shaklga keltiradi."""
+    for key in ("sarlavha", "seo_sarlavha", "xulosa", "maqola", "amaliy_ahamiyat"):
+        if key in analysis:
+            analysis[key] = normalize_text(analysis.get(key))
+    if "teglar" in analysis:
+        analysis["teglar"] = normalize_tags(normalize_text(t) for t in (analysis.get("teglar") or []))
+    return analysis
+
+
+def cleanup_existing_articles(db: Session) -> tuple[int, int]:
+    """Mavjud maqolalardagi kodlash/nom xatolarini tuzatadi va tarjimasiz inglizcha maqolalarni yashiradi."""
+    corrected = 0
+    for field in (
+        Article.title,
+        Article.seo_title,
+        Article.summary,
+        Article.content,
+        Article.practical_note,
+    ):
+        for broken, fixed in TEXT_REPLACEMENTS:
+            corrected += (
+                db.query(Article)
+                .filter(field.contains(broken))
+                .update({field: func.replace(field, broken, fixed)}, synchronize_session=False)
+            )
+    for article in db.query(Article).all():
+        changed = False
+        for attr in ("title", "seo_title", "summary", "content", "practical_note"):
+            raw = getattr(article, attr)
+            if raw:
+                cleaned = normalize_text(raw)
+                if cleaned != raw:
+                    setattr(article, attr, cleaned)
+                    changed = True
+        if changed:
+            corrected += 1
+
+    hidden = 0
+    for article in db.query(Article).filter(Article.status == "published").all():
+        if _looks_english(article.title):
+            article.status = "rejected"
+            hidden += 1
+
+    db.commit()
+    return hidden, corrected
 
 _UZBEK_TITLE_WORDS = {
     "amalga", "bilan", "bozor", "degan", "emas", "haqida", "uchun",

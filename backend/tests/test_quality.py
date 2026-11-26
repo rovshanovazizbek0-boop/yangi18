@@ -1,6 +1,6 @@
 import unittest
 
-from app.services.quality import evaluate_candidate
+from app.services.quality import evaluate_candidate, normalize_text
 
 
 def valid_analysis(**overrides):
@@ -39,6 +39,20 @@ class QualityGateTests(unittest.TestCase):
             valid_source(),
         )
         self.assertIn("sarlavha o'zbek tiliga moslashtirilmagan", report.errors)
+
+    def test_rejects_untranslated_english_sentence_like_osmo(self):
+        report = evaluate_candidate(
+            valid_analysis(sarlavha="Osmo's AI model achieves human-level sense of smell"),
+            valid_source(),
+        )
+        self.assertIn("sarlavha o'zbek tiliga moslashtirilmagan", report.errors)
+
+    def test_normalize_text_fixes_mojibake_terms_and_names(self):
+        self.assertEqual(
+            normalize_text("Jensen Xuang va Jensen Xuan deepfaktlar va Â«vibe codingÂ»"),
+            "Jensen Huang va Jensen Huang dipfeyklar va «vibe coding»",
+        )
+        self.assertEqual(normalize_text("Googleâ€™ning AI"), "Google’ning AI")
 
     def test_rejects_non_ai_source(self):
         report = evaluate_candidate(

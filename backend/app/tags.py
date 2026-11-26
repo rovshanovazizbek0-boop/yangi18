@@ -34,6 +34,7 @@ _ALIAS_GROUPS: dict[str, tuple[str, ...]] = {
     "Microsoft": ("microsoft ai",),
     "Copilot": ("github copilot",),
     "Nvidia": (),
+    "Jensen Huang": ("jensen xuang", "jensen xuan", "jyensen xuang"),
     "LLM": ("large language model", "katta til modeli", "til modeli", "til modellari"),
     "AI agentlari": ("ai agent", "ai agenti", "ai agentlar", "agentlar"),
     "Neyron tarmoqlar": ("neyron tarmoq", "neural network", "neyron tarmoq"),

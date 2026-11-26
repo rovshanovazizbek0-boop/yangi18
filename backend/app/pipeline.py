@@ -37,7 +37,7 @@ from .services.ai_agent import active_model, analyze_news
 from .services.collector import collect_news, fetch_og_image
 from .services.image_gen import generate_image
 from .services.daily_guide import create_daily_guide
-from .services.quality import evaluate_candidate
+from .services.quality import cleanup_existing_articles, evaluate_candidate
 from .services.telegram import notify_subscribers, send_to_channel
 from .utils import slugify
 
@@ -209,6 +209,9 @@ def _run_pipeline_unlocked(per_feed: int = PIPELINE_PER_FEED) -> int:
     try:
         seed_categories(db)
         categories = {c.slug: c for c in db.query(Category).all()}
+        hidden, corrected = cleanup_existing_articles(db)
+        if hidden or corrected:
+            print(f"INFO: Kontent tozalandi: {hidden} ta inglizcha maqola yashirildi, {corrected} ta matn tuzatildi.")
 
         print("INFO: Yangiliklar yig'ilmoqda...")
         fresh = collect_news(db, per_feed=per_feed)
