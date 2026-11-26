@@ -135,6 +135,15 @@ def root():
     return {"loyiha": "AI News Uzbekistan", "hujjatlar": "/docs"}
 
 
+@app.get("/health/live")
+def liveness():
+    """Jarayon tirikligini tekshiradi; bazaga so'rov yubormaydi."""
+    return {
+        "status": "ok",
+        "pipeline": {**PIPELINE_STATE, "last_run": LAST_RUN},
+    }
+
+
 @app.get("/health")
 def health():
     db = SessionLocal()

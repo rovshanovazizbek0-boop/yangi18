@@ -90,6 +90,20 @@ class HealthResponseTests(unittest.TestCase):
         self.assertNotIn("supersecret", body["database_error"])
         broken_session.close.assert_called_once()
 
+    def test_liveness_does_not_touch_database(self):
+        from app import main as app_main
+
+        with patch.object(
+            app_main,
+            "SessionLocal",
+            side_effect=AssertionError("DB must not be opened for /health/live"),
+        ):
+            body = app_main.liveness()
+
+        self.assertEqual(body["status"], "ok")
+        self.assertIn("status", body["pipeline"])
+        self.assertIn("last_run", body["pipeline"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -16,10 +16,12 @@ async function errorDetail(response) {
 }
 
 /** 404 uchun null qaytaradi; vaqtinchalik API/tarmoq xatolarini yashirmaydi. */
-export async function fetchJson(url, fetchImpl = fetch) {
+export async function fetchJson(url, fetchImpl = fetch, { revalidate = 300 } = {}) {
   let response;
   try {
-    response = await fetchImpl(url, { cache: "no-store" });
+    const fetchOptions =
+      revalidate === 0 ? { cache: "no-store" } : { next: { revalidate } };
+    response = await fetchImpl(url, fetchOptions);
   } catch (cause) {
     throw new ApiError("Backend bilan bog'lanib bo'lmadi", 503, { cause });
   }

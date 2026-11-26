@@ -5,6 +5,8 @@ import { SITE_NAME, SITE_URL } from "../../lib/site";
 import { categoryName, hasUzData, NOT_CHECKED, yesNo } from "../../lib/tools";
 import { serializeJsonLd } from "../../lib/json-ld.mjs";
 
+export const dynamic = "force-dynamic";
+
 const getTools = cache(() => apiGet("/api/tools"));
 
 const BASE_METADATA = {

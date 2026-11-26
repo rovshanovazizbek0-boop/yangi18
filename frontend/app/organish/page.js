@@ -5,6 +5,8 @@ import { providerName } from "../../lib/guides";
 import { serializeJsonLd } from "../../lib/json-ld.mjs";
 import { SITE_NAME, SITE_URL } from "../../lib/site";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "AI'ni o'rganish — amaliy qo'llanmalar",
   description: "ChatGPT, Gemini, Claude va boshqa AI vositalaridan xavfsiz va samarali foydalanishni o'zbek tilida qadam-baqadam o'rganing.",

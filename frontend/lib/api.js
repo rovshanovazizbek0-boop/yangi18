@@ -9,13 +9,13 @@ const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "http://localhost:8000";
 
-export async function apiGet(path, params = {}) {
+export async function apiGet(path, params = {}, options = {}) {
   const url = new URL(`${API_URL}${path}`);
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null) url.searchParams.set(key, value);
   });
   try {
-    return await fetchJson(url);
+    return await fetchJson(url, fetch, options);
   } catch (error) {
     // Next.js prerender/dynamic-render signallarini oddiy tarmoq xatosi deb
     // o'rab yubormaslik kerak; framework ularni o'zi boshqaradi.

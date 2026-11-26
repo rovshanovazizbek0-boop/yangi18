@@ -4,6 +4,8 @@ import AdPlaceholder from "../components/AdPlaceholder";
 import GuideCard from "../components/GuideCard";
 import { apiGet } from "../lib/api";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [latest, top, digest, trends, guides, tools] = await Promise.all([
     apiGet("/api/news", { limit: 12 }),

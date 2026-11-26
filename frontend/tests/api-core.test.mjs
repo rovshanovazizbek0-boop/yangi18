@@ -30,3 +30,23 @@ test("tarmoq xatosi vaqtinchalik API xatosiga aylantiriladi", async () => {
     (error) => error instanceof ApiError && error.status === 503,
   );
 });
+
+test("fetchJson standartda 5 daqiqalik revalidate keshini ishlatadi", async () => {
+  let capturedOptions = null;
+  await fetchJson("https://api.test/news", async (_url, options) => {
+    capturedOptions = options;
+    return { ok: true, status: 200, json: async () => ({ ok: true }) };
+  });
+  assert.deepEqual(capturedOptions, { next: { revalidate: 300 } });
+
+  let noStoreOptions = null;
+  await fetchJson(
+    "https://api.test/news",
+    async (_url, options) => {
+      noStoreOptions = options;
+      return { ok: true, status: 200, json: async () => ({ ok: true }) };
+    },
+    { revalidate: 0 },
+  );
+  assert.deepEqual(noStoreOptions, { cache: "no-store" });
+});

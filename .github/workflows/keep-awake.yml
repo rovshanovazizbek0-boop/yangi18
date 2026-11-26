@@ -19,9 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: /health ni chaqirish
+      - name: /health/live ni chaqirish
         env:
-          URL: https://yangi18.onrender.com/health
+          URL: https://yangi18.onrender.com/health/live
         run: |
           set -euo pipefail
 
